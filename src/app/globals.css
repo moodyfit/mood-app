@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: #ffffff;
+  color: #0e0e10;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 무드 사진 위 미세 질감 (실 이미지 교체 전 자리표시자 톤 통일) */
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.35) 0.5px, transparent 0.5px);
+  background-size: 4px 4px;
+  pointer-events: none;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-fade {
+  animation: fade 0.35s ease;
+}
+
+.animate-pop {
+  animation: pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+}
