@@ -5,8 +5,8 @@
 옷을 검색하는 앱이 아니라 **취향을 번역해주는 앱**. 무엇이든(상황·감성·트렌드) 적으면
 서로 다른 무드 사진을 펼쳐주고, 눈이 가는 사진을 고를수록 **추구미 카드**로 취향에 이름을 붙여준다.
 
-전략 근거: [`../mood-fashion-strategy-v1.md`](../mood-fashion-strategy-v1.md)
 UI/UX 가이드라인: [`../mood-fashion-prototype/UI-UX-guideline.md`](../mood-fashion-prototype/UI-UX-guideline.md)
+이미지 소싱 전략 v1.4: [`docs/image-sourcing-v1.4.md`](docs/image-sourcing-v1.4.md)
 
 ## 스택
 
@@ -62,7 +62,8 @@ src/
 
 ## 다음 작업 (전략 §MVP)
 
-- [ ] 이미지 사용권 확보 후 gradient → 실 룩북 이미지 교체 (최우선 실무 과제)
-- [ ] 무드 축 300장 규모 수동 태깅
+- [x] 무드 이미지 = AI 생성 스트릿샷 (gradient → 실사진 교체 완료, 무드당 1장 시드)
+- [ ] AI 스트릿샷 무드당 15~20장으로 증량 → 파일럿 100장 (docs/image-sourcing-v1.4.md)
+- [ ] 무드 축 규모 수동 태깅 + 실상품 3~5개 매칭
 - [ ] 검색어 매핑 테이블 30~50개 확장 + LLM 번역 연동
 - [ ] 익명 세션 기반 저장/검색 로그 → 검증 지표 수집

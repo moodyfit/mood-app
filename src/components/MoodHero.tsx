@@ -8,7 +8,7 @@ export default function MoodHero({ mood }: { mood: Mood }) {
   const saved = isSaved(mood.key);
 
   return (
-    <div className="relative mb-1 aspect-[16/10] overflow-hidden rounded-xl">
+    <div className="relative mb-1 aspect-[3/4] overflow-hidden rounded-xl">
       <div
         className="absolute inset-0"
         style={
@@ -17,7 +17,7 @@ export default function MoodHero({ mood }: { mood: Mood }) {
             : { background: mood.gradient }
         }
       />
-      <div className="grain" />
+      {!mood.imageUrl && <div className="grain" />}
       <button
         type="button"
         onClick={() => toggleSave(mood.key)}

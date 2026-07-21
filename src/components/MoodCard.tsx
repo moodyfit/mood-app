@@ -22,7 +22,7 @@ export default function MoodCard({ mood }: { mood: Mood }) {
             : { background: mood.gradient }
         }
       />
-      <div className="grain" />
+      {!mood.imageUrl && <div className="grain" />}
       <button
         type="button"
         onClick={(e) => {
