@@ -18,6 +18,7 @@ create table if not exists photos (
   mood_key    text not null references moods(key) on delete cascade,
   image_url   text not null,
   body_type   text,                       -- 7.10 체형 변수 (생성 프롬프트 스펙 기록) → '내 체형으로 보기' 전제
+  caption     text,                       -- 7.10 '길게 눌러 해줌': 아이템 명명 + 좋아 보이는 이유 1줄
   created_at  timestamptz not null default now()
 );
 create index if not exists photos_mood_key_idx on photos(mood_key);

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMoodStore } from "@/lib/store";
 import { computeTaste, TASTE_CARD_THRESHOLD } from "@/lib/taste";
 
@@ -21,6 +22,12 @@ export default function TasteProfile() {
           <br />
           취향이 선명해진다.
         </div>
+        <Link
+          href="/scan"
+          className="mt-4 inline-block rounded-[10px] bg-accent px-4 py-2.5 text-[13px] font-semibold text-white"
+        >
+          3초 취향 스캔 →
+        </Link>
       </div>
     );
   }

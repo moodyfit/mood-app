@@ -32,6 +32,7 @@ interface MoodStore {
   isSaved: (key: MoodKey) => boolean;
   toggleSave: (key: MoodKey, query?: string) => void;
   recordView: (key: MoodKey) => void;
+  recordScanLike: (key: MoodKey) => void;
   recordSearch: (query: string) => void;
   searchCount: (query: string) => number;
   cardEverIssued: boolean;
@@ -127,6 +128,12 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     [bump]
   );
 
+  // 7.10 3초 취향 스캔: '좋아'는 저장에 준하는 신호(보드엔 안 담고 프로필만 적재)
+  const recordScanLike = useCallback(
+    (key: MoodKey) => bump(key, W_SAVE),
+    [bump]
+  );
+
   const recordSearch = useCallback((query: string) => {
     const q = normalizeQuery(query);
     if (!q) return;
@@ -146,6 +153,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       isSaved,
       toggleSave,
       recordView,
+      recordScanLike,
       recordSearch,
       searchCount,
       cardEverIssued,
@@ -161,6 +169,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       isSaved,
       toggleSave,
       recordView,
+      recordScanLike,
       recordSearch,
       searchCount,
       cardEverIssued,

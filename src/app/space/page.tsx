@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import TasteProfile from "@/components/TasteProfile";
 import MoodMap from "@/components/MoodMap";
@@ -28,6 +29,12 @@ export default function SpacePage() {
           <div className="mt-8">
             <Room />
           </div>
+          <Link
+            href="/scan"
+            className="mt-8 block rounded-[12px] border border-line py-3.5 text-center text-[14px] font-semibold text-ink-soft transition hover:bg-paper-2"
+          >
+            취향 스캔 한 판 더
+          </Link>
         </>
       )}
     </div>

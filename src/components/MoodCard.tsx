@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import Link from "next/link";
 import type { Mood } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
@@ -9,10 +10,37 @@ export default function MoodCard({ mood, query }: { mood: Mood; query?: string }
   const { isSaved, toggleSave } = useMoodStore();
   const saved = isSaved(mood.key);
 
+  // 7.10 '길게 눌러 해줌' — 롱프레스 중 해설 노출, 떼면 사라짐. 롱프레스 후엔 이동 억제.
+  const [caption, setCaption] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressed = useRef(false);
+
+  function press() {
+    longPressed.current = false;
+    timer.current = setTimeout(() => {
+      longPressed.current = true;
+      setCaption(true);
+    }, 380);
+  }
+  function release() {
+    if (timer.current) clearTimeout(timer.current);
+    setCaption(false);
+  }
+
   return (
     <Link
       href={`/mood/${mood.key}`}
-      className="group relative block aspect-[3/4] overflow-hidden rounded-xl transition active:scale-[0.98]"
+      onClick={(e) => {
+        if (longPressed.current) {
+          e.preventDefault();
+          longPressed.current = false;
+        }
+      }}
+      onPointerDown={press}
+      onPointerUp={release}
+      onPointerLeave={release}
+      onContextMenu={(e) => e.preventDefault()}
+      className="group relative block aspect-[3/4] select-none overflow-hidden rounded-xl transition active:scale-[0.98]"
       aria-label={`${mood.name} 무드 보기`}
     >
       <div
@@ -40,9 +68,19 @@ export default function MoodCard({ mood, query }: { mood: Mood; query?: string }
       >
         {saved ? "♥" : "♡"}
       </button>
-      {/* 모먼트 2: 무드 완성가 — "살 수 있는 잡지" 신호를 첫 화면에서 종결 */}
+
+      {/* 모먼트 2: 무드 완성가 */}
       <div className="absolute bottom-2 left-2 rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur">
         이 느낌 완성 · <span className="font-latin">{formatMan(lookTotal(mood.key))}</span>
+      </div>
+
+      {/* 7.10 길게 눌러 해줌 — 해설 오버레이 */}
+      <div
+        className={`absolute inset-0 flex items-end bg-black/70 p-3 text-[12.5px] leading-relaxed text-white transition-opacity duration-150 ${
+          caption ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      >
+        {mood.caption}
       </div>
     </Link>
   );
