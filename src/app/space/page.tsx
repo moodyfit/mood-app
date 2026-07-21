@@ -21,6 +21,13 @@ export default function SpacePage() {
 
       <TasteProfile />
 
+      <Link
+        href="/shot"
+        className="mt-3 flex items-center justify-center gap-2 rounded-[12px] border border-line py-3 text-[14px] font-semibold text-ink-soft transition hover:bg-paper-2"
+      >
+        📷 멋있는 거 봤으면, 스샷으로 찾기
+      </Link>
+
       {savedCount > 0 && (
         <>
           <div className="mt-8">

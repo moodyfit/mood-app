@@ -54,10 +54,10 @@ export default function ResultsGrid({ query }: { query: string }) {
       )}
 
       <div className="grid grid-cols-2 gap-3">
-        {ordered.map((key) => {
+        {ordered.map((key, idx) => {
           const mood = MOODS[key];
           if (!mood) return null;
-          return <MoodCard key={key} mood={mood} query={query} />;
+          return <MoodCard key={key} mood={mood} query={query} hint={idx === 0} />;
         })}
       </div>
     </div>

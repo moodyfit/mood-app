@@ -6,7 +6,15 @@ import type { Mood } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
 import { lookTotal, formatMan } from "@/lib/products";
 
-export default function MoodCard({ mood, query }: { mood: Mood; query?: string }) {
+export default function MoodCard({
+  mood,
+  query,
+  hint = false,
+}: {
+  mood: Mood;
+  query?: string;
+  hint?: boolean;
+}) {
   const { isSaved, toggleSave } = useMoodStore();
   const saved = isSaved(mood.key);
 
@@ -52,6 +60,12 @@ export default function MoodCard({ mood, query }: { mood: Mood; query?: string }
         }
       />
       {!mood.imageUrl && <div className="grain" />}
+      {/* 첫 인상 감정 대응 + 롱프레스 발견성: 첫 카드에만 해설 힌트 */}
+      {hint && !caption && (
+        <div className="absolute left-2.5 top-2.5 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-ink">
+          꾹 눌러봐
+        </div>
+      )}
       <button
         type="button"
         onClick={(e) => {
