@@ -34,12 +34,9 @@ export default function Room() {
 
   return (
     <div>
-      {/* 문패 */}
-      <div className="mb-3">
-        <div className="text-[12px] text-ink-faint">나의 방</div>
-        <div className="mt-0.5 text-[15px] font-bold tracking-[-0.3px]">
-          {title}의 방
-        </div>
+      {/* 문패 (7.7) — 상시 거주하는 추구미 한 줄 */}
+      <div className="mb-3 text-[15px] font-bold tracking-[-0.3px]">
+        {title}의 방
       </div>
 
       {/* 지배 무드 — 크게 (취향 비중 시각화) */}

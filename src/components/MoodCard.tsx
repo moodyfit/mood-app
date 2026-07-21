@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { Mood } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
+import { lookTotal, formatMan } from "@/lib/products";
 
 export default function MoodCard({ mood, query }: { mood: Mood; query?: string }) {
   const { isSaved, toggleSave } = useMoodStore();
@@ -39,6 +40,10 @@ export default function MoodCard({ mood, query }: { mood: Mood; query?: string }
       >
         {saved ? "♥" : "♡"}
       </button>
+      {/* 모먼트 2: 무드 완성가 — "살 수 있는 잡지" 신호를 첫 화면에서 종결 */}
+      <div className="absolute bottom-2 left-2 rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur">
+        이 느낌 완성 · <span className="font-latin">{formatMan(lookTotal(mood.key))}</span>
+      </div>
     </Link>
   );
 }

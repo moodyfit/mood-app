@@ -23,6 +23,11 @@ export default function ResultsGrid({ query }: { query: string }) {
 
   return (
     <div>
+      {/* 모먼트 1: "내 말을 알아들었다" — 검색어와 결과를 잇는 표식 */}
+      <h2 className="mb-4 text-[20px] font-bold tracking-[-0.4px]">
+        ‘{query}’ 느낌
+      </h2>
+
       <SearchMemory query={query} />
 
       {showToggle && (
