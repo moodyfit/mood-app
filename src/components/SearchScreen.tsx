@@ -32,12 +32,12 @@ export default function SearchScreen() {
   return (
     <div className="flex min-h-[62vh] animate-fade flex-col justify-center px-5 pb-12">
       <h1 className="text-[28px] font-extrabold leading-[1.32] tracking-[-0.9px]">
-        취향이 없는 게 아니에요.
+        취향이 없는 게 아니다.
         <br />
-        <span className="text-ink-soft">이름을 몰랐을 뿐이에요.</span>
+        <span className="text-ink-soft">이름을 몰랐을 뿐.</span>
       </h1>
       <p className="mt-3 text-[14px] leading-[1.6] text-ink-soft">
-        찾는 거 딱 그대로 쳐보세요. 느낌만 적으면 무드로 보여드릴게요.
+        찾는 느낌 그대로 적으면, 무드로 보여준다.
       </p>
 
       <div className="relative mt-6">

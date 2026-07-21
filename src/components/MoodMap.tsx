@@ -119,7 +119,7 @@ export default function MoodMap() {
             <span className="font-latin font-semibold text-ink">{rarity}%</span>
           </>
         ) : (
-          "사진을 저장하면 여기 당신의 좌표가 찍혀요"
+          "저장하면 여기 내 좌표가 찍힌다"
         )}
       </div>
     </div>

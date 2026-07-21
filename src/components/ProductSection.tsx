@@ -19,8 +19,8 @@ export default function ProductSection({
   const saved = isSaved(mood.key);
 
   const reason = saved
-    ? "네가 저장한 무드예요. 같은 결의 아이템이에요."
-    : "지금 보는 무드와 같은 결의 아이템이에요.";
+    ? "저장한 무드와 같은 결의 아이템"
+    : "지금 보는 무드와 같은 결의 아이템";
 
   return (
     <div className="mt-[22px]">

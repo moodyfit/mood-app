@@ -20,7 +20,7 @@ export default function TasteCardModal() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-[11px] font-semibold tracking-[2px] opacity-70">
-          당신의 추구미
+          나의 추구미
         </div>
         <div className="mt-2.5 text-[26px] font-extrabold leading-[1.28] tracking-[-0.6px]">
           {title}
@@ -49,9 +49,9 @@ export default function TasteCardModal() {
         </div>
 
         <div className="mt-5 border-t border-white/15 pt-4 text-[13px] leading-relaxed opacity-90">
-          취향이 없는 게 아니라,
+          취향이 없는 게 아니라
           <br />
-          이름을 몰랐을 뿐이에요.
+          이름을 몰랐을 뿐.
         </div>
 
         <button

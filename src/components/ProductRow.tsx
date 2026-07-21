@@ -10,7 +10,7 @@ export default function ProductRow({ product }: { product: Product }) {
 
   function goTo(url?: string) {
     if (url) window.open(url, "_blank", "noopener");
-    else showToast("데모 · 실제 서비스에선 판매처로 연결됩니다");
+    else showToast("데모 · 실제 서비스에선 판매처로 연결");
   }
 
   return (

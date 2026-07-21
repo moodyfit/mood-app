@@ -78,7 +78,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         if (exists) return prev.filter((s) => s.moodKey !== key);
 
         const next = [...prev, { moodKey: key, savedAt: Date.now() }];
-        showToast("사진을 저장했어요");
+        showToast("무드보드에 저장");
 
         // 임계치 도달 & 최초 발급 → 추구미 카드
         if (next.length >= TASTE_CARD_THRESHOLD && !cardEverIssued) {

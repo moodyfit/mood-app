@@ -15,11 +15,11 @@ export default function TasteProfile() {
   if (savedCount === 0) {
     return (
       <div className="rounded-[18px] border border-dashed border-line bg-paper-2 p-6 text-center">
-        <div className="text-[15px] font-semibold">여기가 당신의 공간이에요</div>
+        <div className="text-[15px] font-semibold">여기가 나의 공간</div>
         <div className="mt-2 text-[13px] leading-relaxed text-ink-soft">
-          마음에 드는 사진을 저장할수록
+          사진을 저장할수록
           <br />
-          당신의 취향이 선명해져요.
+          취향이 선명해진다.
         </div>
       </div>
     );
@@ -34,7 +34,7 @@ export default function TasteProfile() {
       style={{ background: "linear-gradient(160deg,#1E1E20,#000000)" }}
     >
       <div className="text-[11px] font-semibold tracking-[2px] opacity-70">
-        {settled ? "당신의 추구미" : "선명해지는 중"}
+        {settled ? "나의 추구미" : "선명해지는 중"}
       </div>
       <div className="mt-2 text-[23px] font-extrabold leading-[1.25] tracking-[-0.5px]">
         {title}
