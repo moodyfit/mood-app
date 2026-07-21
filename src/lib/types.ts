@@ -21,11 +21,18 @@ export interface ProductSource {
   affiliateUrl?: string; // 제휴 아웃바운드 (수익화 = 이탈률 기반 커미션)
 }
 
+/** 상품 카테고리 (7.10 태깅 스키마 — 자연 번역기·통째로담기 전제) */
+export type ProductCategory = "상의" | "하의" | "아우터" | "신발";
+/** 가격 티어 (7.10 태깅 스키마) */
+export type PriceTier = "로우" | "미드" | "하이";
+
 /** products 테이블 (무드에 매칭된 중고매 가능 아이템) */
 export interface Product {
   id: string;
   moodKey: MoodKey;
   name: string;
+  category: ProductCategory;
+  tier: PriceTier;
   imageUrl?: string;
   gradient: string;
   /** 2~3곳 판매처, price 오름차순. sources[0] = 최저가(primary) */

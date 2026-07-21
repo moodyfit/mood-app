@@ -4,7 +4,13 @@ import type { Product } from "@/lib/types";
 import { formatPrice, primaryPrice } from "@/lib/products";
 import { useMoodStore } from "@/lib/store";
 
-export default function ProductRow({ product }: { product: Product }) {
+export default function ProductRow({
+  product,
+  muted = false,
+}: {
+  product: Product;
+  muted?: boolean;
+}) {
   const { showToast } = useMoodStore();
   const cheapest = product.sources[0];
 
@@ -14,7 +20,11 @@ export default function ProductRow({ product }: { product: Product }) {
   }
 
   return (
-    <div className="rounded-xl border border-line bg-white p-3">
+    <div
+      className={`rounded-xl border border-line bg-white p-3 transition ${
+        muted ? "opacity-45" : ""
+      }`}
+    >
       <button
         type="button"
         onClick={() => goTo(cheapest?.affiliateUrl)}
@@ -29,7 +39,14 @@ export default function ProductRow({ product }: { product: Product }) {
           }
         />
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-medium">{product.name}</div>
+          <div className="flex items-center gap-1.5 text-sm font-medium">
+            {product.name}
+            {muted && (
+              <span className="rounded-full bg-paper-3 px-1.5 py-0.5 text-[10px] font-medium text-ink-faint">
+                예산 밖
+              </span>
+            )}
+          </div>
           <div className="mt-1.5 font-latin text-[15px] font-medium tracking-[-0.2px]">
             {formatPrice(primaryPrice(product))}
           </div>

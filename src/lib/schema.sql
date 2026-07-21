@@ -17,15 +17,19 @@ create table if not exists photos (
   id          uuid primary key default gen_random_uuid(),
   mood_key    text not null references moods(key) on delete cascade,
   image_url   text not null,
+  body_type   text,                       -- 7.10 체형 변수 (생성 프롬프트 스펙 기록) → '내 체형으로 보기' 전제
   created_at  timestamptz not null default now()
 );
 create index if not exists photos_mood_key_idx on photos(mood_key);
 
 -- 상품 (무드에 매칭된 중고매 가능 아이템)
+-- 판매처는 별도 정규화 가능하나 MVP는 products 다건(같은 이름 여러 소스)으로 단순화
 create table if not exists products (
   id            uuid primary key default gen_random_uuid(),
   mood_key      text not null references moods(key) on delete cascade,
   name          text not null,
+  category      text not null,            -- 7.10 태깅: 상의/하의/아우터/신발
+  price_tier    text not null,            -- 7.10 태깅: 로우/미드/하이
   price         int  not null,            -- 원 단위 정수
   source        text not null,            -- "무신사 · 새상품"
   image_url     text,
@@ -34,6 +38,7 @@ create table if not exists products (
   created_at    timestamptz not null default now()
 );
 create index if not exists products_mood_key_idx on products(mood_key);
+create index if not exists products_category_idx on products(category);
 
 -- Layer 2: 검색어 → 무드 매핑 (LLM 번역 캐시/시드)
 create table if not exists query_map (
