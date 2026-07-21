@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { Mood } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
 
-export default function MoodCard({ mood }: { mood: Mood }) {
+export default function MoodCard({ mood, query }: { mood: Mood; query?: string }) {
   const { isSaved, toggleSave } = useMoodStore();
   const saved = isSaved(mood.key);
 
@@ -28,7 +28,7 @@ export default function MoodCard({ mood }: { mood: Mood }) {
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          toggleSave(mood.key);
+          toggleSave(mood.key, query);
         }}
         aria-label={saved ? "저장 취소" : "저장"}
         className={`absolute right-2.5 top-2.5 flex h-[34px] w-[34px] items-center justify-center rounded-full border text-base backdrop-blur transition ${

@@ -4,10 +4,10 @@ import { useMoodStore } from "@/lib/store";
 import { computeTaste } from "@/lib/taste";
 
 export default function TasteCardModal() {
-  const { cardOpen, closeCard, saves } = useMoodStore();
+  const { cardOpen, closeCard, affinity } = useMoodStore();
   if (!cardOpen) return null;
 
-  const { title, bars, rarityPct } = computeTaste(saves);
+  const { title, bars, rarityPct } = computeTaste(affinity);
 
   return (
     <div

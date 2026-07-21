@@ -9,7 +9,7 @@ import { computeTaste, TASTE_CARD_THRESHOLD } from "@/lib/taste";
  * 임계치 전이면 "선명해지는 중"으로 — 절대 "부족함/진행률"로 보여주지 않는다.
  */
 export default function TasteProfile() {
-  const { saves, savedCount, openCard } = useMoodStore();
+  const { affinity, savedCount, openCard } = useMoodStore();
 
   // 저장 0 — 복구 프레이밍 빈 상태 (결핍 표현 금지)
   if (savedCount === 0) {
@@ -25,7 +25,7 @@ export default function TasteProfile() {
     );
   }
 
-  const { title, bars, rarityPct } = computeTaste(saves);
+  const { title, bars, rarityPct } = computeTaste(affinity);
   const settled = savedCount >= TASTE_CARD_THRESHOLD;
 
   return (

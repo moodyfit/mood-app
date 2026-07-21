@@ -6,6 +6,7 @@
 서로 다른 무드 사진을 펼쳐주고, 눈이 가는 사진을 고를수록 **추구미 카드**로 취향에 이름을 붙여준다.
 자책이 아니라 복구 — "너는 취향이 없는 게 아니라 이름을 몰랐던 거다"(원칙 7).
 
+전략 v1.5 반영 노트: [`docs/strategy-v1.5.md`](docs/strategy-v1.5.md)
 전략 v1.4 반영 노트: [`docs/strategy-v1.4.md`](docs/strategy-v1.4.md)
 이미지 소싱 전략 v1.4: [`docs/image-sourcing-v1.4.md`](docs/image-sourcing-v1.4.md)
 UI/UX 가이드라인: [`../mood-fashion-prototype/UI-UX-guideline.md`](../mood-fashion-prototype/UI-UX-guideline.md)
@@ -39,16 +40,16 @@ src/
     page.tsx             홈 = 검색 화면
     results/page.tsx     검색 결과 = 무드 그리드 (?q=)
     mood/[key]/page.tsx  무드 상세 = 사진 + 상품
-    space/page.tsx       나의 공간 (추구미 프로필 + 무드 지도 + 무드보드)
-  components/            SearchScreen · ResultsGrid(토글) · MoodCard · MoodHero(완성가)
-                         · ProductSection(추천 이유) · ProductRow(판매처 병기) · TasteCardModal
-                         · TasteProfile · MoodMap(별자리) · Moodboard(콜라주) · ...
+    space/page.tsx       나의 공간 (추구미 프로필 + 무드 지도 + 내 방)
+  components/            SearchScreen · ResultsGrid(토글) · SearchMemory(검색기억) · MoodCard
+                         · MoodHero(완성가) · ProductSection(추천 이유) · ProductRow(판매처 병기)
+                         · TasteCardModal · TasteProfile · MoodMap(별자리) · Room(내 방) · ...
   lib/
-    types.ts             데이터 모델 (Supabase 테이블과 1:1)
+    types.ts             데이터 모델 (Supabase 테이블과 1:1) + Affinity
     moods.ts             Layer 1 무드 축 + Layer 2 검색어 매핑 + resolveMoods()
     products.ts          무드별 상품 시드
-    taste.ts             추구미 카드 계산 (규칙 기반)
-    store.tsx            클라이언트 상태 (저장/토스트/카드) + localStorage 영속화
+    taste.ts             추구미/개인화 정렬 (affinity 프로필 벡터 기반, 규칙)
+    store.tsx            클라이언트 상태 (저장·프로필 벡터·검색기억·카드) + localStorage
     supabase.ts          Supabase 클라이언트 (환경변수 있으면 활성화)
     schema.sql           Supabase 스키마
 ```

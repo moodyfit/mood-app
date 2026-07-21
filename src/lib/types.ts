@@ -42,7 +42,12 @@ export interface QueryMapping {
 export interface SaveRecord {
   moodKey: MoodKey;
   savedAt: number;
+  /** 저장 당시 검색어 (7.8 검색 기억용) */
+  query?: string;
 }
+
+/** 프로필 무드 벡터 (7.6) — 저장·클릭 누적. moodKey → 가중치 */
+export type Affinity = Record<MoodKey, number>;
 
 /** 추구미 카드 계산 결과 */
 export interface TasteResult {

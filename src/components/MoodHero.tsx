@@ -1,13 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
 import type { Mood } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
 import { lookTotal, formatMan } from "@/lib/products";
 
 export default function MoodHero({ mood }: { mood: Mood }) {
-  const { isSaved, toggleSave } = useMoodStore();
+  const { isSaved, toggleSave, recordView } = useMoodStore();
   const saved = isSaved(mood.key);
   const total = lookTotal(mood.key); // 모먼트 2: 무드 완성가
+
+  // 7.6 프로필 누적: 무드 상세 조회도 취향 신호
+  useEffect(() => {
+    recordView(mood.key);
+  }, [mood.key, recordView]);
 
   return (
     <div className="relative mb-1 aspect-[3/4] overflow-hidden rounded-xl">

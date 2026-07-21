@@ -3,7 +3,7 @@
 import BackButton from "@/components/BackButton";
 import TasteProfile from "@/components/TasteProfile";
 import MoodMap from "@/components/MoodMap";
-import Moodboard from "@/components/Moodboard";
+import Room from "@/components/Room";
 import { useMoodStore } from "@/lib/store";
 
 /**
@@ -26,7 +26,7 @@ export default function SpacePage() {
             <MoodMap />
           </div>
           <div className="mt-8">
-            <Moodboard />
+            <Room />
           </div>
         </>
       )}

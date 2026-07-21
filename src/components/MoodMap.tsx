@@ -16,19 +16,18 @@ const R = 96; // 무드 점 반경
 const LABEL_R = R + 18;
 
 export default function MoodMap() {
-  const { saves } = useMoodStore();
+  const { affinity } = useMoodStore();
 
-  const counts = new Map<string, number>();
-  for (const s of saves) counts.set(s.moodKey, (counts.get(s.moodKey) ?? 0) + 1);
-  const maxW = Math.max(1, ...counts.values());
-  const totalW = saves.length;
+  const weights = Object.values(affinity);
+  const maxW = Math.max(1, ...weights);
+  const totalW = weights.reduce((s, w) => s + w, 0);
 
   const pts = ALL_MOOD_KEYS.map((key, i) => {
     const a = -Math.PI / 2 + (i / ALL_MOOD_KEYS.length) * Math.PI * 2;
     return {
       key,
       name: MOODS[key]?.name ?? key,
-      w: counts.get(key) ?? 0,
+      w: affinity[key] ?? 0,
       x: C + R * Math.cos(a),
       y: C + R * Math.sin(a),
       lx: C + LABEL_R * Math.cos(a),
@@ -53,7 +52,7 @@ export default function MoodMap() {
     me = { x: C + sx, y: C + sy };
   }
 
-  const rarity = totalW > 0 ? computeTaste(saves).rarityPct : null;
+  const rarity = totalW > 0 ? computeTaste(affinity).rarityPct : null;
 
   return (
     <div>

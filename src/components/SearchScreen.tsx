@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SUGGESTIONS } from "@/lib/moods";
+import { useMoodStore } from "@/lib/store";
 
 // 모먼트 1: '아무말 검색' — 일상어 로테이션으로 "그냥 쳐도 된다"를 신호
 const ROTATING = [
@@ -13,8 +13,19 @@ const ROTATING = [
   "퇴근하고 한잔",
 ];
 
+// 7.9 1층: 추천 검색어 칩 — 일반 밥·상황 언어만. IP·실명 제외.
+const CHIPS = [
+  "소개팅 깔끔하게",
+  "퇴근 남",
+  "꾸안꾸",
+  "주말 카페",
+  "면접인데 안 딱딱하게",
+  "동네 산책",
+];
+
 export default function SearchScreen() {
   const router = useRouter();
+  const { recordSearch } = useMoodStore();
   const [q, setQ] = useState("");
   const [ph, setPh] = useState(0);
 
@@ -26,6 +37,7 @@ export default function SearchScreen() {
   function search(value: string) {
     const query = value.trim();
     if (!query) return;
+    recordSearch(query); // 7.8 검색 기억
     router.push(`/results?q=${encodeURIComponent(query)}`);
   }
 
@@ -61,7 +73,7 @@ export default function SearchScreen() {
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        {SUGGESTIONS.map((s) => (
+        {CHIPS.map((s) => (
           <button
             key={s}
             type="button"

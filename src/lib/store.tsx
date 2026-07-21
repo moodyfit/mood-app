@@ -9,17 +9,31 @@ import {
   useRef,
   useState,
 } from "react";
-import type { MoodKey, SaveRecord } from "./types";
+import type { Affinity, MoodKey, SaveRecord } from "./types";
 import { TASTE_CARD_THRESHOLD } from "./taste";
 
-const STORAGE_KEY = "mood.saves.v1";
-const CARD_KEY = "mood.cardIssued.v1";
+const K_SAVES = "mood.saves.v1";
+const K_CARD = "mood.cardIssued.v1";
+const K_AFFINITY = "mood.affinity.v1"; // 7.6 프로필 무드 벡터
+const K_SEARCH = "mood.searchCounts.v1"; // 7.8 검색 기억
+
+// 프로필 가중치: 저장은 클릭보다 강한 신호
+const W_SAVE = 2;
+const W_VIEW = 1;
+
+function normalizeQuery(q: string): string {
+  return q.trim().toLowerCase();
+}
 
 interface MoodStore {
   saves: SaveRecord[];
   savedCount: number;
+  affinity: Affinity;
   isSaved: (key: MoodKey) => boolean;
-  toggleSave: (key: MoodKey) => void;
+  toggleSave: (key: MoodKey, query?: string) => void;
+  recordView: (key: MoodKey) => void;
+  recordSearch: (query: string) => void;
+  searchCount: (query: string) => number;
   cardEverIssued: boolean;
   cardOpen: boolean;
   openCard: () => void;
@@ -32,33 +46,45 @@ const Ctx = createContext<MoodStore | null>(null);
 
 export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [saves, setSaves] = useState<SaveRecord[]>([]);
+  const [affinity, setAffinity] = useState<Affinity>({});
+  const [searchCounts, setSearchCounts] = useState<Record<string, number>>({});
   const [cardEverIssued, setCardEverIssued] = useState(false);
   const [cardOpen, setCardOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hydrated, setHydrated] = useState(false);
 
-  // 초기 로드 (localStorage) — 취향 데이터/카드 발급 이력 복원
+  // 초기 로드 (localStorage)
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setSaves(JSON.parse(raw));
-      setCardEverIssued(localStorage.getItem(CARD_KEY) === "1");
+      const s = localStorage.getItem(K_SAVES);
+      if (s) setSaves(JSON.parse(s));
+      const a = localStorage.getItem(K_AFFINITY);
+      if (a) setAffinity(JSON.parse(a));
+      const q = localStorage.getItem(K_SEARCH);
+      if (q) setSearchCounts(JSON.parse(q));
+      setCardEverIssued(localStorage.getItem(K_CARD) === "1");
     } catch {
       /* ignore */
     }
     setHydrated(true);
   }, []);
 
-  // 변경 시 영속화
+  // 영속화
   useEffect(() => {
     if (!hydrated) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(saves));
+      localStorage.setItem(K_SAVES, JSON.stringify(saves));
+      localStorage.setItem(K_AFFINITY, JSON.stringify(affinity));
+      localStorage.setItem(K_SEARCH, JSON.stringify(searchCounts));
     } catch {
       /* ignore */
     }
-  }, [saves, hydrated]);
+  }, [saves, affinity, searchCounts, hydrated]);
+
+  const bump = useCallback((key: MoodKey, w: number) => {
+    setAffinity((prev) => ({ ...prev, [key]: (prev[key] ?? 0) + w }));
+  }, []);
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
@@ -72,19 +98,19 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   );
 
   const toggleSave = useCallback(
-    (key: MoodKey) => {
+    (key: MoodKey, query?: string) => {
       setSaves((prev) => {
         const exists = prev.some((s) => s.moodKey === key);
         if (exists) return prev.filter((s) => s.moodKey !== key);
 
-        const next = [...prev, { moodKey: key, savedAt: Date.now() }];
+        const next = [...prev, { moodKey: key, savedAt: Date.now(), query }];
         showToast("무드보드에 저장");
+        bump(key, W_SAVE); // 프로필 가중 (저장은 강한 신호)
 
-        // 임계치 도달 & 최초 발급 → 추구미 카드
         if (next.length >= TASTE_CARD_THRESHOLD && !cardEverIssued) {
           setCardEverIssued(true);
           try {
-            localStorage.setItem(CARD_KEY, "1");
+            localStorage.setItem(K_CARD, "1");
           } catch {
             /* ignore */
           }
@@ -93,15 +119,35 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         return next;
       });
     },
-    [cardEverIssued, showToast]
+    [cardEverIssued, showToast, bump]
+  );
+
+  const recordView = useCallback(
+    (key: MoodKey) => bump(key, W_VIEW),
+    [bump]
+  );
+
+  const recordSearch = useCallback((query: string) => {
+    const q = normalizeQuery(query);
+    if (!q) return;
+    setSearchCounts((prev) => ({ ...prev, [q]: (prev[q] ?? 0) + 1 }));
+  }, []);
+
+  const searchCount = useCallback(
+    (query: string) => searchCounts[normalizeQuery(query)] ?? 0,
+    [searchCounts]
   );
 
   const value = useMemo<MoodStore>(
     () => ({
       saves,
       savedCount: saves.length,
+      affinity,
       isSaved,
       toggleSave,
+      recordView,
+      recordSearch,
+      searchCount,
       cardEverIssued,
       cardOpen,
       openCard: () => setCardOpen(true),
@@ -109,7 +155,19 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       toast,
       showToast,
     }),
-    [saves, isSaved, toggleSave, cardEverIssued, cardOpen, toast, showToast]
+    [
+      saves,
+      affinity,
+      isSaved,
+      toggleSave,
+      recordView,
+      recordSearch,
+      searchCount,
+      cardEverIssued,
+      cardOpen,
+      toast,
+      showToast,
+    ]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
