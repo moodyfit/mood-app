@@ -1,12 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SUGGESTIONS } from "@/lib/moods";
+
+// 모먼트 1: '아무말 검색' — 일상어 로테이션으로 "그냥 쳐도 된다"를 신호
+const ROTATING = [
+  "소개팅 깔끔하게",
+  "남들이 아는 그 느낌",
+  "꾸안꾸 그거 뭐냐",
+  "면접인데 안 딱딱하게",
+  "퇴근하고 한잔",
+];
 
 export default function SearchScreen() {
   const router = useRouter();
   const [q, setQ] = useState("");
+  const [ph, setPh] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => setPh((i) => (i + 1) % ROTATING.length), 2600);
+    return () => clearInterval(t);
+  }, []);
 
   function search(value: string) {
     const query = value.trim();
@@ -17,10 +32,13 @@ export default function SearchScreen() {
   return (
     <div className="flex min-h-[62vh] animate-fade flex-col justify-center px-5 pb-12">
       <h1 className="text-[28px] font-extrabold leading-[1.32] tracking-[-0.9px]">
-        옷 이름은 몰라도 괜찮아요.
+        취향이 없는 게 아니에요.
         <br />
-        느낌만 적으면, 무드로 보여드려요.
+        <span className="text-ink-soft">이름을 몰랐을 뿐이에요.</span>
       </h1>
+      <p className="mt-3 text-[14px] leading-[1.6] text-ink-soft">
+        찾는 거 딱 그대로 쳐보세요. 느낌만 적으면 무드로 보여드릴게요.
+      </p>
 
       <div className="relative mt-6">
         <input
@@ -29,7 +47,7 @@ export default function SearchScreen() {
           onKeyDown={(e) => {
             if (e.key === "Enter") search(q);
           }}
-          placeholder="무엇이든 적어보세요"
+          placeholder={`예) ${ROTATING[ph]}`}
           className="w-full rounded-[10px] border border-line bg-white px-[18px] py-4 pr-[52px] text-[15px] outline-none transition placeholder:text-ink-faint focus:border-accent"
         />
         <button

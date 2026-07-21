@@ -8,7 +8,7 @@ export default function TopBar() {
   return (
     <div className="sticky top-0 z-30 flex items-center justify-between px-5 pb-3.5 pt-5 bg-gradient-to-b from-paper from-[72%] to-transparent">
       <Link href="/" className="text-[21px] font-extrabold tracking-[-0.6px]">
-        무드
+        무드핏
       </Link>
       <Link
         href="/archive"

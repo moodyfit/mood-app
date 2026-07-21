@@ -7,7 +7,7 @@ export default function TasteCardModal() {
   const { cardOpen, closeCard, saves } = useMoodStore();
   if (!cardOpen) return null;
 
-  const { title, bars } = computeTaste(saves);
+  const { title, bars, rarityPct } = computeTaste(saves);
 
   return (
     <div
@@ -24,6 +24,10 @@ export default function TasteCardModal() {
         </div>
         <div className="mt-2.5 text-[26px] font-extrabold leading-[1.28] tracking-[-0.6px]">
           {title}
+        </div>
+        <div className="mt-3 text-[13px] leading-relaxed opacity-85">
+          이 무드를 가진 사람, 전체의{" "}
+          <span className="font-latin font-semibold">{rarityPct}%</span>
         </div>
 
         <div className="mt-[22px] flex flex-col gap-[11px]">
@@ -44,10 +48,16 @@ export default function TasteCardModal() {
           ))}
         </div>
 
+        <div className="mt-5 border-t border-white/15 pt-4 text-[13px] leading-relaxed opacity-90">
+          취향이 없는 게 아니라,
+          <br />
+          이름을 몰랐을 뿐이에요.
+        </div>
+
         <button
           type="button"
           onClick={closeCard}
-          className="mt-[22px] w-full rounded-[10px] bg-white py-3.5 text-sm font-bold text-ink"
+          className="mt-5 w-full rounded-[10px] bg-white py-3.5 text-sm font-bold text-ink"
         >
           계속 보기
         </button>

@@ -14,17 +14,22 @@ export interface Mood {
   gradient: string;
 }
 
+/** 판매처 (겹3② PCPartPicker식 횡단 가격 비교) */
+export interface ProductSource {
+  name: string; // "무신사", "번개장터", "29CM" ...
+  price: number; // 원 단위 정수
+  affiliateUrl?: string; // 제휴 아웃바운드 (수익화 = 이탈률 기반 커미션)
+}
+
 /** products 테이블 (무드에 매칭된 중고매 가능 아이템) */
 export interface Product {
   id: string;
   moodKey: MoodKey;
   name: string;
-  price: number; // 원 단위 정수
-  source: string; // "무신사 · 새상품" 등
   imageUrl?: string;
   gradient: string;
-  /** 제휴 아웃바운드 링크 (수익화 = 이탈률 기반 커미션) */
-  affiliateUrl?: string;
+  /** 2~3곳 판매처, price 오름차순. sources[0] = 최저가(primary) */
+  sources: ProductSource[];
 }
 
 /** Layer 2: 검색어 → 무드 매핑 (query_map 테이블). 상품과 무관, 이 테이블만 튜닝 */
@@ -43,4 +48,6 @@ export interface SaveRecord {
 export interface TasteResult {
   title: string; // "클린 미니멀 × 웜톤 뉴트럴"
   bars: { name: string; pct: number }[];
+  /** 포용성 수치 (2.5장): "이 무드 가진 사람, 전체의 X.X%" — 동경 아닌 소속감 */
+  rarityPct: number;
 }

@@ -2,10 +2,12 @@
 
 import type { Mood } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
+import { lookTotal, formatMan } from "@/lib/products";
 
 export default function MoodHero({ mood }: { mood: Mood }) {
   const { isSaved, toggleSave } = useMoodStore();
   const saved = isSaved(mood.key);
+  const total = lookTotal(mood.key); // 모먼트 2: 무드 완성가
 
   return (
     <div className="relative mb-1 aspect-[3/4] overflow-hidden rounded-xl">
@@ -30,6 +32,9 @@ export default function MoodHero({ mood }: { mood: Mood }) {
       >
         {saved ? "♥" : "♡"}
       </button>
+      <div className="absolute bottom-3 left-3 rounded-full bg-black/45 px-3 py-1.5 text-[12px] font-medium text-white backdrop-blur">
+        이 룩 완성 · <span className="font-latin">{formatMan(total)}</span>
+      </div>
     </div>
   );
 }

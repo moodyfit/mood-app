@@ -6,8 +6,8 @@ import Toast from "@/components/Toast";
 import TasteCardModal from "@/components/TasteCardModal";
 
 export const metadata: Metadata = {
-  title: "무드 — 취향 번역기",
-  description: "옷 이름은 몰라도 괜찮아요. 느낌만 적으면, 무드로 보여드려요.",
+  title: "무드핏 MOODFIT — 취향 번역기",
+  description: "취향이 없는 게 아니에요. 이름을 몰랐을 뿐이에요. 느낌만 적으면, 무드로 보여드려요.",
 };
 
 export const viewport: Viewport = {

@@ -1,12 +1,20 @@
-# 무드 (MOOD) — 취향 번역기
+# 무드핏 (MOODFIT) — 취향 번역기
 
-> "옷 이름은 몰라도 괜찮아요. 느낌만 적으면, 무드로 보여드려요."
+> "취향이 없는 게 아니에요. 이름을 몰랐을 뿐이에요."
 
 옷을 검색하는 앱이 아니라 **취향을 번역해주는 앱**. 무엇이든(상황·감성·트렌드) 적으면
 서로 다른 무드 사진을 펼쳐주고, 눈이 가는 사진을 고를수록 **추구미 카드**로 취향에 이름을 붙여준다.
+자책이 아니라 복구 — "너는 취향이 없는 게 아니라 이름을 몰랐던 거다"(원칙 7).
 
-UI/UX 가이드라인: [`../mood-fashion-prototype/UI-UX-guideline.md`](../mood-fashion-prototype/UI-UX-guideline.md)
+전략 v1.4 반영 노트: [`docs/strategy-v1.4.md`](docs/strategy-v1.4.md)
 이미지 소싱 전략 v1.4: [`docs/image-sourcing-v1.4.md`](docs/image-sourcing-v1.4.md)
+UI/UX 가이드라인: [`../mood-fashion-prototype/UI-UX-guideline.md`](../mood-fashion-prototype/UI-UX-guideline.md)
+
+## 시그니처 모먼트 3종 (체감 차별화 본체)
+
+1. **아무말 검색 → "알아먹는다"** — 미매핑·빈 입력도 최근접 무드로 응답 (실패 없는 검색)
+2. **무드 완성가 → "이 살 수 있다"** — 상세에 "이 룩 완성 · N만" (연결 상품 최저가 합산)
+3. **[모두의 결과 ↔ 너의 결과] 토글** — 취향 학습을 유저가 직접 조작 (추구미 카드 발급 후)
 
 ## 스택
 
@@ -32,7 +40,8 @@ src/
     results/page.tsx     검색 결과 = 무드 그리드 (?q=)
     mood/[key]/page.tsx  무드 상세 = 사진 + 상품
     archive/page.tsx     내 아카이브 (저장한 무드)
-  components/            MoodCard · MoodHero · ProductRow · TasteCardModal · ...
+  components/            SearchScreen · ResultsGrid(토글) · MoodCard · MoodHero(완성가)
+                         · ProductSection(추천 이유) · ProductRow(판매처 병기) · TasteCardModal · ...
   lib/
     types.ts             데이터 모델 (Supabase 테이블과 1:1)
     moods.ts             Layer 1 무드 축 + Layer 2 검색어 매핑 + resolveMoods()
