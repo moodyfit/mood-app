@@ -39,9 +39,10 @@ src/
     page.tsx             홈 = 검색 화면
     results/page.tsx     검색 결과 = 무드 그리드 (?q=)
     mood/[key]/page.tsx  무드 상세 = 사진 + 상품
-    archive/page.tsx     내 아카이브 (저장한 무드)
+    space/page.tsx       나의 공간 (추구미 프로필 + 무드 지도 + 무드보드)
   components/            SearchScreen · ResultsGrid(토글) · MoodCard · MoodHero(완성가)
-                         · ProductSection(추천 이유) · ProductRow(판매처 병기) · TasteCardModal · ...
+                         · ProductSection(추천 이유) · ProductRow(판매처 병기) · TasteCardModal
+                         · TasteProfile · MoodMap(별자리) · Moodboard(콜라주) · ...
   lib/
     types.ts             데이터 모델 (Supabase 테이블과 1:1)
     moods.ts             Layer 1 무드 축 + Layer 2 검색어 매핑 + resolveMoods()
@@ -55,6 +56,7 @@ src/
 ## 핵심 플로우 (전략 §4)
 
 검색(무엇이든) → 무드 그리드(사진만 전시) → 사진 저장(취향 데이터) → 상품 뷰 → 3회 누적 시 추구미 카드
+→ **나의 공간**(추구미 프로필·무드 지도·무드보드) = N3 재방문 엔진
 
 ## 설계 원칙 (UI 가이드라인)
 

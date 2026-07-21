@@ -11,10 +11,10 @@ export default function TopBar() {
         무드핏
       </Link>
       <Link
-        href="/archive"
+        href="/space"
         className="flex items-center gap-1.5 rounded-full border border-line px-3.5 py-2 text-xs transition hover:bg-paper-2"
       >
-        <span>♡</span>
+        <span>나의 공간</span>
         <span className="inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1.5 font-latin text-[11px] font-medium text-white">
           {savedCount}
         </span>
