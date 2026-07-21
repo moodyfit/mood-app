@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { MoodProvider } from "@/lib/store";
 import TopBar from "@/components/TopBar";
+import TabBar from "@/components/TabBar";
 import Toast from "@/components/Toast";
 import TasteCardModal from "@/components/TasteCardModal";
 
@@ -44,6 +45,7 @@ export default function RootLayout({
           <div className="relative mx-auto flex min-h-screen max-w-frame flex-col bg-paper">
             <TopBar />
             <main className="flex-1">{children}</main>
+            <TabBar />
           </div>
           <Toast />
           <TasteCardModal />

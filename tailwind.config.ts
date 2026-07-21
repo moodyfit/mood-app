@@ -9,14 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        paper: "#FFFFFF",
-        "paper-2": "#F4F4F5",
-        "paper-3": "#ECECEE",
-        ink: "#0E0E10",
-        "ink-soft": "#6A6A6E",
-        "ink-faint": "#A0A0A4",
-        line: "#E6E6E8",
-        accent: "#000000",
+        // UI 가이드라인 v2 §3 — 무성의 갤러리(무채·웜오프화이트), 액센트=잉크 블랙
+        paper: "#FAFAF8", // bg-primary
+        "paper-2": "#F2F1EE", // bg-secondary (박스·시트)
+        "paper-3": "#ECEAE4", // hover
+        ink: "#1A1A1A", // ink-primary
+        "ink-soft": "#8A8A86", // ink-secondary
+        "ink-faint": "#B0AFA9",
+        line: "#E7E5DF",
+        accent: "#1A1A1A", // 잉크 블랙 (하트·CTA)
       },
       fontFamily: {
         // 국문: Wanted Sans / 영문·숫자: Space Grotesk

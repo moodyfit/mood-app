@@ -39,7 +39,7 @@ export default function MoodHero({ mood }: { mood: Mood }) {
         {saved ? "♥" : "♡"}
       </button>
       <div className="absolute bottom-3 left-3 rounded-full bg-black/45 px-3 py-1.5 text-[12px] font-medium text-white backdrop-blur">
-        이 느낌 완성 · <span className="font-latin">{formatMan(total)}</span>
+        이 느낌 완성 · <span className="font-latin tnum">{formatMan(total)}</span>
       </div>
     </div>
   );

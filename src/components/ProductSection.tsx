@@ -73,7 +73,7 @@ export default function ProductSection({
         </div>
         <div className="mt-2.5 text-[13px] text-ink-soft">
           이 느낌 완성 ·{" "}
-          <span className="font-latin font-semibold text-ink">{formatMan(fit.total)}</span>
+          <span className="font-latin tnum font-semibold text-ink">{formatMan(fit.total)}</span>
           {trimmed && (
             <span className="text-ink-faint">
               {" "}· {fit.dropped.map((d) => d.name).join(", ")} 빼고 이 느낌의 {fit.coverage}%

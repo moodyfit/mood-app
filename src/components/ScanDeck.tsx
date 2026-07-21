@@ -34,14 +34,10 @@ export default function ScanDeck() {
     const ordered = personalizeOrder([...ALL_MOOD_KEYS], affinity);
     return (
       <div className="animate-fade">
-        <div className="mb-1 text-[13px] text-ink-faint">취향 방향 잡았어</div>
-        <div className="text-[22px] font-extrabold tracking-[-0.5px]">
+        <div className="text-[20px] font-bold tracking-[-0.4px]">
           {likes > 0 && title ? `너는 지금 ${title} 쪽` : "일단 눈에 드는 것부터"}
         </div>
-        <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">
-          이 방향으로 정리해뒀어. 눈이 가는 걸 저장하면 더 선명해진다.
-        </p>
-        <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="mt-4 grid grid-cols-2 gap-3">
           {ordered.map((k) => {
             const mood = MOODS[k];
             if (!mood) return null;

@@ -47,7 +47,7 @@ export default function ProductRow({
               </span>
             )}
           </div>
-          <div className="mt-1.5 font-latin text-[15px] font-medium tracking-[-0.2px]">
+          <div className="mt-1.5 font-latin tnum text-[15px] font-medium tracking-[-0.2px]">
             {formatPrice(primaryPrice(product))}
           </div>
           <div className="mt-0.5 text-[11px] text-ink-faint">
@@ -68,7 +68,7 @@ export default function ProductRow({
               className="flex items-baseline gap-1.5 text-[12px] text-ink-soft transition hover:text-ink"
             >
               <span>{s.name}</span>
-              <span className="font-latin font-medium text-ink">
+              <span className="font-latin tnum font-medium text-ink">
                 {formatPrice(s.price)}
               </span>
             </button>

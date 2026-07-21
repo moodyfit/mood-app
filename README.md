@@ -13,7 +13,7 @@
 전략 v1.5 반영 노트: [`docs/strategy-v1.5.md`](docs/strategy-v1.5.md)
 전략 v1.4 반영 노트: [`docs/strategy-v1.4.md`](docs/strategy-v1.4.md)
 이미지 소싱 전략 v1.4: [`docs/image-sourcing-v1.4.md`](docs/image-sourcing-v1.4.md)
-UI/UX 가이드라인: [`../mood-fashion-prototype/UI-UX-guideline.md`](../mood-fashion-prototype/UI-UX-guideline.md)
+UI/UX 가이드라인 v2 적용 노트: [`docs/uiux-v2.md`](docs/uiux-v2.md)
 
 ## 시그니처 모먼트 3종 (체감 차별화 본체)
 
