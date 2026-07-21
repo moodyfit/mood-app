@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMoodStore } from "@/lib/store";
+
+export const PENDING_SHOT_KEY = "moodfit.pendingShot";
 
 // 모먼트 1: '아무말 검색' — 일상어 로테이션으로 "그냥 쳐도 된다"를 신호
 const ROTATING = [
@@ -28,6 +30,7 @@ export default function SearchScreen() {
   const { recordSearch } = useMoodStore();
   const [q, setQ] = useState("");
   const [ph, setPh] = useState(0);
+  const shotInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const t = setInterval(() => setPh((i) => (i + 1) % ROTATING.length), 2600);
@@ -39,6 +42,22 @@ export default function SearchScreen() {
     if (!query) return;
     recordSearch(query); // 7.8 검색 기억
     router.push(`/results?q=${encodeURIComponent(query)}`);
+  }
+
+  // 7.11 스크린샷 부하 — 챗창에서 바로 스샷 올리기
+  function onShot(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        sessionStorage.setItem(PENDING_SHOT_KEY, String(reader.result));
+      } catch {
+        /* ignore */
+      }
+      router.push("/shot");
+    };
+    reader.readAsDataURL(file);
   }
 
   return (
@@ -60,7 +79,27 @@ export default function SearchScreen() {
             if (e.key === "Enter") search(q);
           }}
           placeholder={`예) ${ROTATING[ph]}`}
-          className="w-full rounded-[10px] border border-line bg-white px-[18px] py-4 pr-[52px] text-[15px] outline-none transition placeholder:text-ink-faint focus:border-accent"
+          className="w-full rounded-[10px] border border-line bg-white py-4 pl-[50px] pr-[52px] text-[15px] outline-none transition placeholder:text-ink-faint focus:border-accent"
+        />
+        {/* 스크린샷 올리기 */}
+        <button
+          type="button"
+          onClick={() => shotInput.current?.click()}
+          aria-label="스크린샷 올리기"
+          className="absolute left-2.5 top-1/2 flex h-[34px] w-[34px] -translate-y-1/2 items-center justify-center rounded-[8px] text-ink-soft transition hover:bg-paper-2"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="6" width="18" height="14" rx="2.5" />
+            <circle cx="12" cy="13" r="3.2" />
+            <path d="M8.5 6l1.2-2h4.6l1.2 2" />
+          </svg>
+        </button>
+        <input
+          ref={shotInput}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={onShot}
         />
         <button
           type="button"
@@ -70,6 +109,9 @@ export default function SearchScreen() {
         >
           →
         </button>
+      </div>
+      <div className="mt-2 text-center text-[12px] text-ink-faint">
+        멋있는 거 봤으면 <span className="text-ink-soft">📷</span> 스샷을 올려도 돼
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">

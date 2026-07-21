@@ -44,7 +44,7 @@ export default function RootLayout({
         <MoodProvider>
           <div className="relative mx-auto flex min-h-screen max-w-frame flex-col bg-paper">
             <TopBar />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 pb-24">{children}</main>
             <TabBar />
           </div>
           <Toast />

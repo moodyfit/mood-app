@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ALL_MOOD_KEYS, MOODS } from "@/lib/moods";
+import { PENDING_SHOT_KEY } from "./SearchScreen";
 import MoodCard from "./MoodCard";
 
 /**
@@ -16,6 +17,20 @@ export default function ShotFinder() {
   const [shot, setShot] = useState<string | null>(null);
   const [seed, setSeed] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // 홈 챗창에서 올린 스샷이 있으면 바로 결과로
+  useEffect(() => {
+    try {
+      const pending = sessionStorage.getItem(PENDING_SHOT_KEY);
+      if (pending) {
+        setShot(pending);
+        setSeed(pending.length % ALL_MOOD_KEYS.length);
+        sessionStorage.removeItem(PENDING_SHOT_KEY);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   function onFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

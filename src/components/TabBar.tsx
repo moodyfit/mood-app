@@ -43,7 +43,7 @@ const TABS = [
 export default function TabBar() {
   const pathname = usePathname() || "/";
   return (
-    <nav className="sticky bottom-0 z-40 mx-auto grid max-w-frame grid-cols-3 border-t border-line bg-paper/95 backdrop-blur">
+    <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-frame -translate-x-1/2 grid grid-cols-3 border-t border-line bg-paper pb-[env(safe-area-inset-bottom)]">
       {TABS.map((t) => {
         const active = t.match(pathname);
         return (
