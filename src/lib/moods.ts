@@ -69,6 +69,7 @@ export const QUERY_MAP: QueryMapping[] = [
   { keyword: "주말 카페", moodKeys: ["soft", "amekaji", "clean", "cityboy"] },
   { keyword: "면접 가는 날", moodKeys: ["classic", "clean", "cityboy"] },
   { keyword: "동네 산책", moodKeys: ["amekaji", "soft", "street"] },
+  { keyword: "갑자기 모임", moodKeys: ["clean", "cityboy", "street", "amekaji"] },
 ];
 
 export const SUGGESTIONS = QUERY_MAP.map((q) => q.keyword);

@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import TasteProfile from "@/components/TasteProfile";
-import MoodMap from "@/components/MoodMap";
 import Room from "@/components/Room";
 import Closet from "@/components/Closet";
 import Discovered from "@/components/Discovered";
@@ -38,9 +37,7 @@ export default function SpacePage() {
 
       {savedCount > 0 && (
         <>
-          <div className="mt-8">
-            <MoodMap />
-          </div>
+          {/* 저장 사진 밀도 그리드 + 아직 안 가본 곳 (숫자·바 없음) */}
           <div className="mt-8">
             <Room />
           </div>

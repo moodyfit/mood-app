@@ -18,12 +18,14 @@ export default function MoodCard({
   hint = false,
   size = "sm",
   ratio,
+  bare = false,
 }: {
   mood: Mood;
   query?: string;
   hint?: boolean;
   size?: "hero" | "sm";
   ratio?: number;
+  bare?: boolean; // 스캔 = 사진만(텍스트·가격·해설·하트 없음)
 }) {
   const router = useRouter();
   const { isSaved, toggleSave } = useMoodStore();
@@ -40,6 +42,7 @@ export default function MoodCard({
   const lastTap = useRef(0);
 
   function down() {
+    if (bare) return; // 스캔: 제스처 오버레이 없음, 탭=이동만
     longPressed.current = false;
     longTimer.current = setTimeout(() => {
       longPressed.current = true;
@@ -48,6 +51,10 @@ export default function MoodCard({
   }
 
   function up() {
+    if (bare) {
+      router.push(`/mood/${mood.key}`);
+      return;
+    }
     if (longTimer.current) clearTimeout(longTimer.current);
     setCaption(false);
     if (longPressed.current) {
@@ -101,32 +108,34 @@ export default function MoodCard({
       />
       {!mood.imageUrl && <div className="grain" />}
 
-      {/* 첫 카드·히어로: 해설을 펼쳐서 상시 노출 (B6 1번 카드 + v2.6). 롱프레스 학습은 덤 */}
-      {(hint || hero) && !caption && (
+      {/* 첫 카드·히어로: 해설을 펼쳐서 상시 노출 (B6). 스캔(bare)은 텍스트 없음 */}
+      {(hint || hero) && !bare && !caption && (
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
           <div className="line-clamp-2 text-[11.5px] leading-relaxed text-white/90">{mood.caption}</div>
         </div>
       )}
 
-      <button
-        type="button"
-        onPointerDown={(e) => e.stopPropagation()}
-        onClick={(e) => {
-          e.stopPropagation();
-          toggleSave(mood.key, query);
-        }}
-        aria-label={saved ? "저장 취소" : "저장"}
-        className={`absolute right-2.5 top-2.5 flex h-[34px] w-[34px] items-center justify-center rounded-full border text-base backdrop-blur transition ${
-          saved
-            ? "border-accent bg-accent text-white"
-            : "border-white/35 bg-black/25 text-white"
-        }`}
-      >
-        {saved ? "♥" : "♡"}
-      </button>
+      {!bare && (
+        <button
+          type="button"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleSave(mood.key, query);
+          }}
+          aria-label={saved ? "저장 취소" : "저장"}
+          className={`absolute right-2.5 top-2.5 flex h-[34px] w-[34px] items-center justify-center rounded-full border text-base backdrop-blur transition ${
+            saved
+              ? "border-accent bg-accent text-white"
+              : "border-white/35 bg-black/25 text-white"
+          }`}
+        >
+          {saved ? "♥" : "♡"}
+        </button>
+      )}
 
-      {/* 완성가 라벨 — 히어로(풀샷)에서. 해설 밴드와 겹치지 않게 상단-좌측. 소형 카드는 생략(탭 후 노출) */}
-      {hero && (
+      {/* 완성가 라벨 — 중대형 카드 전체(비-bare). 상단-좌측(해설 밴드와 겹침 방지). 상품 없으면 미렌더 */}
+      {!bare && lookTotal(mood.key) > 0 && (
         <div className="absolute left-2 top-2 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur">
           이 느낌 완성 · <span className="tnum">{formatMan(lookTotal(mood.key))}</span>
         </div>

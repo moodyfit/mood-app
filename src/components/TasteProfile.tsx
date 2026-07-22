@@ -30,7 +30,7 @@ export default function TasteProfile() {
     );
   }
 
-  const { title, bars, rarityPct } = computeTaste(affinity);
+  const { title, rarityPct } = computeTaste(affinity);
   const settled = savedCount >= TASTE_CARD_THRESHOLD;
 
   return (
@@ -47,21 +47,6 @@ export default function TasteProfile() {
       <div className="mt-2 text-[12.5px] opacity-85">
         이 무드를 가진 사람, 전체의{" "}
         <span className="font-latin font-semibold">{rarityPct}%</span>
-      </div>
-
-      <div className="mt-4 flex flex-col gap-2">
-        {bars.map((b) => (
-          <div
-            key={b.name}
-            className="flex items-center gap-2.5 font-latin text-[11px] font-medium"
-          >
-            <span className="w-[84px] flex-shrink-0">{b.name}</span>
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/20">
-              <div className="h-full rounded-full bg-white" style={{ width: `${b.pct}%` }} />
-            </div>
-            <span>{b.pct}%</span>
-          </div>
-        ))}
       </div>
 
       {settled && (

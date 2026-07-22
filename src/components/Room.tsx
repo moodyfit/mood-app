@@ -48,8 +48,8 @@ export default function Room() {
           className="relative mb-2 block aspect-[16/10] w-full overflow-hidden rounded-xl"
         >
           <div className="absolute inset-0" style={tileBg(MOODS[dominant])} />
-          <div className="absolute bottom-2 left-2 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur">
-            내 취향의 중심
+          <div className="absolute bottom-2 left-2 rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-medium text-white/90 backdrop-blur">
+            {MOODS[dominant].name}
           </div>
         </Link>
       )}
@@ -65,6 +65,9 @@ export default function Room() {
                 className="relative block aspect-[3/4] overflow-hidden rounded-xl"
               >
                 <div className="absolute inset-0" style={tileBg(MOODS[k])} />
+                <div className="absolute bottom-1.5 left-1.5 rounded-full bg-black/40 px-2 py-0.5 text-[10.5px] font-medium text-white/90 backdrop-blur">
+                  {MOODS[k]!.name}
+                </div>
               </Link>
             ) : null
           )}

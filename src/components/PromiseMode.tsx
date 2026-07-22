@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import BackButton from "./BackButton";
-import { SUGGESTIONS, resolveMoods, MOODS } from "@/lib/moods";
+import { resolveMoods, MOODS } from "@/lib/moods";
 import type { Mood } from "@/lib/types";
 import { productsFor, fitLookToBudget, formatMan, BUDGETS } from "@/lib/products";
 
@@ -11,6 +11,9 @@ import { productsFor, fitLookToBudget, formatMan, BUDGETS } from "@/lib/products
  * 약속 모드 (★ v1) — 상황·언제·예산 → 완성 조합 2~3개 택일. "3분 안에 결정 끝."
  * 제0조: 취향(무드)은 상황이 정하고, 실행(예산 맞춤·판매처)은 무드핏이. 생성형 조합 없음.
  */
+// 약속 모드 = 마감 있는 결정용. '동네 산책'은 검색 칩에 이미 있어 제외, '갑자기 모임' 추가.
+const OCCASIONS = ["첫 소개팅", "퇴근 후 술약속", "친구 결혼식", "주말 카페", "면접 가는 날", "갑자기 모임"];
+
 const WHEN = [
   { label: "오늘·내일", note: "급하니까 바로 결정" },
   { label: "이번 주말", note: "넉넉하게 골라도 돼" },
@@ -45,7 +48,7 @@ export default function PromiseMode() {
       <div className="mt-6">
         <div className="mb-2 text-[13px] font-semibold">어떤 자리야</div>
         <div className="flex flex-wrap gap-2">
-          {SUGGESTIONS.map((s) => (
+          {OCCASIONS.map((s) => (
             <button key={s} type="button" onClick={() => setOccasion(s)} className={chip(occasion === s)}>
               {s}
             </button>

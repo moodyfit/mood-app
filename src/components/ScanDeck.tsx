@@ -84,18 +84,19 @@ export default function ScanDeck() {
         </div>
 
         {heroKey && MOODS[heroKey] && (
-          <div className="mt-4">
-            <MoodCard mood={MOODS[heroKey]} size="hero" />
+          <div className="mt-4 animate-rise">
+            <MoodCard mood={MOODS[heroKey]} size="hero" bare />
           </div>
         )}
 
+        {/* 스캔 결과 = 사진만(bare): 텍스트·가격·해설 없음 */}
         <div className="mt-3" style={{ columnCount: 2, columnGap: "12px" }}>
           {restKeys.map((k) => {
             const mood = MOODS[k];
             if (!mood) return null;
             return (
-              <div key={k} className="mb-3 break-inside-avoid">
-                <MoodCard mood={mood} />
+              <div key={k} className="mb-3 break-inside-avoid animate-rise">
+                <MoodCard mood={mood} bare />
               </div>
             );
           })}

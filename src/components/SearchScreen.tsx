@@ -13,6 +13,7 @@ const ROTATING = [
   "꾸안꾸 그거 뭐냐",
   "면접인데 안 딱딱하게",
   "퇴근하고 한잔",
+  "멋있던 스샷 올려도 돼",
 ];
 
 // 7.9 1층: 추천 검색어 칩 — 일반 밥·상황 언어만. IP·실명 제외. (2~6번 슬롯)
@@ -80,9 +81,8 @@ export default function SearchScreen() {
 
   return (
     <div className="sticky top-0 z-30 border-b border-line bg-paper px-5 pb-3 pt-5">
-      <div className="mb-2.5 flex items-baseline justify-between">
+      <div className="mb-2.5">
         <span className="text-[17px] font-extrabold tracking-[-0.4px]">무드핏</span>
-        <span className="text-[12px] text-ink-faint">찾는 느낌 그대로 쳐봐</span>
       </div>
 
       <div className="relative">
@@ -124,11 +124,7 @@ export default function SearchScreen() {
           →
         </button>
       </div>
-      <div className="mt-1.5 text-[11.5px] text-ink-faint">
-        멋있는 거 봤으면 스샷을 올려도 돼
-      </div>
-
-      <div className="mt-2 flex gap-2 overflow-x-auto pb-0.5">
+      <div className="mt-3 flex gap-2 overflow-x-auto pb-0.5">
         {chips.map((s) => (
           <button
             key={s}

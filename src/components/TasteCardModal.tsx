@@ -9,7 +9,7 @@ export default function TasteCardModal() {
   const { cardOpen, closeCard, affinity } = useMoodStore();
   if (!cardOpen) return null;
 
-  const { title, bars, rarityPct } = computeTaste(affinity);
+  const { title, rarityPct } = computeTaste(affinity);
 
   return (
     <div
@@ -30,24 +30,6 @@ export default function TasteCardModal() {
         <div className="mt-3 text-[13px] leading-relaxed opacity-85">
           이 무드를 가진 사람, 전체의{" "}
           <span className="font-latin font-semibold">{rarityPct}%</span>
-        </div>
-
-        <div className="mt-[22px] flex flex-col gap-[11px]">
-          {bars.map((b) => (
-            <div
-              key={b.name}
-              className="flex items-center gap-2.5 font-latin text-xs font-medium"
-            >
-              <span className="w-[92px] flex-shrink-0">{b.name}</span>
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/20">
-                <div
-                  className="h-full rounded-full bg-white"
-                  style={{ width: `${b.pct}%` }}
-                />
-              </div>
-              <span>{b.pct}%</span>
-            </div>
-          ))}
         </div>
 
         <div className="mt-5 border-t border-white/15 pt-4 text-[13px] leading-relaxed opacity-90">
