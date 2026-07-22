@@ -61,17 +61,13 @@ export default function SearchScreen() {
   }
 
   return (
-    <div className="flex min-h-[62vh] animate-fade flex-col justify-center px-5 pb-12">
-      <h1 className="text-[28px] font-extrabold leading-[1.32] tracking-[-0.9px]">
-        취향이 없는 게 아니다.
-        <br />
-        <span className="text-ink-soft">이름을 몰랐을 뿐.</span>
-      </h1>
-      <p className="mt-3 text-[14px] leading-[1.6] text-ink-soft">
-        찾는 느낌 그대로 적으면, 무드로 보여준다.
-      </p>
+    <div className="sticky top-0 z-30 border-b border-line bg-paper px-5 pb-3 pt-5">
+      <div className="mb-2.5 flex items-baseline justify-between">
+        <span className="text-[17px] font-extrabold tracking-[-0.4px]">무드핏</span>
+        <span className="text-[12px] text-ink-faint">찾는 느낌 그대로 쳐봐</span>
+      </div>
 
-      <div className="relative mt-6">
+      <div className="relative">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -110,17 +106,13 @@ export default function SearchScreen() {
           →
         </button>
       </div>
-      <div className="mt-2 text-center text-[12px] text-ink-faint">
-        멋있는 거 봤으면 <span className="text-ink-soft">📷</span> 스샷을 올려도 돼
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-2.5 flex gap-2 overflow-x-auto pb-0.5">
         {CHIPS.map((s) => (
           <button
             key={s}
             type="button"
             onClick={() => search(s)}
-            className="rounded-full border border-line px-[15px] py-[9px] text-[13px] transition hover:border-accent hover:bg-paper-2"
+            className="shrink-0 rounded-full border border-line px-3.5 py-1.5 text-[13px] transition hover:border-accent hover:bg-paper-2"
           >
             {s}
           </button>
