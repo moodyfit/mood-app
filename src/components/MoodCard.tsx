@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Mood } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
 import { lookTotal, formatMan } from "@/lib/products";
+import { moodCoverRatio } from "@/lib/photos";
 
 /**
  * 무드 카드 (가이드라인 v2 §2·§4.2) — 메이슨리 전시 문법.
@@ -16,7 +17,7 @@ export default function MoodCard({
   query,
   hint = false,
   size = "sm",
-  ratio = 0.75,
+  ratio,
 }: {
   mood: Mood;
   query?: string;
@@ -28,6 +29,8 @@ export default function MoodCard({
   const { isSaved, toggleSave } = useMoodStore();
   const saved = isSaved(mood.key);
   const hero = size === "hero";
+  // 실측 비율 미도입 로컬 커버는 key 기반 안전 변주로 메이슨리 스태거 확보
+  const cardR = ratio ?? moodCoverRatio(mood.key);
 
   const [caption, setCaption] = useState(false);
   const [pop, setPop] = useState(false);
@@ -85,7 +88,7 @@ export default function MoodCard({
       onKeyDown={(e) => {
         if (e.key === "Enter") router.push(`/mood/${mood.key}`);
       }}
-      style={{ aspectRatio: String(hero ? 0.78 : ratio) }}
+      style={{ aspectRatio: String(hero ? 0.78 : cardR) }}
       className="group relative block w-full cursor-pointer select-none overflow-hidden rounded-2xl transition active:scale-[0.98]"
     >
       <div

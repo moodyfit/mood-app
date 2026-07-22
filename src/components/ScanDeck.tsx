@@ -32,16 +32,30 @@ export default function ScanDeck() {
   if (done) {
     const { title } = computeTaste(affinity);
     const ordered = personalizeOrder([...ALL_MOOD_KEYS], affinity);
+    // 스캔 결과는 개인화 → 최상위 매치를 전면폭 히어로(크기=적합도)
+    const heroKey = likes > 0 && ordered.length > 3 ? ordered[0] : null;
+    const restKeys = heroKey ? ordered.slice(1) : ordered;
     return (
       <div className="animate-fade">
         <div className="text-[20px] font-bold tracking-[-0.4px]">
           {likes > 0 && title ? `너는 지금 ${title} 쪽` : "일단 눈에 드는 것부터"}
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          {ordered.map((k) => {
+
+        {heroKey && MOODS[heroKey] && (
+          <div className="mt-4">
+            <MoodCard mood={MOODS[heroKey]} size="hero" />
+          </div>
+        )}
+
+        <div className="mt-3" style={{ columnCount: 2, columnGap: "12px" }}>
+          {restKeys.map((k) => {
             const mood = MOODS[k];
             if (!mood) return null;
-            return <MoodCard key={k} mood={mood} />;
+            return (
+              <div key={k} className="mb-3 break-inside-avoid">
+                <MoodCard mood={mood} />
+              </div>
+            );
           })}
         </div>
         <Link

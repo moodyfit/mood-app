@@ -92,11 +92,16 @@ export default function ShotFinder() {
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3">
+      {/* 메이슨리(전시 문법). 근접 무드는 아직 셸 순서라 히어로(크기=적합도) 없음 — 크기로 거짓 랭킹 암시 금지 */}
+      <div className="mt-5" style={{ columnCount: 2, columnGap: "12px" }}>
         {near.map((k) => {
           const mood = MOODS[k];
           if (!mood) return null;
-          return <MoodCard key={k} mood={mood} />;
+          return (
+            <div key={k} className="mb-3 break-inside-avoid">
+              <MoodCard mood={mood} />
+            </div>
+          );
         })}
       </div>
 

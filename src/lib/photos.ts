@@ -20,11 +20,33 @@ export interface Photo {
 /** 카드 기본 비율(width/height). 스트릿샷 세로 구도 기준 4:5. */
 export const DEFAULT_CARD_RATIO = 0.8;
 
-/** 카드 렌더 비율. 비정상값은 0.5~0.9로 클램프(구도 보호). */
+/** 문자열 → 안정 해시(결정적, Math.random 미사용) */
+function hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+/**
+ * 실비율(aspect_ratio) 없을 때의 폴백 변주.
+ * 전부 원본(≈0.78)보다 '넓게'만 → cover 가 좌우 배경만 크롭, 인물 세로 구도는 보존(①).
+ * 실값 이미지가 생성되면 cardRatio 가 실값을 우선 사용.
+ */
+const FALLBACK_RATIOS = [0.78, 0.82, 0.86, 0.9];
+
+/** 무드 커버(≈0.75) 폴백 변주 — 넓게만. */
+const COVER_RATIOS = [0.75, 0.79, 0.84, 0.88];
+
+/** 카드 렌더 비율. 실값 있으면 클램프해서 사용, 없으면 id 기반 안전 변주 폴백. */
 export function cardRatio(p: Photo): number {
   const r = p.aspect_ratio;
-  if (typeof r !== "number" || !isFinite(r) || r <= 0) return DEFAULT_CARD_RATIO;
-  return Math.min(0.9, Math.max(0.5, r));
+  if (typeof r === "number" && isFinite(r) && r > 0) return Math.min(0.95, Math.max(0.5, r));
+  return FALLBACK_RATIOS[hashStr(p.id) % FALLBACK_RATIOS.length];
+}
+
+/** 무드 커버 카드 비율(로컬 폴백 그리드). key 기반 결정적 변주 — 넓게만(인물 보존). */
+export function moodCoverRatio(key: string): number {
+  return COVER_RATIOS[hashStr(key) % COVER_RATIOS.length];
 }
 
 /** Storage 공개 URL (moods 버킷은 public 이어야 함) */
