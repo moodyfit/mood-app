@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ALL_MOOD_KEYS, MOODS } from "@/lib/moods";
 import { computeTaste, personalizeOrder } from "@/lib/taste";
 import { useMoodStore } from "@/lib/store";
+import { haptic } from "@/lib/haptic";
 import MoodCard from "./MoodCard";
 
 /**
@@ -32,6 +33,7 @@ export default function ScanDeck() {
   }, [scanning, done, markScanDone]);
 
   function like(key: string) {
+    haptic();
     recordScanLike(key);
     setLiked((a) => [...a, key]);
     setI((n) => n + 1);
@@ -53,7 +55,7 @@ export default function ScanDeck() {
     liked.length === 0
       ? null
       : streak >= 2 && MOODS[last]
-        ? `지금 ${MOODS[last].name} ${streak}연속 👀`
+        ? `지금 ${MOODS[last].name} ${streak}연속`
         : `${liked.length}개 골랐어`;
 
   // 하이드레이션 전에는 렌더 보류(전시/덱 깜빡임 방지)

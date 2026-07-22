@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { TASTE_CARD_THRESHOLD } from "@/lib/taste";
+import { haptic } from "@/lib/haptic";
 
 /**
  * 모먼트 3 토글 — 상시 노출, 두 상태 모두 '살아있는' UI(회색 비활성 금지).
@@ -24,17 +25,21 @@ export default function ResultToggle({
   const [note, setNote] = useState<string | null>(null);
 
   function pickAll() {
+    haptic();
     onChange(false);
     setNote(null);
   }
   function pickYou() {
+    haptic();
     if (!formed) {
       const left = Math.max(1, TASTE_CARD_THRESHOLD - savedCount);
       setNote(`${left}장만 저장하면 너만의 결과가 열려`);
       return;
     }
     onChange(true);
-    setNote(changedCount > 0 ? `${changedCount}장이 자리를 바꿨어` : "너의 취향으로 정렬했어");
+    setNote(
+      changedCount > 0 ? `네 취향 반영으로 ${changedCount}장이 자리를 바꿨어` : "네 취향으로 정렬했어"
+    );
   }
 
   const tab = (active: boolean) =>

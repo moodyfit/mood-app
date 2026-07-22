@@ -12,8 +12,15 @@ import {
 import type { Affinity, MoodKey, OwnedItem, SaveRecord } from "./types";
 import { TASTE_CARD_THRESHOLD } from "./taste";
 import { MOODS } from "./moods";
+import { haptic } from "./haptic";
 
 const isKnownMood = (k: string): boolean => Boolean(MOODS[k]);
+
+export interface DiscoveredItem {
+  id: string;
+  moodKey: MoodKey;
+  at: number;
+}
 
 const K_SAVES = "mood.saves.v1";
 const K_CARD = "mood.cardIssued.v1";
@@ -21,6 +28,8 @@ const K_AFFINITY = "mood.affinity.v1"; // 7.6 프로필 무드 벡터
 const K_SEARCH = "mood.searchCounts.v1"; // 7.8 검색 기억
 const K_OWNED = "mood.owned.v1"; // 1.5.2 '내 옷' 소유 결
 const K_SCAN = "mood.scanDone.v1"; // 스캔 1회 완료 — 이후 스캔 탭은 전시 기본, 원할 때만 재스캔
+const K_DOT = "mood.spaceDot.v1"; // B5 카드 발급 dot (나의 공간 미확인 신호)
+const K_DISC = "mood.discovered.v1"; // C7 '발견' 결 (스크린샷 입주)
 
 // 프로필 가중치: 저장은 클릭보다 강한 신호
 const W_SAVE = 2;
@@ -50,6 +59,10 @@ interface MoodStore {
   scanDone: boolean;
   markScanDone: () => void;
   hydrated: boolean;
+  spaceDot: boolean;
+  clearSpaceDot: () => void;
+  discovered: DiscoveredItem[];
+  addDiscovered: (moodKey: MoodKey) => void;
   toast: string | null;
   showToast: (msg: string) => void;
 }
@@ -64,6 +77,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [cardEverIssued, setCardEverIssued] = useState(false);
   const [cardOpen, setCardOpen] = useState(false);
   const [scanDone, setScanDone] = useState(false);
+  const [spaceDot, setSpaceDot] = useState(false);
+  const [discovered, setDiscovered] = useState<DiscoveredItem[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -85,6 +100,9 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       if (o) setOwned(JSON.parse(o));
       setCardEverIssued(localStorage.getItem(K_CARD) === "1");
       setScanDone(localStorage.getItem(K_SCAN) === "1");
+      setSpaceDot(localStorage.getItem(K_DOT) === "1");
+      const d = localStorage.getItem(K_DISC);
+      if (d) setDiscovered((JSON.parse(d) as DiscoveredItem[]).filter((x) => isKnownMood(x.moodKey)));
     } catch {
       /* ignore */
     }
@@ -99,10 +117,11 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(K_AFFINITY, JSON.stringify(affinity));
       localStorage.setItem(K_SEARCH, JSON.stringify(searchCounts));
       localStorage.setItem(K_OWNED, JSON.stringify(owned));
+      localStorage.setItem(K_DISC, JSON.stringify(discovered));
     } catch {
       /* ignore */
     }
-  }, [saves, affinity, searchCounts, owned, hydrated]);
+  }, [saves, affinity, searchCounts, owned, discovered, hydrated]);
 
   const bump = useCallback((key: MoodKey, w: number) => {
     setAffinity((prev) => ({ ...prev, [key]: (prev[key] ?? 0) + w }));
@@ -126,14 +145,17 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         if (exists) return prev.filter((s) => s.moodKey !== key);
 
         const next = [...prev, { moodKey: key, savedAt: Date.now(), query }];
-        showToast("무드보드에 저장");
+        showToast("저장했어");
+        haptic(); // soft impact
         bump(key, W_SAVE); // 프로필 가중 (저장은 강한 신호)
 
-        // 카드 '발급'은 조용히 — 모달·알림 금지(스펙). 카드는 나의 공간 문패로만 산다.
+        // 카드 '발급'은 조용히 — 모달·알림 금지(스펙). 신호는 탭바 dot 하나뿐.
         if (next.length >= TASTE_CARD_THRESHOLD && !cardEverIssued) {
           setCardEverIssued(true);
+          setSpaceDot(true);
           try {
             localStorage.setItem(K_CARD, "1");
+            localStorage.setItem(K_DOT, "1");
           } catch {
             /* ignore */
           }
@@ -164,6 +186,22 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const clearSpaceDot = useCallback(() => {
+    setSpaceDot(false);
+    try {
+      localStorage.removeItem(K_DOT);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const addDiscovered = useCallback((moodKey: MoodKey) => {
+    setDiscovered((prev) => {
+      const id = `${moodKey}-${prev.length}`;
+      return [{ id, moodKey, at: Date.now() }, ...prev].slice(0, 24);
+    });
+  }, []);
+
   const recordSearch = useCallback((query: string) => {
     const q = normalizeQuery(query);
     if (!q) return;
@@ -186,7 +224,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         if (prev.some((o) => o.id === item.id)) {
           return prev.filter((o) => o.id !== item.id);
         }
-        showToast("내 옷에 추가");
+        showToast("내 옷에 담았어");
         return [...prev, item];
       });
     },
@@ -214,6 +252,10 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       scanDone,
       markScanDone,
       hydrated,
+      spaceDot,
+      clearSpaceDot,
+      discovered,
+      addDiscovered,
       toast,
       showToast,
     }),
@@ -234,6 +276,10 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       scanDone,
       markScanDone,
       hydrated,
+      spaceDot,
+      clearSpaceDot,
+      discovered,
+      addDiscovered,
       toast,
       showToast,
     ]

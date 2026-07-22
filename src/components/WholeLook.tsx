@@ -44,7 +44,7 @@ export default function WholeLook({ products }: { products: Product[] }) {
           onClick={() => setOpen(false)}
         >
           <div
-            className="max-h-[78vh] w-full max-w-frame overflow-auto rounded-t-[20px] bg-white p-5 pb-9"
+            className="animate-sheet max-h-[78vh] w-full max-w-frame overflow-auto rounded-t-[20px] bg-white p-5 pb-9"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3 flex items-center justify-between">

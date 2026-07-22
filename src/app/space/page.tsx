@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import TasteProfile from "@/components/TasteProfile";
 import MoodMap from "@/components/MoodMap";
 import Room from "@/components/Room";
 import Closet from "@/components/Closet";
+import Discovered from "@/components/Discovered";
 import { useMoodStore } from "@/lib/store";
 
 /**
@@ -13,7 +15,12 @@ import { useMoodStore } from "@/lib/store";
  * 척추: 추구미 카드 프로필(A) + 무드 지도(C) + 자동 콜라주 무드보드(A).
  */
 export default function SpacePage() {
-  const { savedCount } = useMoodStore();
+  const { savedCount, clearSpaceDot } = useMoodStore();
+
+  // B5: 나의 공간 진입 시 카드 발급 dot 제거
+  useEffect(() => {
+    clearSpaceDot();
+  }, [clearSpaceDot]);
 
   return (
     <div className="animate-fade px-5 pb-14">
@@ -26,7 +33,7 @@ export default function SpacePage() {
         href="/shot"
         className="mt-3 flex items-center justify-center gap-2 rounded-[12px] border border-line py-3 text-[14px] font-semibold text-ink-soft transition hover:bg-paper-2"
       >
-        📷 멋있는 거 봤으면, 스샷으로 찾기
+        멋있는 거 봤으면 스샷으로 찾기
       </Link>
 
       {savedCount > 0 && (
@@ -45,6 +52,11 @@ export default function SpacePage() {
           </Link>
         </>
       )}
+
+      {/* 발견 결 (스크린샷) */}
+      <div className="mt-8">
+        <Discovered />
+      </div>
 
       {/* 소유 결 — 있으면 저장 여부와 무관하게 노출 */}
       <div className="mt-8">

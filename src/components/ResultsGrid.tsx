@@ -24,14 +24,14 @@ export default function ResultsGrid({ query, you = false }: { query: string; you
   const changedCount = base.reduce((n, k, i) => (personalOrder[i] !== k ? n + 1 : n), 0);
   const ordered = personal ? personalOrder : base;
 
-  // 히어로는 개인화 + 표본 충분할 때만
-  const heroKey = personal && ordered.length > 3 ? ordered[0] : null;
+  // B6: 1번 카드는 모두/너의 무관하게 항상 대형 고정 + 해설 펼침
+  const heroKey = ordered.length > 3 ? ordered[0] : null;
   const restKeys = heroKey ? ordered.slice(1) : ordered;
 
   return (
     <div>
       <h2 className="mb-4 text-[20px] font-bold tracking-[-0.4px]">
-        {you ? "너의 추구미로 골라봤어" : `‘${query}’ 느낌`}
+        {you ? "너의 추구미로 골라봤어" : `‘${query}’ — 대충 쳐도 돼`}
       </h2>
 
       {!you && <SearchMemory query={query} />}
@@ -44,8 +44,8 @@ export default function ResultsGrid({ query, you = false }: { query: string; you
         onChange={setOverride}
       />
 
-      {personal && heroKey && MOODS[heroKey] && (
-        <div className="mb-3">
+      {heroKey && MOODS[heroKey] && (
+        <div className="mb-3 animate-rise">
           <MoodCard mood={MOODS[heroKey]} query={query} size="hero" />
         </div>
       )}
@@ -55,7 +55,7 @@ export default function ResultsGrid({ query, you = false }: { query: string; you
           const mood = MOODS[key];
           if (!mood) return null;
           return (
-            <div key={key} className="mb-3 break-inside-avoid">
+            <div key={key} className="mb-3 break-inside-avoid animate-rise">
               <MoodCard mood={mood} query={query} hint={!heroKey && idx === 0} />
             </div>
           );

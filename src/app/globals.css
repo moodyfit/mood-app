@@ -4,6 +4,8 @@
 
 :root {
   color-scheme: light;
+  /* 활기 = 스프링(바운스). 공간은 통통 튀되 컨페티·팡파레·게이지는 금지 */
+  --spring: cubic-bezier(0.22, 1.2, 0.36, 1);
 }
 
 html,
@@ -21,7 +23,9 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-fade,
-  .animate-pop {
+  .animate-pop,
+  .animate-rise,
+  .animate-sheet {
     animation: none;
   }
 }
@@ -49,20 +53,57 @@ body {
 }
 
 @keyframes pop {
-  from {
-    transform: scale(0.85);
+  0% {
+    transform: scale(0.6);
     opacity: 0;
   }
-  to {
+  60% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
     transform: scale(1);
     opacity: 1;
   }
 }
 
+/* 카드 등장 미세 튕김 (구조적 등장 — 사진 위 장식 모션 아님) */
+@keyframes rise {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  60% {
+    transform: translateY(-2px) scale(1.004);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 바텀시트 스프링 슬라이드업 */
+@keyframes sheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 .animate-fade {
-  animation: fade 0.35s ease;
+  animation: fade 0.4s var(--spring);
 }
 
 .animate-pop {
-  animation: pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+  animation: pop 0.5s var(--spring);
+}
+
+.animate-rise {
+  animation: rise 0.44s var(--spring) both;
+}
+
+.animate-sheet {
+  animation: sheet 0.4s var(--spring);
 }

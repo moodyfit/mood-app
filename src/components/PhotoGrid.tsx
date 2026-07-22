@@ -47,14 +47,14 @@ export default function PhotoGrid({
 
   const ordered = personal ? personalOrder : neutral;
 
-  // 히어로는 개인화 + 표본이 충분할 때만(작은 결과가 통짜 히어로가 되지 않게)
-  const hero = personal && ordered.length > 3 ? ordered[0] : null;
+  // B6: 1번 카드는 모두/너의 무관하게 항상 대형 고정 + 해설 펼침(표본 충분할 때)
+  const hero = ordered.length > 3 ? ordered[0] : null;
   const rest = hero ? ordered.slice(1) : ordered;
 
   return (
     <div>
       <h2 className="mb-4 text-[20px] font-bold tracking-[-0.4px]">
-        {you ? "너의 추구미로 골라봤어" : `‘${query}’ 느낌`}
+        {you ? "너의 추구미로 골라봤어" : `‘${query}’ — 대충 쳐도 돼`}
       </h2>
 
       <ResultToggle
@@ -66,8 +66,8 @@ export default function PhotoGrid({
       />
 
       {/* 개인화 전용 히어로: 너의 결과에서만 최상위 매치를 전면폭으로 = 크기로 적합도를 말한다 */}
-      {personal && hero && (
-        <div className="mb-3">
+      {hero && (
+        <div className="mb-3 animate-rise">
           <PhotoCard photo={hero} query={query} size="hero" />
         </div>
       )}
@@ -75,7 +75,7 @@ export default function PhotoGrid({
       {/* 메이슨리 = CSS 멀티컬럼(핀터레스트 배치). 세로 리듬은 사진 실비율에서 나옴 */}
       <div style={{ columnCount: 2, columnGap: "12px" }}>
         {rest.map((p, idx) => (
-          <div key={p.id} className="mb-3 break-inside-avoid">
+          <div key={p.id} className="mb-3 break-inside-avoid animate-rise">
             <PhotoCard photo={p} query={query} hint={!hero && idx === 0} />
           </div>
         ))}

@@ -101,8 +101,8 @@ export default function MoodCard({
       />
       {!mood.imageUrl && <div className="grain" />}
 
-      {/* 첫 카드: 해설을 펼쳐서 상시 노출 (v2.6 1번 사진 해설 펼침). 롱프레스 학습은 덤 */}
-      {hint && !caption && (
+      {/* 첫 카드·히어로: 해설을 펼쳐서 상시 노출 (B6 1번 카드 + v2.6). 롱프레스 학습은 덤 */}
+      {(hint || hero) && !caption && (
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
           <div className="line-clamp-2 text-[11.5px] leading-relaxed text-white/90">{mood.caption}</div>
         </div>
@@ -125,9 +125,9 @@ export default function MoodCard({
         {saved ? "♥" : "♡"}
       </button>
 
-      {/* 모먼트 2: 무드 완성가 — hero에서만(소형 카드는 사진을 덮지 않음, ②). 상세에서 항상 노출 */}
+      {/* 완성가 라벨 — 히어로(풀샷)에서. 해설 밴드와 겹치지 않게 상단-좌측. 소형 카드는 생략(탭 후 노출) */}
       {hero && (
-        <div className="absolute bottom-2 left-2 rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur">
+        <div className="absolute left-2 top-2 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur">
           이 느낌 완성 · <span className="tnum">{formatMan(lookTotal(mood.key))}</span>
         </div>
       )}

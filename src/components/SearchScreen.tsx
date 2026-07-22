@@ -15,9 +15,8 @@ const ROTATING = [
   "퇴근하고 한잔",
 ];
 
-// 7.9 1층: 추천 검색어 칩 — 일반 밥·상황 언어만. IP·실명 제외.
+// 7.9 1층: 추천 검색어 칩 — 일반 밥·상황 언어만. IP·실명 제외. (2~6번 슬롯)
 const CHIPS = [
-  "소개팅 깔끔하게",
   "퇴근 남",
   "꾸안꾸",
   "주말 카페",
@@ -25,17 +24,36 @@ const CHIPS = [
   "동네 산책",
 ];
 
+// C8 오늘의 아무말 칩 — 1번 슬롯 daily 로테이션(이상한 검색어). 스타일 동일, 내용만.
+const DAILY = [
+  "전여친 결혼식",
+  "월급날 플렉스인 척",
+  "비 오는 날 재즈바",
+  "퇴사 통보하는 날",
+  "아무도 안 만나는 날",
+  "집앞인데 각 잡고",
+  "첫 출근 얕보이기 싫을 때",
+];
+
 export default function SearchScreen() {
   const router = useRouter();
   const { recordSearch } = useMoodStore();
   const [q, setQ] = useState("");
   const [ph, setPh] = useState(0);
+  const [dailyIdx, setDailyIdx] = useState(0);
   const shotInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const t = setInterval(() => setPh((i) => (i + 1) % ROTATING.length), 2600);
     return () => clearInterval(t);
   }, []);
+
+  // 날짜 기반 로테이션(클라이언트에서만 산정 — 하이드레이션 불일치 방지)
+  useEffect(() => {
+    setDailyIdx(Math.floor(Date.now() / 86400000) % DAILY.length);
+  }, []);
+
+  const chips = [DAILY[dailyIdx], ...CHIPS];
 
   function search(value: string) {
     const query = value.trim();
@@ -107,11 +125,11 @@ export default function SearchScreen() {
         </button>
       </div>
       <div className="mt-1.5 text-[11.5px] text-ink-faint">
-        멋있는 거 봤으면 <span className="text-ink-soft">📷</span> 스샷을 올려도 돼
+        멋있는 거 봤으면 스샷을 올려도 돼
       </div>
 
       <div className="mt-2 flex gap-2 overflow-x-auto pb-0.5">
-        {CHIPS.map((s) => (
+        {chips.map((s) => (
           <button
             key={s}
             type="button"

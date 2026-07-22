@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useMoodStore } from "@/lib/store";
 
 /**
  * 가이드라인 v2 §2 — 하단 탭바 (v1 금지 철회, 대중적 관습 채택).
@@ -43,6 +44,7 @@ const TABS = [
 
 export default function TabBar() {
   const pathname = usePathname() || "/";
+  const { spaceDot } = useMoodStore();
   return (
     <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-frame -translate-x-1/2 grid grid-cols-3 border-t border-line bg-paper pb-[env(safe-area-inset-bottom)]">
       {TABS.map((t) => {
@@ -55,17 +57,23 @@ export default function TabBar() {
               active ? "text-ink" : "text-ink-faint"
             }`}
           >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {t.icon}
-            </svg>
+            <div className="relative">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                {t.icon}
+              </svg>
+              {/* B5 추구미 카드 발급 신호 — dot 하나(숫자·문구 없음). 진입 시 제거 */}
+              {t.href === "/space" && spaceDot && (
+                <span className="absolute -right-1 -top-0.5 h-2 w-2 rounded-full bg-accent" />
+              )}
+            </div>
             <span className={active ? "font-semibold" : "font-medium"}>{t.label}</span>
           </Link>
         );

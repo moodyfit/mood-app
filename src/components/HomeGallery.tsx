@@ -38,7 +38,7 @@ export default function HomeGallery() {
 
       {/* 내 취향 = 크게 (전면폭 히어로) */}
       {heroKey && MOODS[heroKey] && (
-        <div className="mb-3">
+        <div className="mb-3 animate-rise">
           <MoodCard mood={MOODS[heroKey]} size="hero" />
         </div>
       )}
@@ -47,7 +47,7 @@ export default function HomeGallery() {
       <div style={{ columnCount: 2, columnGap: "12px" }}>
         {restKeys.map((k, i) =>
           MOODS[k] ? (
-            <div key={k} className="mb-3 break-inside-avoid">
+            <div key={k} className="mb-3 break-inside-avoid animate-rise">
               <MoodCard mood={MOODS[k]} hint={!heroKey && i === 0} />
             </div>
           ) : null

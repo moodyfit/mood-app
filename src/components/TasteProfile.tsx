@@ -18,9 +18,7 @@ export default function TasteProfile() {
       <div className="rounded-[18px] border border-dashed border-line bg-paper-2 p-6 text-center">
         <div className="text-[15px] font-semibold">여기가 나의 공간</div>
         <div className="mt-2 text-[13px] leading-relaxed text-ink-soft">
-          사진을 저장할수록
-          <br />
-          취향이 선명해진다.
+          저장하면 여기 쌓여.
         </div>
         <Link
           href="/scan"
