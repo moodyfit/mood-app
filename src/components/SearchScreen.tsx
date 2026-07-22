@@ -106,7 +106,11 @@ export default function SearchScreen() {
           →
         </button>
       </div>
-      <div className="mt-2.5 flex gap-2 overflow-x-auto pb-0.5">
+      <div className="mt-1.5 text-[11.5px] text-ink-faint">
+        멋있는 거 봤으면 <span className="text-ink-soft">📷</span> 스샷을 올려도 돼
+      </div>
+
+      <div className="mt-2 flex gap-2 overflow-x-auto pb-0.5">
         {CHIPS.map((s) => (
           <button
             key={s}

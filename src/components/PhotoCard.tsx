@@ -95,12 +95,11 @@ export default function PhotoCard({
       {showCaption && !caption && photo.caption_item && (
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
           <div className="text-[12.5px] font-semibold text-white">{photo.caption_item}</div>
-          {photo.caption_why ? (
+          {/* 해설이 펼쳐진 것 자체가 노출 — 별도 안내 문구 금지(스펙) */}
+          {photo.caption_why && (
             <div className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-white/85">
               {photo.caption_why}
             </div>
-          ) : (
-            <div className="mt-0.5 text-[11px] text-white/70">꾹 누르면 왜 멋진지 →</div>
           )}
         </div>
       )}

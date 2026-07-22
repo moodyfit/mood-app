@@ -129,6 +129,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         showToast("무드보드에 저장");
         bump(key, W_SAVE); // 프로필 가중 (저장은 강한 신호)
 
+        // 카드 '발급'은 조용히 — 모달·알림 금지(스펙). 카드는 나의 공간 문패로만 산다.
         if (next.length >= TASTE_CARD_THRESHOLD && !cardEverIssued) {
           setCardEverIssued(true);
           try {
@@ -136,7 +137,6 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
           } catch {
             /* ignore */
           }
-          setTimeout(() => setCardOpen(true), 550);
         }
         return next;
       });

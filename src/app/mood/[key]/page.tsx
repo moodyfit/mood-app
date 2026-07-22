@@ -22,7 +22,7 @@ export default async function MoodDetailPage({
   const total = products.reduce((s, p) => s + primaryPrice(p), 0);
 
   return (
-    <div className="animate-fade px-5 pb-12">
+    <div className="animate-fade px-5 pb-32">
       <BackButton />
       <MoodHero mood={mood} total={total} />
 

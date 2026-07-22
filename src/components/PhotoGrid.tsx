@@ -3,9 +3,10 @@
 import { useState } from "react";
 import type { Photo } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
-import { topShare, SKEW_THRESHOLD } from "@/lib/taste";
+import { TASTE_CARD_THRESHOLD } from "@/lib/taste";
 import PhotoCard from "./PhotoCard";
 import GridTail from "./GridTail";
+import ResultToggle from "./ResultToggle";
 
 /**
  * DB photos 메이슨리 + 모먼트3 [모두의 결과 ↔ 너의 결과] 토글.
@@ -23,21 +24,28 @@ export default function PhotoGrid({
   query: string;
   you?: boolean;
 }) {
-  const { affinity, cardEverIssued } = useMoodStore();
-  const [personal, setPersonal] = useState(you);
+  const { affinity, savedCount } = useMoodStore();
+  // 프로필 형성 = 저장 3장 이상. 형성되면 기본값이 '너의 결과'.
+  const formed = savedCount >= TASTE_CARD_THRESHOLD;
+  const [override, setOverride] = useState<boolean | null>(null);
+  const personal = override ?? (you || formed);
 
-  const showToggle = you || (cardEverIssued && topShare(affinity) >= SKEW_THRESHOLD);
+  const neutral = photos;
+  const personalOrder = [...photos]
+    .map((p) => ({
+      p,
+      s: Object.entries(p.mood_vector ?? {}).reduce((a, [k, v]) => a + (affinity[k] ?? 0) * v, 0),
+    }))
+    .sort((a, b) => b.s - a.s)
+    .map((x) => x.p);
 
-  const ordered =
-    personal
-      ? [...photos]
-          .map((p) => ({
-            p,
-            s: Object.entries(p.mood_vector ?? {}).reduce((a, [k, v]) => a + (affinity[k] ?? 0) * v, 0),
-          }))
-          .sort((a, b) => b.s - a.s)
-          .map((x) => x.p)
-      : photos;
+  // 두 정렬에서 자리가 바뀐 장수 (모먼트3 "너를 배웠다")
+  const changedCount = neutral.reduce(
+    (n, p, i) => (personalOrder[i]?.id !== p.id ? n + 1 : n),
+    0
+  );
+
+  const ordered = personal ? personalOrder : neutral;
 
   // 히어로는 개인화 + 표본이 충분할 때만(작은 결과가 통짜 히어로가 되지 않게)
   const hero = personal && ordered.length > 3 ? ordered[0] : null;
@@ -49,24 +57,13 @@ export default function PhotoGrid({
         {you ? "너의 추구미로 골라봤어" : `‘${query}’ 느낌`}
       </h2>
 
-      {showToggle && (
-        <div className="mb-4 inline-flex rounded-full border border-line p-1 text-[13px]">
-          <button
-            type="button"
-            onClick={() => setPersonal(false)}
-            className={`rounded-full px-3.5 py-1.5 transition ${!personal ? "bg-accent text-white" : "text-ink-soft"}`}
-          >
-            모두의 결과
-          </button>
-          <button
-            type="button"
-            onClick={() => setPersonal(true)}
-            className={`rounded-full px-3.5 py-1.5 transition ${personal ? "bg-accent text-white" : "text-ink-soft"}`}
-          >
-            너의 결과
-          </button>
-        </div>
-      )}
+      <ResultToggle
+        personal={personal}
+        formed={formed}
+        savedCount={savedCount}
+        changedCount={changedCount}
+        onChange={setOverride}
+      />
 
       {/* 개인화 전용 히어로: 너의 결과에서만 최상위 매치를 전면폭으로 = 크기로 적합도를 말한다 */}
       {personal && hero && (

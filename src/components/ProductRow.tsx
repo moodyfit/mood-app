@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import type { Product } from "@/lib/types";
 import { formatPrice, primaryPrice } from "@/lib/products";
 import { useMoodStore } from "@/lib/store";
@@ -15,9 +16,28 @@ export default function ProductRow({
   const cheapest = product.sources[0];
   const owned = isOwned(product.id);
 
+  // "샀어?" — 외부 링크로 나갔다 돌아오면 이 카드에 인라인 1줄(팝업 금지)
+  const [awaiting, setAwaiting] = useState(false);
+  const [askBuy, setAskBuy] = useState(false);
+
+  useEffect(() => {
+    function onVis() {
+      if (document.visibilityState === "visible" && awaiting) {
+        setAwaiting(false);
+        if (!isOwned(product.id)) setAskBuy(true);
+      }
+    }
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, [awaiting, product.id, isOwned]);
+
   function goTo(url?: string) {
-    if (url) window.open(url, "_blank", "noopener");
-    else showToast("데모 · 실제 서비스에선 판매처로 연결");
+    if (url) {
+      window.open(url, "_blank", "noopener");
+      setAwaiting(true); // 복귀 감지 준비
+    } else {
+      showToast("데모 · 실제 서비스에선 판매처로 연결");
+    }
   }
 
   return (
@@ -90,6 +110,20 @@ export default function ProductRow({
           {owned ? "✓ 내 옷" : "샀어"}
         </button>
       </div>
+
+      {/* 외부 복귀 감지 인라인 — 탭 1회로 '내 옷' 입주 (팝업 아님) */}
+      {askBuy && !owned && (
+        <button
+          type="button"
+          onClick={() => {
+            toggleOwned({ id: product.id, moodKey: product.moodKey, name: product.name });
+            setAskBuy(false);
+          }}
+          className="mt-2 w-full rounded-[8px] border border-accent bg-accent/10 py-2 text-[12.5px] font-semibold text-accent"
+        >
+          샀어? 탭하면 ‘내 옷’으로 →
+        </button>
+      )}
     </div>
   );
 }
