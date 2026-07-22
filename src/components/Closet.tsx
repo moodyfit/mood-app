@@ -9,13 +9,15 @@ import { useMoodStore } from "@/lib/store";
  * "샀어" 표시한 아이템이 모임. 탭 → "이거 들어간 룩 보기"(상함형: 존재하는 무드 룩으로 이동).
  * 제0조 경계: 생성형 조합("이 바지 매치해봐") 금지, 상함형(있는 룩 필터)만.
  */
-export default function Closet() {
+export default function Closet({ promotedName }: { promotedName?: string }) {
   const { owned } = useMoodStore();
   if (owned.length === 0) return null;
 
   return (
     <div>
-      <div className="mb-2 text-[12px] text-ink-faint">내 옷</div>
+      <div className="mb-2 text-[12px] text-ink-faint">
+        {promotedName ? `새로 온 ${promotedName}, 입어볼 조합` : "내 옷"}
+      </div>
       <div className="flex flex-col gap-2">
         {owned.map((item) => {
           const mood = MOODS[item.moodKey];

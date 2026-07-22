@@ -224,8 +224,9 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         if (prev.some((o) => o.id === item.id)) {
           return prev.filter((o) => o.id !== item.id);
         }
-        showToast("내 옷에 담았어");
-        return [...prev, item];
+        showToast("내 옷에 담았어 — 도착하면 입을 조합 알려줄게");
+        haptic();
+        return [...prev, { ...item, at: Date.now() }];
       });
     },
     [showToast]

@@ -64,6 +64,7 @@ export interface OwnedItem {
   id: string;
   moodKey: MoodKey;
   name: string;
+  at?: number; // 담은 시각(ms) — '내 옷' 7일 승격용
 }
 
 /** 추구미 카드 계산 결과 */

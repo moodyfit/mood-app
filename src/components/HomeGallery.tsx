@@ -1,26 +1,39 @@
 "use client";
 
+import { useState } from "react";
 import { ALL_MOOD_KEYS, MOODS } from "@/lib/moods";
-import { personalizeOrder } from "@/lib/taste";
+import { personalizeOrder, TASTE_CARD_THRESHOLD } from "@/lib/taste";
 import { useMoodStore } from "@/lib/store";
 import MoodCard from "./MoodCard";
+import ResultToggle from "./ResultToggle";
 
 /**
- * 홈 상시 전시 (장소화 = "내 추구미만 모아두는 곳").
- * 들어오자마자 지금까지 종합된 취향을 메이슨리로 — 내 취향은 크게(히어로), 나머지는 작게.
- * 취향 신호가 없으면(신규) 6축을 중립 전시 → 항상 구경거리가 있어 재방문 유도(N3).
+ * 홈 상시 전시 (장소화 = "내 추구미만 모아두는 곳") + [내 느낌 ↔ 새로운 느낌] 토글.
+ * 내 느낌: 추구미 가중 피드(내 취향 크게). 새로운 느낌: 프로필 하위/미노출 축 위주(인기·최신 금지).
  * 크기 = 추구미 적합도(개인화 시각화), 인기 랭킹 아님(헌법).
  */
 export default function HomeGallery() {
-  // SSR/첫 페인트는 중립 전시(affinity 빈 값 → 히어로 없음), 하이드레이션 후 개인화로 승격.
-  // 가드로 null 반환하지 않음 → 들어오자마자 항상 구경거리가 있게.
-  const { affinity } = useMoodStore();
+  const { affinity, savedCount, recordSearch } = useMoodStore();
 
   const hasTaste = Object.keys(affinity).length > 0;
-  const ordered = personalizeOrder([...ALL_MOOD_KEYS], affinity);
+  const formed = savedCount >= TASTE_CARD_THRESHOLD;
+  const [override, setOverride] = useState<boolean | null>(null);
+  const personal = override ?? formed; // 내 느낌(기본, 형성 시) ↔ 새로운 느낌
 
-  const heroKey = hasTaste && ordered.length > 3 ? ordered[0] : null;
+  const personalOrder = personalizeOrder([...ALL_MOOD_KEYS], affinity);
+  // 새로운 느낌 = 프로필 하위 축 먼저(인기·최신 아님 — affinity 오름차순). '아직 안 가본 곳'과 축 일치
+  const newOrder = [...ALL_MOOD_KEYS].sort((a, b) => (affinity[a] ?? 0) - (affinity[b] ?? 0));
+  const ordered = personal ? personalOrder : newOrder;
+
+  // 히어로(크기=적합도)는 '내 느낌'에서만. '새로운 느낌'은 탐색이라 랭크 히어로 없음
+  const heroKey = personal && hasTaste && ordered.length > 3 ? ordered[0] : null;
   const restKeys = heroKey ? ordered.slice(1) : ordered;
+
+  function onToggle(p: boolean) {
+    setOverride(p);
+    // user_actions: '새로운 느낌' 탭 = 탐색 의지 신호 (로컬 로깅, DB 연동 시 동일)
+    if (!p) recordSearch("탐색:새로운느낌");
+  }
 
   return (
     <div className="animate-fade px-5 pb-8">
@@ -35,22 +48,35 @@ export default function HomeGallery() {
         )}
       </div>
 
-      {/* 내 취향 = 크게 (전면폭 히어로) */}
-      {heroKey && MOODS[heroKey] && (
-        <div className="mb-3 animate-rise">
-          <MoodCard mood={MOODS[heroKey]} size="hero" />
-        </div>
-      )}
+      <ResultToggle
+        personal={personal}
+        formed={formed}
+        savedCount={savedCount}
+        changedCount={0}
+        onChange={onToggle}
+        labels={["새로운 느낌", "내 느낌"]}
+        invite="3장만 저장하면 네 느낌이 생겨"
+        rightNote=""
+        leftNote="안 가본 느낌들이야"
+      />
 
-      {/* 나머지 = 작게, 벽돌형 메이슨리 */}
-      <div style={{ columnCount: 2, columnGap: "12px" }}>
-        {restKeys.map((k, i) =>
-          MOODS[k] ? (
-            <div key={k} className="mb-3 break-inside-avoid animate-rise">
-              <MoodCard mood={MOODS[k]} hint={!heroKey && i === 0} />
-            </div>
-          ) : null
+      {/* 크로스페이드: 모드 전환 시 remount로 페이드 재생 */}
+      <div key={personal ? "me" : "new"} className="animate-fade">
+        {heroKey && MOODS[heroKey] && (
+          <div className="mb-3 animate-rise">
+            <MoodCard mood={MOODS[heroKey]} size="hero" />
+          </div>
         )}
+
+        <div style={{ columnCount: 2, columnGap: "12px" }}>
+          {restKeys.map((k, i) =>
+            MOODS[k] ? (
+              <div key={k} className="mb-3 break-inside-avoid animate-rise">
+                <MoodCard mood={MOODS[k]} hint={!heroKey && i === 0} />
+              </div>
+            ) : null
+          )}
+        </div>
       </div>
     </div>
   );

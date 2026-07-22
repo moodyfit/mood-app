@@ -1,6 +1,7 @@
 import Link from "next/link";
 import SearchScreen from "@/components/SearchScreen";
 import HomeGallery from "@/components/HomeGallery";
+import HomeCloset from "@/components/HomeCloset";
 
 // 홈 = 검색창(위 고정) + 약속 모드 진입 카드(유일) + 종합 취향 상시 메이슨리 전시
 export default function HomePage() {
@@ -21,6 +22,9 @@ export default function HomePage() {
           <span className="ml-2 text-lg">›</span>
         </Link>
       </div>
+
+      {/* '내 옷' 보유 시에만 노출되는 슬림 진입 줄 (소환형) */}
+      <HomeCloset />
 
       <div className="pt-5">
         <HomeGallery />

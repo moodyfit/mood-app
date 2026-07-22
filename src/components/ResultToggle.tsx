@@ -15,30 +15,42 @@ export default function ResultToggle({
   savedCount,
   changedCount,
   onChange,
+  labels = ["모두의 결과", "너의 결과"],
+  invite,
+  rightNote,
+  leftNote = null,
 }: {
   personal: boolean;
   formed: boolean;
   savedCount: number;
   changedCount: number;
   onChange: (p: boolean) => void;
+  labels?: [string, string];
+  invite?: string; // 오른쪽(개인화) 탭 시 미형성 초대 문구
+  rightNote?: string; // 오른쪽 전환 노트 오버라이드('' = 노트 없음)
+  leftNote?: string | null; // 왼쪽 전환 노트
 }) {
   const [note, setNote] = useState<string | null>(null);
 
   function pickAll() {
     haptic();
     onChange(false);
-    setNote(null);
+    setNote(leftNote);
   }
   function pickYou() {
     haptic();
     if (!formed) {
       const left = Math.max(1, TASTE_CARD_THRESHOLD - savedCount);
-      setNote(`${left}장만 저장하면 너만의 결과가 열려`);
+      setNote(invite ?? `${left}장만 저장하면 너만의 결과가 열려`);
       return;
     }
     onChange(true);
     setNote(
-      changedCount > 0 ? `네 취향 반영으로 ${changedCount}장이 자리를 바꿨어` : "네 취향으로 정렬했어"
+      rightNote !== undefined
+        ? rightNote
+        : changedCount > 0
+          ? `네 취향 반영으로 ${changedCount}장이 자리를 바꿨어`
+          : "네 취향으로 정렬했어"
     );
   }
 
@@ -49,10 +61,10 @@ export default function ResultToggle({
     <div className="mb-4">
       <div className="inline-flex rounded-full border border-line p-1 text-[13px]">
         <button type="button" onClick={pickAll} className={tab(!personal)}>
-          모두의 결과
+          {labels[0]}
         </button>
         <button type="button" onClick={pickYou} className={tab(personal)}>
-          너의 결과
+          {labels[1]}
         </button>
       </div>
       {note && <div className="mt-2 text-[12.5px] text-ink-soft">{note}</div>}
