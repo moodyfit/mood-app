@@ -12,7 +12,8 @@ import { useMoodStore } from "@/lib/store";
  * · 미개척지: 안 고른 무드는 흐릿한 실루엣으로 존재, 누르면 그 무드로 이동(탐색).
  * · 문패: 방 입구에 요약 추구미 한 줄 — 카드가 일회성이 아니라 상시 거주.
  */
-function tileBg(mood: Mood) {
+function tileBg(mood?: Mood) {
+  if (!mood) return undefined; // 스테일 키 방어
   return mood.imageUrl
     ? {
         backgroundImage: `url(${mood.imageUrl})`,
@@ -25,7 +26,8 @@ function tileBg(mood: Mood) {
 export default function Room() {
   const { affinity, isSaved } = useMoodStore();
 
-  const savedRanked = moodsByAffinity(affinity).filter((k) => isSaved(k));
+  // 캐논 6축에 없는 스테일 키(옛 버전 localStorage 잔재) 제거 → undefined 참조 방지
+  const savedRanked = moodsByAffinity(affinity).filter((k) => isSaved(k) && MOODS[k]);
   const dominant = savedRanked[0];
   const rest = savedRanked.slice(1);
   const unexplored = ALL_MOOD_KEYS.filter((k) => !isSaved(k));
@@ -55,15 +57,17 @@ export default function Room() {
       {/* 나머지 저장 무드 — 2열 */}
       {rest.length > 0 && (
         <div className="grid grid-cols-2 gap-2">
-          {rest.map((k) => (
-            <Link
-              key={k}
-              href={`/mood/${k}`}
-              className="relative block aspect-[3/4] overflow-hidden rounded-xl"
-            >
-              <div className="absolute inset-0" style={tileBg(MOODS[k])} />
-            </Link>
-          ))}
+          {rest.map((k) =>
+            MOODS[k] ? (
+              <Link
+                key={k}
+                href={`/mood/${k}`}
+                className="relative block aspect-[3/4] overflow-hidden rounded-xl"
+              >
+                <div className="absolute inset-0" style={tileBg(MOODS[k])} />
+              </Link>
+            ) : null
+          )}
         </div>
       )}
 

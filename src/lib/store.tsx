@@ -11,6 +11,9 @@ import {
 } from "react";
 import type { Affinity, MoodKey, OwnedItem, SaveRecord } from "./types";
 import { TASTE_CARD_THRESHOLD } from "./taste";
+import { MOODS } from "./moods";
+
+const isKnownMood = (k: string): boolean => Boolean(MOODS[k]);
 
 const K_SAVES = "mood.saves.v1";
 const K_CARD = "mood.cardIssued.v1";
@@ -68,10 +71,14 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   // 초기 로드 (localStorage)
   useEffect(() => {
     try {
+      // 캐논 6축에 없는 스테일 키(옛 버전 localStorage 잔재)는 로드 시 제거 → self-heal
       const s = localStorage.getItem(K_SAVES);
-      if (s) setSaves(JSON.parse(s));
+      if (s) setSaves((JSON.parse(s) as SaveRecord[]).filter((r) => isKnownMood(r.moodKey)));
       const a = localStorage.getItem(K_AFFINITY);
-      if (a) setAffinity(JSON.parse(a));
+      if (a) {
+        const raw = JSON.parse(a) as Affinity;
+        setAffinity(Object.fromEntries(Object.entries(raw).filter(([k]) => isKnownMood(k))));
+      }
       const q = localStorage.getItem(K_SEARCH);
       if (q) setSearchCounts(JSON.parse(q));
       const o = localStorage.getItem(K_OWNED);
