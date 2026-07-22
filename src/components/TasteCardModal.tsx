@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMoodStore } from "@/lib/store";
-import { computeTaste } from "@/lib/taste";
+import { computeTaste, aliasFor } from "@/lib/taste";
 
 export default function TasteCardModal() {
   const router = useRouter();
@@ -10,6 +10,7 @@ export default function TasteCardModal() {
   if (!cardOpen) return null;
 
   const { title, rarityPct } = computeTaste(affinity);
+  const alias = aliasFor(affinity);
 
   return (
     <div
@@ -24,9 +25,10 @@ export default function TasteCardModal() {
         <div className="text-[11px] font-semibold tracking-[2px] opacity-70">
           나의 추구미
         </div>
-        <div className="mt-2.5 text-[26px] font-extrabold leading-[1.28] tracking-[-0.6px]">
-          {title}
+        <div className="mt-2.5 text-[25px] font-extrabold leading-[1.24] tracking-[-0.6px]">
+          {alias || title}
         </div>
+        {alias && <div className="mt-1 text-[12.5px] opacity-55">{title}</div>}
         <div className="mt-3 text-[13px] leading-relaxed opacity-85">
           이 무드를 가진 사람, 전체의{" "}
           <span className="font-latin font-semibold">{rarityPct}%</span>

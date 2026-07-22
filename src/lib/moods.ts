@@ -70,6 +70,20 @@ export const QUERY_MAP: QueryMapping[] = [
   { keyword: "면접 가는 날", moodKeys: ["classic", "clean", "cityboy"] },
   { keyword: "동네 산책", moodKeys: ["amekaji", "soft", "street"] },
   { keyword: "갑자기 모임", moodKeys: ["clean", "cityboy", "street", "amekaji"] },
+  // 밈·일상어 (#5) — 표면 언어. 변형어('테토남 그 느낌','테토')는 resolveMoods 부분매칭으로 폴백.
+  { keyword: "테토남", moodKeys: ["street", "amekaji", "cityboy"] },
+  { keyword: "에겐남", moodKeys: ["soft", "clean", "cityboy"] },
+  { keyword: "느좋", moodKeys: ["cityboy", "soft", "clean"] },
+  { keyword: "남친룩", moodKeys: ["soft", "clean", "cityboy"] },
+  { keyword: "힙하게", moodKeys: ["street", "amekaji", "cityboy"] },
+  { keyword: "꾸안꾸", moodKeys: ["cityboy", "soft", "clean"] },
+  { keyword: "만찢남", moodKeys: ["clean", "classic", "cityboy"] },
+  { keyword: "댄디하게", moodKeys: ["classic", "clean", "soft"] },
+  { keyword: "올드머니", moodKeys: ["classic", "clean", "soft"] },
+  { keyword: "시크하게", moodKeys: ["clean", "street", "classic"] },
+  // 상황어 칩 (홈)
+  { keyword: "소개팅 깔끔하게", moodKeys: ["clean", "soft", "cityboy", "classic"] },
+  { keyword: "퇴근 후 약속", moodKeys: ["street", "amekaji", "clean", "classic"] },
 ];
 
 export const SUGGESTIONS = QUERY_MAP.map((q) => q.keyword);

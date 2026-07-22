@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMoodStore } from "@/lib/store";
-import { computeTaste, TASTE_CARD_THRESHOLD } from "@/lib/taste";
+import { computeTaste, aliasFor, TASTE_CARD_THRESHOLD } from "@/lib/taste";
 
 /**
  * 컨셉 A 헤더 — 진화하는 추구미 카드 프로필.
@@ -31,6 +31,7 @@ export default function TasteProfile() {
   }
 
   const { title, rarityPct } = computeTaste(affinity);
+  const alias = aliasFor(affinity);
   const settled = savedCount >= TASTE_CARD_THRESHOLD;
 
   return (
@@ -41,9 +42,11 @@ export default function TasteProfile() {
       <div className="text-[11px] font-semibold tracking-[2px] opacity-70">
         {settled ? "나의 추구미" : "선명해지는 중"}
       </div>
-      <div className="mt-2 text-[23px] font-extrabold leading-[1.25] tracking-[-0.5px]">
-        {title}
+      {/* 별칭이 주인공(큰 글씨), 축 조합명은 아래 작게 */}
+      <div className="mt-2 text-[22px] font-extrabold leading-[1.2] tracking-[-0.5px]">
+        {alias || title}
       </div>
+      {alias && <div className="mt-1 text-[12px] opacity-55">{title}</div>}
       <div className="mt-2 text-[12.5px] opacity-85">
         이 무드를 가진 사람, 전체의{" "}
         <span className="font-latin font-semibold">{rarityPct}%</span>

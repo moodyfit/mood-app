@@ -16,14 +16,9 @@ const ROTATING = [
   "멋있던 스샷 올려도 돼",
 ];
 
-// 7.9 1층: 추천 검색어 칩 — 일반 밥·상황 언어만. IP·실명 제외. (2~6번 슬롯)
-const CHIPS = [
-  "퇴근 남",
-  "꾸안꾸",
-  "주말 카페",
-  "면접인데 안 딱딱하게",
-  "동네 산책",
-];
+// 칩 구성 고정(#5): [오늘의 아무말 1] + [밈 3] + [상황어 2]. 밈→축 번역은 뒤에서만.
+const MEME_CHIPS = ["테토남 그 느낌", "느좋 그 자체", "남친룩"];
+const SITU_CHIPS = ["소개팅 깔끔하게", "퇴근 후 약속"];
 
 // C8 오늘의 아무말 칩 — 1번 슬롯 daily 로테이션(이상한 검색어). 스타일 동일, 내용만.
 const DAILY = [
@@ -54,7 +49,7 @@ export default function SearchScreen() {
     setDailyIdx(Math.floor(Date.now() / 86400000) % DAILY.length);
   }, []);
 
-  const chips = [DAILY[dailyIdx], ...CHIPS];
+  const chips = [DAILY[dailyIdx], ...MEME_CHIPS, ...SITU_CHIPS];
 
   function search(value: string) {
     const query = value.trim();
