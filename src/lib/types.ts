@@ -59,6 +59,13 @@ export interface SaveRecord {
 /** 프로필 무드 벡터 (7.6) — 저장·클릭 누적. moodKey → 가중치 */
 export type Affinity = Record<MoodKey, number>;
 
+/** 소유 아이템 (1.5.2 '내 옷' 결 — "샀어" 표시된 상품) */
+export interface OwnedItem {
+  id: string;
+  moodKey: MoodKey;
+  name: string;
+}
+
 /** 추구미 카드 계산 결과 */
 export interface TasteResult {
   title: string; // "클린 미니멀 × 웜톤 뉴트럴"

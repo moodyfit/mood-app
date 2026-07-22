@@ -5,6 +5,7 @@ import BackButton from "@/components/BackButton";
 import TasteProfile from "@/components/TasteProfile";
 import MoodMap from "@/components/MoodMap";
 import Room from "@/components/Room";
+import Closet from "@/components/Closet";
 import { useMoodStore } from "@/lib/store";
 
 /**
@@ -44,6 +45,11 @@ export default function SpacePage() {
           </Link>
         </>
       )}
+
+      {/* 소유 결 — 있으면 저장 여부와 무관하게 노출 */}
+      <div className="mt-8">
+        <Closet />
+      </div>
     </div>
   );
 }

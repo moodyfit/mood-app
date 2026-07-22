@@ -9,13 +9,14 @@ import {
   useRef,
   useState,
 } from "react";
-import type { Affinity, MoodKey, SaveRecord } from "./types";
+import type { Affinity, MoodKey, OwnedItem, SaveRecord } from "./types";
 import { TASTE_CARD_THRESHOLD } from "./taste";
 
 const K_SAVES = "mood.saves.v1";
 const K_CARD = "mood.cardIssued.v1";
 const K_AFFINITY = "mood.affinity.v1"; // 7.6 프로필 무드 벡터
 const K_SEARCH = "mood.searchCounts.v1"; // 7.8 검색 기억
+const K_OWNED = "mood.owned.v1"; // 1.5.2 '내 옷' 소유 결
 
 // 프로필 가중치: 저장은 클릭보다 강한 신호
 const W_SAVE = 2;
@@ -35,6 +36,9 @@ interface MoodStore {
   recordScanLike: (key: MoodKey) => void;
   recordSearch: (query: string) => void;
   searchCount: (query: string) => number;
+  owned: OwnedItem[];
+  isOwned: (id: string) => boolean;
+  toggleOwned: (item: OwnedItem) => void;
   cardEverIssued: boolean;
   cardOpen: boolean;
   openCard: () => void;
@@ -49,6 +53,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [saves, setSaves] = useState<SaveRecord[]>([]);
   const [affinity, setAffinity] = useState<Affinity>({});
   const [searchCounts, setSearchCounts] = useState<Record<string, number>>({});
+  const [owned, setOwned] = useState<OwnedItem[]>([]);
   const [cardEverIssued, setCardEverIssued] = useState(false);
   const [cardOpen, setCardOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -64,6 +69,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       if (a) setAffinity(JSON.parse(a));
       const q = localStorage.getItem(K_SEARCH);
       if (q) setSearchCounts(JSON.parse(q));
+      const o = localStorage.getItem(K_OWNED);
+      if (o) setOwned(JSON.parse(o));
       setCardEverIssued(localStorage.getItem(K_CARD) === "1");
     } catch {
       /* ignore */
@@ -78,10 +85,11 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(K_SAVES, JSON.stringify(saves));
       localStorage.setItem(K_AFFINITY, JSON.stringify(affinity));
       localStorage.setItem(K_SEARCH, JSON.stringify(searchCounts));
+      localStorage.setItem(K_OWNED, JSON.stringify(owned));
     } catch {
       /* ignore */
     }
-  }, [saves, affinity, searchCounts, hydrated]);
+  }, [saves, affinity, searchCounts, owned, hydrated]);
 
   const bump = useCallback((key: MoodKey, w: number) => {
     setAffinity((prev) => ({ ...prev, [key]: (prev[key] ?? 0) + w }));
@@ -145,6 +153,24 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     [searchCounts]
   );
 
+  const isOwned = useCallback(
+    (id: string) => owned.some((o) => o.id === id),
+    [owned]
+  );
+
+  const toggleOwned = useCallback(
+    (item: OwnedItem) => {
+      setOwned((prev) => {
+        if (prev.some((o) => o.id === item.id)) {
+          return prev.filter((o) => o.id !== item.id);
+        }
+        showToast("내 옷에 추가");
+        return [...prev, item];
+      });
+    },
+    [showToast]
+  );
+
   const value = useMemo<MoodStore>(
     () => ({
       saves,
@@ -156,6 +182,9 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       recordScanLike,
       recordSearch,
       searchCount,
+      owned,
+      isOwned,
+      toggleOwned,
       cardEverIssued,
       cardOpen,
       openCard: () => setCardOpen(true),
@@ -172,6 +201,9 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       recordScanLike,
       recordSearch,
       searchCount,
+      owned,
+      isOwned,
+      toggleOwned,
       cardEverIssued,
       cardOpen,
       toast,

@@ -11,8 +11,9 @@ export default function ProductRow({
   product: Product;
   muted?: boolean;
 }) {
-  const { showToast } = useMoodStore();
+  const { showToast, isOwned, toggleOwned } = useMoodStore();
   const cheapest = product.sources[0];
+  const owned = isOwned(product.id);
 
   function goTo(url?: string) {
     if (url) window.open(url, "_blank", "noopener");
@@ -57,24 +58,38 @@ export default function ProductRow({
         <div className="text-xl text-ink-faint">›</div>
       </button>
 
-      {/* 겹3② 판매처 횡단 가격 비교 (PCPartPicker 신뢰) */}
-      {product.sources.length > 1 && (
-        <div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1 border-t border-line pt-2.5">
-          {product.sources.map((s) => (
-            <button
-              key={s.name}
-              type="button"
-              onClick={() => goTo(s.affiliateUrl)}
-              className="flex items-baseline gap-1.5 text-[12px] text-ink-soft transition hover:text-ink"
-            >
-              <span>{s.name}</span>
-              <span className="font-latin tnum font-medium text-ink">
-                {formatPrice(s.price)}
-              </span>
-            </button>
-          ))}
+      {/* 겹3② 판매처 횡단 가격 비교 + 1.5.2 "샀어?" 소유 표시 */}
+      <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-line pt-2.5">
+        <div className="flex flex-wrap gap-x-3 gap-y-1">
+          {product.sources.length > 1 &&
+            product.sources.map((s) => (
+              <button
+                key={s.name}
+                type="button"
+                onClick={() => goTo(s.affiliateUrl)}
+                className="flex items-baseline gap-1.5 text-[12px] text-ink-soft transition hover:text-ink"
+              >
+                <span>{s.name}</span>
+                <span className="font-latin tnum font-medium text-ink">
+                  {formatPrice(s.price)}
+                </span>
+              </button>
+            ))}
         </div>
-      )}
+        <button
+          type="button"
+          onClick={() =>
+            toggleOwned({ id: product.id, moodKey: product.moodKey, name: product.name })
+          }
+          className={`flex-shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-medium transition ${
+            owned
+              ? "border-accent bg-accent text-white"
+              : "border-line text-ink-soft hover:border-accent"
+          }`}
+        >
+          {owned ? "✓ 내 옷" : "샀어"}
+        </button>
+      </div>
     </div>
   );
 }
