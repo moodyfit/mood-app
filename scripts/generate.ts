@@ -1,6 +1,8 @@
 /**
  * MOODFIT 무드 사진 배치 생성 (GENERATION.md).
- * 스택: fal.ai · fal-ai/flux/schnell (기본) · 896x1152(4:5). 인증: env FAL_KEY (.env, 하드코딩 금지).
+ * 스택: fal.ai · fal-ai/flux/schnell (기본). 인증: env FAL_KEY (.env, 하드코딩 금지).
+ * 비율 믹스(메이슨리 전시 문법): 4:5 기본 + 3:4/9:16 일부를 생성 단계에서 부여(약 7:2:1).
+ *   → 세로 리듬을 크롭이 아니라 캔버스 자체로 만든다(스트릿샷 구도 보존). aspect_ratio 를 gen_log 에 기록.
  *
  * 사용:
  *   npx tsx generate.ts test [--dry]                 §1 감성 테스트 5장 → images/_test/
@@ -24,7 +26,18 @@ const LOG = path.join(IMAGES, "gen_log.json");
 const args = process.argv.slice(2);
 const DRY = args.includes("--dry");
 const MODEL = args.includes("--dev") ? "fal-ai/flux/dev" : "fal-ai/flux/schnell";
-const SIZE = { width: 896, height: 1152 };
+// 비율 믹스: 4:5 기본 + 3:4/9:16 일부. 크롭 금지 — 캔버스 자체로 세로 변주(①).
+const SIZES = [
+  { width: 896, height: 1120, label: "4:5" }, // 0.800
+  { width: 864, height: 1152, label: "3:4" }, // 0.750
+  { width: 768, height: 1344, label: "9:16" }, // 0.571
+] as const;
+// 인덱스 기반 결정적 분포(재현성): 0~6 → 4:5, 7~8 → 3:4, 9 → 9:16 (약 7:2:1)
+function pickSize(i: number) {
+  const r = ((i % 10) + 10) % 10;
+  const s = r <= 6 ? SIZES[0] : r <= 8 ? SIZES[1] : SIZES[2];
+  return { ...s, ratio: +(s.width / s.height).toFixed(3) };
+}
 const COST_PER_IMG = MODEL.endsWith("schnell") ? 0.003 : 0.025; // USD 대략치(미리보기용)
 
 // 최소 .env 로더 (dotenv 무의존)
@@ -66,16 +79,21 @@ async function appendLog(entry: Record<string, unknown>) {
   await fs.writeFile(LOG, JSON.stringify(arr, null, 2));
 }
 
-async function genAndSave(prompt: string, outPath: string, meta: Record<string, unknown>) {
+async function genAndSave(
+  prompt: string,
+  outPath: string,
+  meta: Record<string, unknown>,
+  size: ReturnType<typeof pickSize>,
+) {
   const name = path.basename(outPath);
   if (DRY) {
-    console.log(`[dry] ${name}\n      ${prompt}\n`);
+    console.log(`[dry] ${name} · ${size.label}(${size.ratio})\n      ${prompt}\n`);
     return;
   }
   const res: any = await fal.subscribe(MODEL, {
     input: {
       prompt,
-      image_size: SIZE,
+      image_size: { width: size.width, height: size.height },
       num_images: 1,
       num_inference_steps: MODEL.endsWith("schnell") ? 4 : 28,
       enable_safety_checker: true,
@@ -86,18 +104,19 @@ async function genAndSave(prompt: string, outPath: string, meta: Record<string, 
   const buf = Buffer.from(await (await fetch(url)).arrayBuffer());
   await fs.mkdir(path.dirname(outPath), { recursive: true });
   await fs.writeFile(outPath, buf);
-  await appendLog({ file: path.relative(ROOT, outPath), prompt, model: MODEL, ...meta });
+  await appendLog({ file: path.relative(ROOT, outPath), prompt, model: MODEL, aspect_ratio: size.ratio, size: size.label, ...meta });
   console.log(`saved ${name}`);
 }
 
 async function runTest() {
   await fs.mkdir(TEST_DIR, { recursive: true });
-  const jobs = TEST_AXES.map((axis) => {
+  const jobs = TEST_AXES.map((axis, i) => {
     const { prompt, meta } = buildPrompt(axis, 0);
-    return { prompt, meta, out: path.join(TEST_DIR, `${axis}-test.png`) };
+    // 테스트는 축 순서로 비율을 흩어 3종을 눈으로 비교
+    return { prompt, meta, size: pickSize(i * 3), out: path.join(TEST_DIR, `${axis}-test.png`) };
   });
   console.log(`§1 감성 테스트 ${jobs.length}장 · ${MODEL} · 예상 $${(jobs.length * COST_PER_IMG).toFixed(3)}\n`);
-  for (const j of jobs) await genAndSave(j.prompt, j.out, j.meta);
+  for (const j of jobs) await genAndSave(j.prompt, j.out, j.meta, j.size);
 }
 
 async function runBatch(axis: string, count: number) {
@@ -105,8 +124,9 @@ async function runBatch(axis: string, count: number) {
   console.log(`batch ${axis} ${count}장 (${axis}-${String(start).padStart(3, "0")}~) · ${MODEL} · 예상 $${(count * COST_PER_IMG).toFixed(3)}\n`);
   for (let k = 0; k < count; k++) {
     const num = String(start + k).padStart(3, "0");
-    const { prompt, meta } = buildPrompt(axis, start + k - 1);
-    await genAndSave(prompt, path.join(IMAGES, `${axis}-${num}.png`), meta);
+    const idx = start + k - 1;
+    const { prompt, meta } = buildPrompt(axis, idx);
+    await genAndSave(prompt, path.join(IMAGES, `${axis}-${num}.png`), meta, pickSize(idx));
   }
 }
 

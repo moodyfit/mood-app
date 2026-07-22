@@ -7,22 +7,27 @@ import { useMoodStore } from "@/lib/store";
 import { lookTotal, formatMan } from "@/lib/products";
 
 /**
- * 무드 카드 (가이드라인 v2 §2·§4.2).
+ * 무드 카드 (가이드라인 v2 §2·§4.2) — 메이슨리 전시 문법.
  * 표준 제스처: 단일 탭=상세 이동 / 더블탭=저장(인스타 문법) / 롱프레스=해설.
- * 4:5, 라운드 16.
+ * size: "hero"(너의 결과 최상위, 전면폭) | "sm"(일반). 소형 카드는 완성가 라벨 생략(②).
  */
 export default function MoodCard({
   mood,
   query,
   hint = false,
+  size = "sm",
+  ratio = 0.75,
 }: {
   mood: Mood;
   query?: string;
   hint?: boolean;
+  size?: "hero" | "sm";
+  ratio?: number;
 }) {
   const router = useRouter();
   const { isSaved, toggleSave } = useMoodStore();
   const saved = isSaved(mood.key);
+  const hero = size === "hero";
 
   const [caption, setCaption] = useState(false);
   const [pop, setPop] = useState(false);
@@ -80,7 +85,8 @@ export default function MoodCard({
       onKeyDown={(e) => {
         if (e.key === "Enter") router.push(`/mood/${mood.key}`);
       }}
-      className="group relative block aspect-[4/5] cursor-pointer select-none overflow-hidden rounded-2xl transition active:scale-[0.98]"
+      style={{ aspectRatio: String(hero ? 0.78 : ratio) }}
+      className="group relative block w-full cursor-pointer select-none overflow-hidden rounded-2xl transition active:scale-[0.98]"
     >
       <div
         className="absolute inset-0"
@@ -115,10 +121,12 @@ export default function MoodCard({
         {saved ? "♥" : "♡"}
       </button>
 
-      {/* 모먼트 2: 무드 완성가 */}
-      <div className="absolute bottom-2 left-2 rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur">
-        이 느낌 완성 · <span className="tnum">{formatMan(lookTotal(mood.key))}</span>
-      </div>
+      {/* 모먼트 2: 무드 완성가 — hero에서만(소형 카드는 사진을 덮지 않음, ②). 상세에서 항상 노출 */}
+      {hero && (
+        <div className="absolute bottom-2 left-2 rounded-full bg-black/40 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur">
+          이 느낌 완성 · <span className="tnum">{formatMan(lookTotal(mood.key))}</span>
+        </div>
+      )}
 
       {/* 더블탭 저장 하트 팝 */}
       {pop && (

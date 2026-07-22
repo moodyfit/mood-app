@@ -3,27 +3,34 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Photo } from "@/lib/photos";
-import { photoUrl, dominantMood } from "@/lib/photos";
+import { photoUrl, dominantMood, cardRatio } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 
 /**
- * DB photos 카드.
+ * DB photos 카드 (메이슨리 = 전시 문법).
  * 단일 탭 = 무드 상세(살 수 있는 surface) / 롱프레스 = 해설 / 하트 = 저장.
- * 첫 카드(hint)는 해설을 밴드로 상시 노출 → 최강 무기(왜 멋있는지) 발견성 확보.
+ * size: "hero"(개인화 시각화 — 너의 결과 최상위 매치, 전면폭) | "sm"(일반).
+ * 해설 밴드는 hero/hint 카드에서만 → 소형 카드는 사진을 덮지 않음(액자 원칙 ②).
+ * 높이는 사진 실비율(cardRatio)로 — 크롭으로 세로를 위조하지 않음(①).
  */
 export default function PhotoCard({
   photo,
   query,
   hint = false,
+  size = "sm",
 }: {
   photo: Photo;
   query?: string;
   hint?: boolean;
+  size?: "hero" | "sm";
 }) {
   const router = useRouter();
   const { isSaved, toggleSave } = useMoodStore();
   const key = dominantMood(photo.mood_vector);
   const saved = isSaved(key);
+  const hero = size === "hero";
+  const showCaption = hero || hint;
+  const ratio = hero ? 0.78 : cardRatio(photo);
 
   const [caption, setCaption] = useState(false);
   const longTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -60,7 +67,8 @@ export default function PhotoCard({
       }}
       onContextMenu={(e) => e.preventDefault()}
       onKeyDown={(e) => key && e.key === "Enter" && router.push(`/mood/${key}`)}
-      className="group relative block aspect-[4/5] cursor-pointer select-none overflow-hidden rounded-2xl transition active:scale-[0.98]"
+      style={{ aspectRatio: String(ratio) }}
+      className="group relative block w-full cursor-pointer select-none overflow-hidden rounded-2xl transition active:scale-[0.98]"
     >
       <div
         className="absolute inset-0 bg-paper-2"
@@ -82,8 +90,8 @@ export default function PhotoCard({
         {saved ? "♥" : "♡"}
       </button>
 
-      {/* 첫 카드: 해설을 밴드로 상시 노출 (무기 발견성) */}
-      {hint && !caption && photo.caption_item && (
+      {/* hero/첫 카드: 해설을 밴드로 상시 노출 (무기 발견성). 소형 카드는 생략 → 탭 후 노출(②) */}
+      {showCaption && !caption && photo.caption_item && (
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-3 pt-8">
           <div className="text-[12.5px] font-medium text-white">{photo.caption_item}</div>
           <div className="mt-0.5 text-[11px] text-white/70">꾹 누르면 왜 멋진지 →</div>
