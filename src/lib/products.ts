@@ -12,46 +12,82 @@ import { MOODS } from "./moods";
  * 각 아이템은 2~3곳 판매처 + 카테고리 태그를 가진다.
  * (겹3② 횡단 가격 비교 = PCPartPicker 신뢰 / 7.10 자연 번역기의 카테고리 전제)
  */
-const ITEM_TEMPLATE: {
-  name: string;
-  category: ProductCategory;
-  sources: ProductSource[];
-}[] = [
+/**
+ * #8 예산 다이얼 — 슬롯(아우터/상의/하의/신발)마다 티어별 변형.
+ * 기본템 = 미드(is_default). 예산 다이얼이 같은 무드의 해당 티어로 슬롯을 교체.
+ * 티어 변형이 없는 슬롯은 미드 유지("이 슬롯은 그대로가 최선"). 로고 비전면 기본템.
+ * (로컬 6무드 = 간판 룩으로 취급, 티어 완비. 실데이터는 간판 10개만 완비 → hasDial)
+ */
+type Variant = { name: string; sources: ProductSource[] };
+const SLOTS: { category: ProductCategory; variants: Partial<Record<PriceTier, Variant>> }[] = [
   {
-    name: "셋업 자켓",
-    category: "아우터",
-    sources: [
-      { name: "번개장터", price: 72000 },
-      { name: "무신사", price: 89000 },
-      { name: "29CM", price: 94000 },
-    ],
+    category: "아우터", // 로우 대안 없음 → 5만에서 기본템 유지
+    variants: {
+      미드: { name: "셋업 자켓", sources: [{ name: "번개장터", price: 72000 }, { name: "무신사", price: 89000 }, { name: "29CM", price: 94000 }] },
+      하이: { name: "울 블레이저", sources: [{ name: "무신사", price: 159000 }, { name: "29CM", price: 179000 }] },
+    },
   },
   {
-    name: "코튼 니트",
     category: "상의",
-    sources: [
-      { name: "번개장터", price: 42000 },
-      { name: "무신사", price: 49000 },
-    ],
+    variants: {
+      로우: { name: "베이직 스웻", sources: [{ name: "유니클로", price: 19900 }, { name: "무신사", price: 24000 }] },
+      미드: { name: "코튼 니트", sources: [{ name: "번개장터", price: 42000 }, { name: "무신사", price: 49000 }] },
+      하이: { name: "메리노 니트", sources: [{ name: "무신사", price: 89000 }, { name: "29CM", price: 98000 }] },
+    },
   },
   {
-    name: "와이드 슬랙스",
     category: "하의",
-    sources: [
-      { name: "번개장터", price: 33000 },
-      { name: "무신사", price: 38000 },
-      { name: "29CM", price: 41000 },
-    ],
+    variants: {
+      로우: { name: "코튼 치노", sources: [{ name: "유니클로", price: 29900 }] },
+      미드: { name: "와이드 슬랙스", sources: [{ name: "번개장터", price: 33000 }, { name: "무신사", price: 38000 }, { name: "29CM", price: 41000 }] },
+      하이: { name: "울 슬랙스", sources: [{ name: "무신사", price: 79000 }, { name: "29CM", price: 89000 }] },
+    },
   },
   {
-    name: "레더 로퍼",
-    category: "신발",
-    sources: [
-      { name: "크림", price: 115000 },
-      { name: "무신사", price: 129000 },
-    ],
+    category: "신발", // 로우 대안 없음 → 5만에서 기본템 유지
+    variants: {
+      미드: { name: "레더 스니커", sources: [{ name: "무신사", price: 79000 }, { name: "크림", price: 89000 }] },
+      하이: { name: "레더 로퍼", sources: [{ name: "무신사", price: 145000 }, { name: "크림", price: 159000 }] },
+    },
   },
 ];
+
+export const DIAL_SLOT_COUNT = SLOTS.length;
+/** 슬롯 i에 해당 티어 대안이 있나 (없으면 기본템 유지) */
+export function slotHasTier(i: number, tier: PriceTier): boolean {
+  return Boolean(SLOTS[i]?.variants[tier]);
+}
+/** 예산 프리셋 → 목표 티어. 5만=로우 / 10만=미드 / 20만·상관없음=하이. 양방향 다이얼(상향 포함) */
+export function tierForBudget(won: number | null): PriceTier {
+  if (won == null) return "하이";
+  if (won <= 50000) return "로우";
+  if (won <= 100000) return "미드";
+  return "하이";
+}
+/** 티어별 대안 완비된 간판 룩만 다이얼 노출 (로컬 전체 true) */
+export function hasDial(moodKey: MoodKey): boolean {
+  return Boolean(MOODS[moodKey]);
+}
+/** 무드 룩을 특정 티어로 구성. 슬롯에 티어 없으면 미드(기본템) 폴백 */
+export function buildLook(moodKey: MoodKey, tier: PriceTier = "미드"): Product[] {
+  const mood = MOODS[moodKey];
+  if (!mood) return [];
+  return SLOTS.map((s, i) => {
+    // 해당 티어 대안이 없으면 미드로 폴백 — id도 실제 티어를 반영(스왑 안 된 슬롯은 리마운트/애니메이션 없음)
+    const resolvedTier: PriceTier = s.variants[tier] ? tier : "미드";
+    const v = s.variants[resolvedTier]!;
+    const sources = [...v.sources].sort((a, b) => a.price - b.price);
+    return {
+      id: `${moodKey}-${i}-${resolvedTier}`,
+      moodKey,
+      name: v.name,
+      category: s.category,
+      tier: tierOf(sources[0].price),
+      gradient: shiftGradient(mood.gradient, i),
+      sources,
+    };
+  });
+}
 
 function shiftGradient(gradient: string, i: number): string {
   const angles = [150, 30, 210, 300];
@@ -65,21 +101,9 @@ export function tierOf(won: number): PriceTier {
   return "하이";
 }
 
+/** 기본 룩 = 미드 티어(is_default). 완성가 라벨의 산식 기준 */
 export function productsFor(moodKey: MoodKey): Product[] {
-  const mood = MOODS[moodKey];
-  if (!mood) return [];
-  return ITEM_TEMPLATE.map((t, i) => {
-    const sources = [...t.sources].sort((a, b) => a.price - b.price);
-    return {
-      id: `${moodKey}-${i}`,
-      moodKey,
-      name: t.name,
-      category: t.category,
-      tier: tierOf(sources[0].price),
-      gradient: shiftGradient(mood.gradient, i),
-      sources,
-    };
-  });
+  return buildLook(moodKey, "미드");
 }
 
 /** 상품의 대표(최저) 가격 */

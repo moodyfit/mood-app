@@ -33,7 +33,7 @@ export default async function MoodDetailPage({
       </div>
 
       <WholeLook products={products} />
-      <ProductSection mood={mood} products={products} />
+      <ProductSection mood={mood} />
     </div>
   );
 }
