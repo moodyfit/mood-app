@@ -1,14 +1,15 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Photo } from "@/lib/photos";
 import { photoUrl, dominantMood } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 
 /**
- * DB photos 카드 (마일스톤: 그리드가 Supabase에서 뜸).
- * 완성가 라벨 없음(products 비어 있음). 롱프레스=해설(caption_item/why), 더블탭/하트=저장.
- * 저장/프로필은 mood_vector 최상위 축으로 적재.
+ * DB photos 카드.
+ * 단일 탭 = 무드 상세(살 수 있는 surface) / 롱프레스 = 해설 / 하트 = 저장.
+ * 첫 카드(hint)는 해설을 밴드로 상시 노출 → 최강 무기(왜 멋있는지) 발견성 확보.
  */
 export default function PhotoCard({
   photo,
@@ -19,6 +20,7 @@ export default function PhotoCard({
   query?: string;
   hint?: boolean;
 }) {
+  const router = useRouter();
   const { isSaved, toggleSave } = useMoodStore();
   const key = dominantMood(photo.mood_vector);
   const saved = isSaved(key);
@@ -37,28 +39,33 @@ export default function PhotoCard({
   function up() {
     if (longTimer.current) clearTimeout(longTimer.current);
     setCaption(false);
+    if (longPressed.current) {
+      longPressed.current = false;
+      return;
+    }
+    if (key) router.push(`/mood/${key}`);
   }
 
   const url = photoUrl(photo.image_url);
 
   return (
     <div
+      role="link"
+      tabIndex={0}
       onPointerDown={down}
       onPointerUp={up}
-      onPointerLeave={up}
+      onPointerLeave={() => {
+        if (longTimer.current) clearTimeout(longTimer.current);
+        setCaption(false);
+      }}
       onContextMenu={(e) => e.preventDefault()}
-      className="group relative block aspect-[4/5] select-none overflow-hidden rounded-2xl"
+      onKeyDown={(e) => key && e.key === "Enter" && router.push(`/mood/${key}`)}
+      className="group relative block aspect-[4/5] cursor-pointer select-none overflow-hidden rounded-2xl transition active:scale-[0.98]"
     >
       <div
         className="absolute inset-0 bg-paper-2"
         style={url ? { backgroundImage: `url(${url})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
       />
-
-      {hint && !caption && (
-        <div className="absolute left-2.5 top-2.5 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-ink">
-          꾹 눌러봐
-        </div>
-      )}
 
       <button
         type="button"
@@ -75,7 +82,15 @@ export default function PhotoCard({
         {saved ? "♥" : "♡"}
       </button>
 
-      {/* 해설 (길게 눌러 해줌) */}
+      {/* 첫 카드: 해설을 밴드로 상시 노출 (무기 발견성) */}
+      {hint && !caption && photo.caption_item && (
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-3 pt-8">
+          <div className="text-[12.5px] font-medium text-white">{photo.caption_item}</div>
+          <div className="mt-0.5 text-[11px] text-white/70">꾹 누르면 왜 멋진지 →</div>
+        </div>
+      )}
+
+      {/* 롱프레스 해설 (전문) */}
       <div
         className={`absolute inset-0 flex flex-col justify-end gap-1 p-3 text-white transition-opacity duration-150 ${
           caption ? "opacity-100" : "pointer-events-none opacity-0"

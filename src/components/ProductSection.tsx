@@ -24,7 +24,7 @@ export default function ProductSection({
 
   // 기본 '상관없음'(전체) = won null
   const [budget, setBudget] = useState<number | null>(null);
-  const fit = fitLookToBudget(mood.key, budget);
+  const fit = fitLookToBudget(products, budget);
   const trimmed = budget != null && fit.dropped.length > 0;
 
   const reason = saved

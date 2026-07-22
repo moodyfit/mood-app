@@ -1,9 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useMoodStore } from "@/lib/store";
 import { computeTaste } from "@/lib/taste";
 
 export default function TasteCardModal() {
+  const router = useRouter();
   const { cardOpen, closeCard, affinity } = useMoodStore();
   if (!cardOpen) return null;
 
@@ -54,12 +56,16 @@ export default function TasteCardModal() {
           이름을 몰랐을 뿐.
         </div>
 
+        {/* 카드 = 종착지가 아니라 개인화 출입구 (원칙 1.7: 실용 요약 → 다음 행동) */}
         <button
           type="button"
-          onClick={closeCard}
+          onClick={() => {
+            closeCard();
+            router.push("/results?you=1");
+          }}
           className="mt-5 w-full rounded-[10px] bg-white py-3.5 text-sm font-bold text-ink"
         >
-          계속 보기
+          이 추구미로 다시 보기
         </button>
       </div>
     </div>

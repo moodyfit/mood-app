@@ -11,19 +11,20 @@ export const dynamic = "force-dynamic";
 export default async function ResultsPage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: { q?: string; you?: string };
 }) {
   const q = searchParams.q ?? "";
+  const you = searchParams.you === "1"; // 추구미 카드 → "이 추구미로 다시 보기"
 
-  // 마일스톤: Supabase 설정 시 그리드를 photos(DB)에서. 미설정/빈 결과면 로컬 폴백.
   if (isSupabaseEnabled()) {
     const photos = await fetchPhotos();
     if (photos.length > 0) {
-      const ranked = rankPhotos(photos, resolveMoods(q));
+      // you 모드: 검색어 랭킹 없이 프로필(너의 결과)로 정렬 — 클라에서 affinity 적용
+      const ranked = you ? photos : rankPhotos(photos, resolveMoods(q));
       return (
         <div className="animate-fade px-5 pb-12">
           <BackButton href="/" />
-          <PhotoGrid photos={ranked} query={q} />
+          <PhotoGrid photos={ranked} query={q} you={you} />
         </div>
       );
     }
@@ -32,7 +33,7 @@ export default async function ResultsPage({
   return (
     <div className="animate-fade px-5 pb-12">
       <BackButton href="/" />
-      <ResultsGrid query={q} />
+      <ResultsGrid query={q} you={you} />
     </div>
   );
 }

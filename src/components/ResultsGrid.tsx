@@ -3,50 +3,43 @@
 import { useState } from "react";
 import MoodCard from "./MoodCard";
 import SearchMemory from "./SearchMemory";
-import { MOODS, resolveMoods } from "@/lib/moods";
+import { MOODS, ALL_MOOD_KEYS, resolveMoods } from "@/lib/moods";
 import { personalizeOrder, topShare, SKEW_THRESHOLD } from "@/lib/taste";
 import { useMoodStore } from "@/lib/store";
 
 /**
- * 모먼트 3 + 7.6: [모두의 결과 ↔ 너의 결과] 토글.
- * · 모두의 결과 = 검색어→사진 일치도(중립, 인기순 아님)
- * · 너의 결과 = 일치도 × (1+프로필 가중치) 재정렬
- * · 토글은 카드 발급 이후 + 프로필이 특정 축에 의미있게 쏠렸을 때만 노출
+ * 모먼트 3 + 7.6: [모두의 결과 ↔ 너의 결과] 토글. (로컬 폴백 그리드)
+ * you=true(추구미 카드 진입): 검색어 없이 전체를 프로필로 정렬.
  */
-export default function ResultsGrid({ query }: { query: string }) {
+export default function ResultsGrid({ query, you = false }: { query: string; you?: boolean }) {
   const { cardEverIssued, affinity } = useMoodStore();
-  const [personal, setPersonal] = useState(false);
+  const [personal, setPersonal] = useState(you);
 
-  const base = resolveMoods(query); // 실패 없는 폴백 보장
+  const base = you ? [...ALL_MOOD_KEYS] : resolveMoods(query);
   const ordered = personal ? personalizeOrder(base, affinity) : base;
-  const showToggle = cardEverIssued && topShare(affinity) >= SKEW_THRESHOLD;
+  const showToggle = you || (cardEverIssued && topShare(affinity) >= SKEW_THRESHOLD);
 
   return (
     <div>
-      {/* 모먼트 1: "내 말을 알아들었다" — 검색어와 결과를 잇는 표식 */}
       <h2 className="mb-4 text-[20px] font-bold tracking-[-0.4px]">
-        ‘{query}’ 느낌
+        {you ? "너의 추구미로 골라봤어" : `‘${query}’ 느낌`}
       </h2>
 
-      <SearchMemory query={query} />
+      {!you && <SearchMemory query={query} />}
 
       {showToggle && (
         <div className="mb-4 inline-flex rounded-full border border-line p-1 text-[13px]">
           <button
             type="button"
             onClick={() => setPersonal(false)}
-            className={`rounded-full px-3.5 py-1.5 transition ${
-              !personal ? "bg-accent text-white" : "text-ink-soft"
-            }`}
+            className={`rounded-full px-3.5 py-1.5 transition ${!personal ? "bg-accent text-white" : "text-ink-soft"}`}
           >
             모두의 결과
           </button>
           <button
             type="button"
             onClick={() => setPersonal(true)}
-            className={`rounded-full px-3.5 py-1.5 transition ${
-              personal ? "bg-accent text-white" : "text-ink-soft"
-            }`}
+            className={`rounded-full px-3.5 py-1.5 transition ${personal ? "bg-accent text-white" : "text-ink-soft"}`}
           >
             너의 결과
           </button>

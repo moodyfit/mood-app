@@ -3,12 +3,11 @@
 import { useEffect } from "react";
 import type { Mood } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
-import { lookTotal, formatMan } from "@/lib/products";
+import { formatMan } from "@/lib/products";
 
-export default function MoodHero({ mood }: { mood: Mood }) {
+export default function MoodHero({ mood, total }: { mood: Mood; total: number }) {
   const { isSaved, toggleSave, recordView } = useMoodStore();
   const saved = isSaved(mood.key);
-  const total = lookTotal(mood.key); // 모먼트 2: 무드 완성가
 
   // 7.6 프로필 누적: 무드 상세 조회도 취향 신호
   useEffect(() => {

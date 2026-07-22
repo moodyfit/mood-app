@@ -1,4 +1,6 @@
 import { getSupabase } from "./supabase";
+import type { MoodKey, Product } from "./types";
+import { productsFor, tierOf } from "./products";
 
 /** 라이브 photos 테이블 (태깅 스키마) */
 export interface Photo {
@@ -33,6 +35,53 @@ export async function fetchPhotos(): Promise<Photo[]> {
 /** mood_vector 최상위 축 */
 export function dominantMood(v: Record<string, number>): string {
   return Object.entries(v ?? {}).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "";
+}
+
+interface ProductRow {
+  name: string;
+  category: string;
+  price: number;
+  source: string;
+  gradient: string;
+  affiliate_url: string | null;
+}
+
+/** DB products(아이템×판매처 행)를 무드별로 조회해 Product[](sources 묶음)로 그룹 */
+export async function fetchProductsByMood(moodKey: MoodKey): Promise<Product[]> {
+  const sb = getSupabase();
+  if (!sb) return [];
+  const { data, error } = await sb
+    .from("products")
+    .select("name,category,price,source,gradient,affiliate_url")
+    .eq("mood_key", moodKey);
+  if (error || !data) return [];
+
+  const byName = new Map<string, Product>();
+  for (const r of data as ProductRow[]) {
+    let p = byName.get(r.name);
+    if (!p) {
+      p = {
+        id: `${moodKey}-${r.name}`,
+        moodKey,
+        name: r.name,
+        category: r.category as Product["category"],
+        tier: tierOf(r.price),
+        gradient: r.gradient,
+        sources: [],
+      };
+      byName.set(r.name, p);
+    }
+    p.sources.push({ name: r.source, price: r.price, affiliateUrl: r.affiliate_url ?? undefined });
+  }
+  const list = [...byName.values()];
+  for (const p of list) p.sources.sort((a, b) => a.price - b.price);
+  return list;
+}
+
+/** DB에 있으면 DB, 없으면 로컬 시드 (살 수 있다 완결 — 시딩 전엔 로컬 데모, 시딩 후 DB) */
+export async function getProductsForMood(moodKey: MoodKey): Promise<Product[]> {
+  const db = await fetchProductsByMood(moodKey);
+  return db.length > 0 ? db : productsFor(moodKey);
 }
 
 /**

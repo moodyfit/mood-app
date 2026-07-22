@@ -67,13 +67,21 @@ export default function TasteProfile() {
       </div>
 
       {settled && (
-        <button
-          type="button"
-          onClick={openCard}
-          className="mt-4 w-full rounded-[10px] border border-white/25 py-2.5 text-[13px] font-semibold text-white/90 transition hover:bg-white/10"
-        >
-          추구미 카드 크게 보기
-        </button>
+        <div className="mt-4 flex gap-2">
+          <Link
+            href="/results?you=1"
+            className="flex-1 rounded-[10px] bg-white py-2.5 text-center text-[13px] font-bold text-ink"
+          >
+            이 추구미로 다시 보기
+          </Link>
+          <button
+            type="button"
+            onClick={openCard}
+            className="rounded-[10px] border border-white/25 px-3 py-2.5 text-[13px] font-semibold text-white/90 transition hover:bg-white/10"
+          >
+            카드
+          </button>
+        </div>
       )}
     </div>
   );

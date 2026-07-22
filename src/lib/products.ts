@@ -126,10 +126,9 @@ export interface FitResult {
  * budget=null(상관없음) → 전체 포함. 초과 시 아이템 절출을 제안(7.10.3).
  */
 export function fitLookToBudget(
-  moodKey: MoodKey,
+  products: Product[],
   budget: number | null
 ): FitResult {
-  const products = productsFor(moodKey);
   if (budget == null) {
     return {
       includedIds: new Set(products.map((p) => p.id)),

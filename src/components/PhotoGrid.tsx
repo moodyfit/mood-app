@@ -8,25 +8,28 @@ import PhotoCard from "./PhotoCard";
 
 /**
  * DB photos 그리드 + 모먼트3 [모두의 결과 ↔ 너의 결과] 토글.
- * · 모두의 결과 = 서버가 검색어로 랭킹한 순서(중립)
- * · 너의 결과 = 프로필 벡터(affinity)로 mood_vector 재랭킹
- * · 토글은 카드 발급 이후 + 취향이 쏠렸을 때만 (7.6)
+ * you=true(추구미 카드 진입): 처음부터 '너의 결과'로, 헤더도 개인화 문구.
  */
-export default function PhotoGrid({ photos, query }: { photos: Photo[]; query: string }) {
+export default function PhotoGrid({
+  photos,
+  query,
+  you = false,
+}: {
+  photos: Photo[];
+  query: string;
+  you?: boolean;
+}) {
   const { affinity, cardEverIssued } = useMoodStore();
-  const [personal, setPersonal] = useState(false);
+  const [personal, setPersonal] = useState(you);
 
-  const showToggle = cardEverIssued && topShare(affinity) >= SKEW_THRESHOLD;
+  const showToggle = you || (cardEverIssued && topShare(affinity) >= SKEW_THRESHOLD);
 
   const ordered =
-    personal && showToggle
+    personal
       ? [...photos]
           .map((p) => ({
             p,
-            s: Object.entries(p.mood_vector ?? {}).reduce(
-              (a, [k, v]) => a + (affinity[k] ?? 0) * v,
-              0
-            ),
+            s: Object.entries(p.mood_vector ?? {}).reduce((a, [k, v]) => a + (affinity[k] ?? 0) * v, 0),
           }))
           .sort((a, b) => b.s - a.s)
           .map((x) => x.p)
@@ -34,7 +37,9 @@ export default function PhotoGrid({ photos, query }: { photos: Photo[]; query: s
 
   return (
     <div>
-      <h2 className="mb-4 text-[20px] font-bold tracking-[-0.4px]">‘{query}’ 느낌</h2>
+      <h2 className="mb-4 text-[20px] font-bold tracking-[-0.4px]">
+        {you ? "너의 추구미로 골라봤어" : `‘${query}’ 느낌`}
+      </h2>
 
       {showToggle && (
         <div className="mb-4 inline-flex rounded-full border border-line p-1 text-[13px]">
