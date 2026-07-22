@@ -6,6 +6,7 @@ import SearchMemory from "./SearchMemory";
 import { MOODS, ALL_MOOD_KEYS, resolveMoods } from "@/lib/moods";
 import { personalizeOrder, topShare, SKEW_THRESHOLD } from "@/lib/taste";
 import { useMoodStore } from "@/lib/store";
+import GridTail from "./GridTail";
 
 /**
  * 모먼트 3 + 7.6: [모두의 결과 ↔ 너의 결과] 토글. (로컬 폴백 메이슨리)
@@ -68,7 +69,7 @@ export default function ResultsGrid({ query, you = false }: { query: string; you
         })}
       </div>
 
-      <p className="mt-6 text-center text-[12px] text-ink-faint">여기까지 · {ordered.length}개</p>
+      <GridTail query={query} count={ordered.length} unit="개" />
     </div>
   );
 }

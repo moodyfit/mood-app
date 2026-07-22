@@ -90,11 +90,18 @@ export default function PhotoCard({
         {saved ? "♥" : "♡"}
       </button>
 
-      {/* hero/첫 카드: 해설을 밴드로 상시 노출 (무기 발견성). 소형 카드는 생략 → 탭 후 노출(②) */}
+      {/* hero/첫 카드: 해설을 '펼쳐서' 상시 노출 (v2.6 1번 사진 해설 펼침 + §7.10 무기#1).
+          왜 멋있는지를 롱프레스 없이 즉시 보여 최강 무기를 전면화. 소형 일반 카드는 생략(②) */}
       {showCaption && !caption && photo.caption_item && (
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-3 pt-8">
-          <div className="text-[12.5px] font-medium text-white">{photo.caption_item}</div>
-          <div className="mt-0.5 text-[11px] text-white/70">꾹 누르면 왜 멋진지 →</div>
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
+          <div className="text-[12.5px] font-semibold text-white">{photo.caption_item}</div>
+          {photo.caption_why ? (
+            <div className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-white/85">
+              {photo.caption_why}
+            </div>
+          ) : (
+            <div className="mt-0.5 text-[11px] text-white/70">꾹 누르면 왜 멋진지 →</div>
+          )}
         </div>
       )}
 

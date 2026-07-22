@@ -5,6 +5,7 @@ import type { Photo } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 import { topShare, SKEW_THRESHOLD } from "@/lib/taste";
 import PhotoCard from "./PhotoCard";
+import GridTail from "./GridTail";
 
 /**
  * DB photos 메이슨리 + 모먼트3 [모두의 결과 ↔ 너의 결과] 토글.
@@ -83,8 +84,8 @@ export default function PhotoGrid({
         ))}
       </div>
 
-      {/* 유한 구경(③): 끝을 명시 — 무한 스크롤 아님 */}
-      <p className="mt-6 text-center text-[12px] text-ink-faint">여기까지 · {ordered.length}장</p>
+      {/* 유한 구경(③) + v2.6 검색어 제안: 무한 스크롤 대신 재검색 유도 */}
+      <GridTail query={query} count={ordered.length} unit="장" />
     </div>
   );
 }

@@ -101,9 +101,10 @@ export default function MoodCard({
       />
       {!mood.imageUrl && <div className="grain" />}
 
+      {/* 첫 카드: 해설을 펼쳐서 상시 노출 (v2.6 1번 사진 해설 펼침). 롱프레스 학습은 덤 */}
       {hint && !caption && (
-        <div className="absolute left-2.5 top-2.5 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-ink">
-          꾹 눌러봐
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
+          <div className="line-clamp-2 text-[11.5px] leading-relaxed text-white/90">{mood.caption}</div>
         </div>
       )}
 
