@@ -17,6 +17,7 @@ const K_CARD = "mood.cardIssued.v1";
 const K_AFFINITY = "mood.affinity.v1"; // 7.6 프로필 무드 벡터
 const K_SEARCH = "mood.searchCounts.v1"; // 7.8 검색 기억
 const K_OWNED = "mood.owned.v1"; // 1.5.2 '내 옷' 소유 결
+const K_SCAN = "mood.scanDone.v1"; // 스캔 1회 완료 — 이후 스캔 탭은 전시 기본, 원할 때만 재스캔
 
 // 프로필 가중치: 저장은 클릭보다 강한 신호
 const W_SAVE = 2;
@@ -43,6 +44,9 @@ interface MoodStore {
   cardOpen: boolean;
   openCard: () => void;
   closeCard: () => void;
+  scanDone: boolean;
+  markScanDone: () => void;
+  hydrated: boolean;
   toast: string | null;
   showToast: (msg: string) => void;
 }
@@ -56,6 +60,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [owned, setOwned] = useState<OwnedItem[]>([]);
   const [cardEverIssued, setCardEverIssued] = useState(false);
   const [cardOpen, setCardOpen] = useState(false);
+  const [scanDone, setScanDone] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -72,6 +77,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       const o = localStorage.getItem(K_OWNED);
       if (o) setOwned(JSON.parse(o));
       setCardEverIssued(localStorage.getItem(K_CARD) === "1");
+      setScanDone(localStorage.getItem(K_SCAN) === "1");
     } catch {
       /* ignore */
     }
@@ -142,6 +148,15 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     [bump]
   );
 
+  const markScanDone = useCallback(() => {
+    setScanDone(true);
+    try {
+      localStorage.setItem(K_SCAN, "1");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   const recordSearch = useCallback((query: string) => {
     const q = normalizeQuery(query);
     if (!q) return;
@@ -189,6 +204,9 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       cardOpen,
       openCard: () => setCardOpen(true),
       closeCard: () => setCardOpen(false),
+      scanDone,
+      markScanDone,
+      hydrated,
       toast,
       showToast,
     }),
@@ -206,6 +224,9 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       toggleOwned,
       cardEverIssued,
       cardOpen,
+      scanDone,
+      markScanDone,
+      hydrated,
       toast,
       showToast,
     ]

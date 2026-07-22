@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ALL_MOOD_KEYS, MOODS } from "@/lib/moods";
 import { computeTaste, personalizeOrder } from "@/lib/taste";
@@ -9,36 +9,62 @@ import MoodCard from "./MoodCard";
 
 /**
  * 7.10 3초 취향 스캔 — 질문 0개. 사진 좋아/별로만으로 취향 방향을 잡는다.
- * 온보딩(설문)을 제거. '좋아'는 프로필 벡터에 적재(recordScanLike) → 즉시 방향 그리드.
- * 스와이프=고르는 모드(스캔), 그리드=사는 모드(메인)로 역할 분리.
+ * 덱(고르는 모드)은 '처음 1회'만 강제. 이후 스캔 탭은 전시(그리드)가 기본,
+ * '다시 스캔'으로 원할 때만 재실행. '좋아'는 프로필 벡터에 적재(recordScanLike).
  */
 export default function ScanDeck() {
-  const { recordScanLike, affinity } = useMoodStore();
+  const { recordScanLike, affinity, scanDone, markScanDone, hydrated } = useMoodStore();
   const [i, setI] = useState(0);
-  const [likes, setLikes] = useState(0);
+  const [rescanning, setRescanning] = useState(false);
 
   const deck = ALL_MOOD_KEYS;
   const done = i >= deck.length;
+  // 덱을 보여줄 조건: 아직 1회도 안 했거나(최초) 사용자가 다시 스캔을 눌렀을 때
+  const scanning = rescanning || !scanDone;
+
+  // 덱을 끝까지 넘기면 완료 기록 + 재스캔 종료 → 전시로 전환
+  useEffect(() => {
+    if (scanning && done) {
+      markScanDone();
+      setRescanning(false);
+    }
+  }, [scanning, done, markScanDone]);
 
   function like(key: string) {
     recordScanLike(key);
-    setLikes((n) => n + 1);
     setI((n) => n + 1);
   }
   function skip() {
     setI((n) => n + 1);
   }
+  function restart() {
+    setI(0);
+    setRescanning(true);
+  }
 
-  if (done) {
+  // 하이드레이션 전에는 렌더 보류(전시/덱 깜빡임 방지)
+  if (!hydrated) return null;
+
+  // ── 전시 모드 (기본): 스캔 1회 완료 후, 또는 재스캔 종료 후 ──
+  if (!scanning || done) {
     const { title } = computeTaste(affinity);
     const ordered = personalizeOrder([...ALL_MOOD_KEYS], affinity);
-    // 스캔 결과는 개인화 → 최상위 매치를 전면폭 히어로(크기=적합도)
-    const heroKey = likes > 0 && ordered.length > 3 ? ordered[0] : null;
+    // 개인화 신호(title)가 있으면 최상위 매치를 전면폭 히어로(크기=적합도)
+    const heroKey = title && ordered.length > 3 ? ordered[0] : null;
     const restKeys = heroKey ? ordered.slice(1) : ordered;
     return (
       <div className="animate-fade">
-        <div className="text-[20px] font-bold tracking-[-0.4px]">
-          {likes > 0 && title ? `너는 지금 ${title} 쪽` : "일단 눈에 드는 것부터"}
+        <div className="flex items-start justify-between gap-3">
+          <div className="text-[20px] font-bold tracking-[-0.4px]">
+            {title ? `너는 지금 ${title} 쪽` : "눈에 드는 것부터"}
+          </div>
+          <button
+            type="button"
+            onClick={restart}
+            className="mt-1 flex-shrink-0 rounded-full border border-line px-3 py-1.5 text-[12.5px] text-ink-soft transition hover:border-accent"
+          >
+            다시 스캔
+          </button>
         </div>
 
         {heroKey && MOODS[heroKey] && (
@@ -58,6 +84,7 @@ export default function ScanDeck() {
             );
           })}
         </div>
+
         <Link
           href="/space"
           className="mt-6 block rounded-[10px] bg-accent py-3.5 text-center text-sm font-bold text-white"
@@ -68,6 +95,7 @@ export default function ScanDeck() {
     );
   }
 
+  // ── 덱 모드: 최초 1회(또는 재스캔 중) ──
   const mood = MOODS[deck[i]];
 
   return (
