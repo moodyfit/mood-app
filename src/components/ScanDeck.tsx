@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ALL_MOOD_KEYS, MOODS } from "@/lib/moods";
-import { computeTaste, personalizeOrder } from "@/lib/taste";
+import { aliasCore, aliasScanHeadline, moodAliasCore, personalizeOrder } from "@/lib/taste";
 import { useMoodStore } from "@/lib/store";
 import { haptic } from "@/lib/haptic";
 import MoodCard from "./MoodCard";
@@ -54,8 +54,8 @@ export default function ScanDeck() {
   const observation =
     liked.length === 0
       ? null
-      : streak >= 2 && MOODS[last]
-        ? `지금 ${MOODS[last].name} ${streak}연속`
+      : streak >= 2 && moodAliasCore(last)
+        ? `지금 ${moodAliasCore(last)} 쪽 ${streak}연속`
         : `${liked.length}개 골랐어`;
 
   // 하이드레이션 전에는 렌더 보류(전시/덱 깜빡임 방지)
@@ -63,16 +63,16 @@ export default function ScanDeck() {
 
   // ── 전시 모드 (기본): 스캔 1회 완료 후, 또는 재스캔 종료 후 ──
   if (!scanning || done) {
-    const { title } = computeTaste(affinity);
+    const core = aliasCore(affinity);
     const ordered = personalizeOrder([...ALL_MOOD_KEYS], affinity);
-    // 개인화 신호(title)가 있으면 최상위 매치를 전면폭 히어로(크기=적합도)
-    const heroKey = title && ordered.length > 3 ? ordered[0] : null;
+    // 개인화 신호(별칭)가 있으면 최상위 매치를 전면폭 히어로(크기=적합도)
+    const heroKey = core && ordered.length > 3 ? ordered[0] : null;
     const restKeys = heroKey ? ordered.slice(1) : ordered;
     return (
       <div className="animate-fade">
         <div className="flex items-start justify-between gap-3">
           <div className="text-[20px] font-bold tracking-[-0.4px]">
-            {title ? `너는 지금 ${title} 쪽` : "눈에 드는 것부터"}
+            {aliasScanHeadline(affinity) || "눈에 드는 것부터"}
           </div>
           <button
             type="button"

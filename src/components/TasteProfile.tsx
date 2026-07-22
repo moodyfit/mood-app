@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMoodStore } from "@/lib/store";
-import { computeTaste, aliasFor, TASTE_CARD_THRESHOLD } from "@/lib/taste";
+import { computeTaste, aliasType, TASTE_CARD_THRESHOLD } from "@/lib/taste";
 
 /**
  * 컨셉 A 헤더 — 진화하는 추구미 카드 프로필.
@@ -31,7 +31,7 @@ export default function TasteProfile() {
   }
 
   const { title, rarityPct } = computeTaste(affinity);
-  const alias = aliasFor(affinity);
+  const alias = aliasType(affinity);
   const settled = savedCount >= TASTE_CARD_THRESHOLD;
 
   return (

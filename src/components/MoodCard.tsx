@@ -84,7 +84,7 @@ export default function MoodCard({
     <div
       role="link"
       tabIndex={0}
-      aria-label={`${mood.name} 무드 보기`}
+      aria-label="무드 보기"
       onPointerDown={down}
       onPointerUp={up}
       onPointerLeave={() => {

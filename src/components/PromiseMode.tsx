@@ -6,6 +6,7 @@ import BackButton from "./BackButton";
 import { resolveMoods, MOODS } from "@/lib/moods";
 import type { Mood } from "@/lib/types";
 import { productsFor, fitLookToBudget, formatMan, BUDGETS } from "@/lib/products";
+import { moodAliasType } from "@/lib/taste";
 
 /**
  * 약속 모드 (★ v1) — 상황·언제·예산 → 완성 조합 2~3개 택일. "3분 안에 결정 끝."
@@ -96,7 +97,7 @@ export default function PromiseMode() {
                 >
                   <div className="h-20 w-16 flex-shrink-0 rounded-xl" style={cover(mood)} />
                   <div className="min-w-0 flex-1">
-                    <div className="text-[15px] font-bold">{mood.name}</div>
+                    <div className="text-[15px] font-bold">{moodAliasType(k)}</div>
                     <div className="mt-0.5 line-clamp-1 text-[12.5px] text-ink-soft">{mood.description}</div>
                     <div className="mt-1 text-[13px]">
                       이 느낌 완성 ·{" "}

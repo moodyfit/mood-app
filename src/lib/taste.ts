@@ -37,35 +37,37 @@ export function computeTaste(affinity: Affinity): TasteResult {
  * 단일 지배(상위축 0.7+) → 1축 별칭, 아니면 상위 2축 조합 별칭(순서 무관).
  * ⚠ 밈→축 번역 수식은 절대 노출 금지 — 여기서 나오는 건 오직 별칭 문자열.
  */
+// 별칭 core(어미 '타입'/'쪽' 없는 알맹이). 표면별 어형은 아래 함수가 붙인다.
 const SINGLE_ALIAS: Record<MoodKey, string> = {
-  clean: "군더더기 없는 타입",
-  cityboy: "힘 뺀 게 멋인 타입",
-  street: "크게 입는 타입",
-  amekaji: "빈티지가 체질인 타입",
-  classic: "각 잡힌 게 편한 타입",
-  soft: "순한 인상이 무기인 타입",
+  clean: "군더더기 없는",
+  cityboy: "힘 뺀 게 멋인",
+  street: "크게 입는",
+  amekaji: "빈티지가 체질인",
+  classic: "각 잡힌 게 편한",
+  soft: "순한 인상이 무기인",
 };
 
 // 키 = 두 축을 알파벳 정렬해 조인(순서 무관 조회)
 const COMBO_ALIAS: Record<string, string> = {
-  "cityboy|clean": "힘 뺐는데 정돈된 타입",
-  "clean|street": "깔끔한데 심심하진 않은 타입",
-  "amekaji|clean": "단정한데 낡은 멋 아는 타입",
-  "classic|clean": "각 잡을 줄 아는 타입",
-  "clean|soft": "순한맛인데 정돈된 타입",
-  "cityboy|street": "여유롭게 노는 타입",
-  "amekaji|cityboy": "꾸민 듯 안 꾸민 타입",
-  "cityboy|classic": "셋업도 청바지처럼 입는 타입",
-  "cityboy|soft": "동네에서 제일 편해 보이는 타입",
-  "amekaji|street": "낡고 큰 게 멋인 타입",
-  "classic|street": "정장에 스니커 신는 타입",
-  "soft|street": "부드러운데 힘 있는 타입",
-  "amekaji|classic": "오래된 게 잘 어울리는 타입",
-  "amekaji|soft": "니트에 데님이 국룰인 타입",
-  "classic|soft": "코트가 잘 어울리는 타입",
+  "cityboy|clean": "힘 뺐는데 정돈된",
+  "clean|street": "깔끔한데 심심하진 않은",
+  "amekaji|clean": "단정한데 낡은 멋 아는",
+  "classic|clean": "각 잡을 줄 아는",
+  "clean|soft": "순한맛인데 정돈된",
+  "cityboy|street": "여유롭게 노는",
+  "amekaji|cityboy": "꾸민 듯 안 꾸민",
+  "cityboy|classic": "셋업도 청바지처럼 입는",
+  "cityboy|soft": "동네에서 제일 편해 보이는",
+  "amekaji|street": "낡고 큰 게 멋인",
+  "classic|street": "정장에 스니커 신는",
+  "soft|street": "부드러운데 힘 있는",
+  "amekaji|classic": "오래된 게 잘 어울리는",
+  "amekaji|soft": "니트에 데님이 국룰인",
+  "classic|soft": "코트가 잘 어울리는",
 };
 
-export function aliasFor(affinity: Affinity): string {
+/** 유저 추구미 별칭 core. 단일 지배(0.7+) → 1축, 아니면 상위 2축 조합. */
+export function aliasCore(affinity: Affinity): string {
   const r = ranked(affinity);
   if (r.length === 0) return "";
   const total = r.reduce((s, [, w]) => s + w, 0) || 1;
@@ -75,6 +77,31 @@ export function aliasFor(affinity: Affinity): string {
   const k2 = r[1][0];
   const key = [k1, k2].sort().join("|");
   return COMBO_ALIAS[key] ?? SINGLE_ALIAS[k1] ?? "";
+}
+
+// ── 표면별 표기(공용) — 화면은 이 함수만 호출, 어형 하드코딩 금지 ──
+/** 카드·문패·공유: "…타입" */
+export function aliasType(affinity: Affinity): string {
+  const c = aliasCore(affinity);
+  return c ? `${c} 타입` : "";
+}
+/** 나의 공간 방 제목: "…타입의 방" */
+export function aliasRoomTitle(affinity: Affinity): string {
+  const c = aliasCore(affinity);
+  return c ? `${c} 타입의 방` : "나의 방";
+}
+/** 스캔 결과 헤드라인: "너는 지금 … 쪽" */
+export function aliasScanHeadline(affinity: Affinity): string {
+  const c = aliasCore(affinity);
+  return c ? `너는 지금 ${c} 쪽` : "";
+}
+/** 단일 무드(룩) 별칭 — 약속 모드·스샷 후보 등 낱개 무드 표기용 */
+export function moodAliasCore(key: MoodKey): string {
+  return SINGLE_ALIAS[key] ?? "";
+}
+export function moodAliasType(key: MoodKey): string {
+  const c = SINGLE_ALIAS[key];
+  return c ? `${c} 타입` : "";
 }
 
 /**

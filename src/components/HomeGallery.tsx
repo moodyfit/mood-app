@@ -1,7 +1,7 @@
 "use client";
 
 import { ALL_MOOD_KEYS, MOODS } from "@/lib/moods";
-import { personalizeOrder, computeTaste } from "@/lib/taste";
+import { personalizeOrder } from "@/lib/taste";
 import { useMoodStore } from "@/lib/store";
 import MoodCard from "./MoodCard";
 
@@ -18,7 +18,6 @@ export default function HomeGallery() {
 
   const hasTaste = Object.keys(affinity).length > 0;
   const ordered = personalizeOrder([...ALL_MOOD_KEYS], affinity);
-  const { title } = computeTaste(affinity);
 
   const heroKey = hasTaste && ordered.length > 3 ? ordered[0] : null;
   const restKeys = heroKey ? ordered.slice(1) : ordered;
@@ -27,7 +26,7 @@ export default function HomeGallery() {
     <div className="animate-fade px-5 pb-8">
       <div className="mb-3">
         <div className="text-[15px] font-bold tracking-[-0.3px]">
-          {title ? `${title}, 지금까지` : "여러 느낌부터 둘러봐"}
+          {hasTaste ? "네가 좋아한 느낌, 지금까지" : "오늘의 한 장"}
         </div>
         {!hasTaste && (
           <div className="mt-0.5 text-[12.5px] text-ink-soft">

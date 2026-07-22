@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { Mood } from "@/lib/types";
 import { ALL_MOOD_KEYS, MOODS } from "@/lib/moods";
-import { computeTaste, moodsByAffinity } from "@/lib/taste";
+import { aliasRoomTitle, moodsByAffinity } from "@/lib/taste";
 import { useMoodStore } from "@/lib/store";
 
 /**
@@ -32,13 +32,11 @@ export default function Room() {
   const rest = savedRanked.slice(1);
   const unexplored = ALL_MOOD_KEYS.filter((k) => !isSaved(k));
 
-  const { title } = computeTaste(affinity);
-
   return (
     <div>
-      {/* 문패 (7.7) — 상시 거주하는 추구미 한 줄 */}
+      {/* 문패 (7.7) — 별칭 방 제목(축 이름 아님) */}
       <div className="mb-3 text-[15px] font-bold tracking-[-0.3px]">
-        {title}의 방
+        {aliasRoomTitle(affinity)}
       </div>
 
       {/* 지배 무드 — 크게 (취향 비중 시각화) */}

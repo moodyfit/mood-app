@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMoodStore } from "@/lib/store";
-import { computeTaste, aliasFor } from "@/lib/taste";
+import { computeTaste, aliasType } from "@/lib/taste";
 
 export default function TasteCardModal() {
   const router = useRouter();
@@ -10,7 +10,7 @@ export default function TasteCardModal() {
   if (!cardOpen) return null;
 
   const { title, rarityPct } = computeTaste(affinity);
-  const alias = aliasFor(affinity);
+  const alias = aliasType(affinity);
 
   return (
     <div

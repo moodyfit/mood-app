@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ALL_MOOD_KEYS, MOODS } from "@/lib/moods";
 import type { MoodKey } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
+import { moodAliasType } from "@/lib/taste";
 import { PENDING_SHOT_KEY } from "./SearchScreen";
 
 /**
@@ -112,7 +113,7 @@ export default function ShotFinder() {
                 }
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-3 pt-8">
-                <span className="text-[14px] font-bold text-white">{mood.name}</span>
+                <span className="text-[14px] font-bold text-white">{moodAliasType(k)}</span>
               </div>
             </button>
           );
@@ -131,7 +132,7 @@ export default function ShotFinder() {
               onClick={() => pick(k)}
               className="rounded-full border border-line px-3.5 py-1.5 text-[13px] text-ink-soft transition hover:border-accent"
             >
-              {mood.name}
+              {moodAliasType(k)}
             </button>
           );
         })}
