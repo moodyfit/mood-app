@@ -15,6 +15,7 @@ import MoodCard from "./MoodCard";
 export default function ScanDeck() {
   const { recordScanLike, affinity, scanDone, markScanDone, hydrated } = useMoodStore();
   const [i, setI] = useState(0);
+  const [liked, setLiked] = useState<string[]>([]); // 이번 세션 '좋아' 순서 (실시간 요약용)
   const [rescanning, setRescanning] = useState(false);
 
   const deck = ALL_MOOD_KEYS;
@@ -32,6 +33,7 @@ export default function ScanDeck() {
 
   function like(key: string) {
     recordScanLike(key);
+    setLiked((a) => [...a, key]);
     setI((n) => n + 1);
   }
   function skip() {
@@ -39,8 +41,20 @@ export default function ScanDeck() {
   }
   function restart() {
     setI(0);
+    setLiked([]);
     setRescanning(true);
   }
+
+  // 실시간 요약 — 관찰문만(해석문 금지). 같은 축 연속을 세어 "지금 N연속"
+  const last = liked[liked.length - 1];
+  let streak = 0;
+  for (let j = liked.length - 1; j >= 0 && liked[j] === last; j--) streak++;
+  const observation =
+    liked.length === 0
+      ? null
+      : streak >= 2 && MOODS[last]
+        ? `지금 ${MOODS[last].name} ${streak}연속 👀`
+        : `${liked.length}개 골랐어`;
 
   // 하이드레이션 전에는 렌더 보류(전시/덱 깜빡임 방지)
   if (!hydrated) return null;
@@ -106,6 +120,13 @@ export default function ScanDeck() {
           {i + 1} / {deck.length}
         </span>
       </div>
+
+      {/* v2.6 §7.12 스캔 실시간 요약 — 관찰문만(해석문 금지) */}
+      {observation && (
+        <div className="mb-3 rounded-full bg-paper-2 py-2 text-center text-[13px] font-semibold text-accent">
+          {observation}
+        </div>
+      )}
 
       <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl">
         <div
