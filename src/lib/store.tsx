@@ -30,6 +30,7 @@ const K_OWNED = "mood.owned.v1"; // 1.5.2 '내 옷' 소유 결
 const K_SCAN = "mood.scanDone.v1"; // 스캔 1회 완료 — 이후 스캔 탭은 전시 기본, 원할 때만 재스캔
 const K_DOT = "mood.spaceDot.v1"; // B5 카드 발급 dot (나의 공간 미확인 신호)
 const K_DISC = "mood.discovered.v1"; // C7 '발견' 결 (스크린샷 입주)
+const K_WORN = "mood.worn.v1"; // #9 [입었어] 착용 횟수 (아이템 id별)
 
 // 프로필 가중치: 저장은 클릭보다 강한 신호
 const W_SAVE = 2;
@@ -63,6 +64,8 @@ interface MoodStore {
   clearSpaceDot: () => void;
   discovered: DiscoveredItem[];
   addDiscovered: (moodKey: MoodKey) => void;
+  recordWorn: (id: string) => void;
+  wornOf: (id: string) => number;
   toast: string | null;
   showToast: (msg: string) => void;
 }
@@ -79,6 +82,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [scanDone, setScanDone] = useState(false);
   const [spaceDot, setSpaceDot] = useState(false);
   const [discovered, setDiscovered] = useState<DiscoveredItem[]>([]);
+  const [worn, setWorn] = useState<Record<string, number>>({});
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -103,6 +107,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       setSpaceDot(localStorage.getItem(K_DOT) === "1");
       const d = localStorage.getItem(K_DISC);
       if (d) setDiscovered((JSON.parse(d) as DiscoveredItem[]).filter((x) => isKnownMood(x.moodKey)));
+      const w = localStorage.getItem(K_WORN);
+      if (w) setWorn(JSON.parse(w));
     } catch {
       /* ignore */
     }
@@ -118,10 +124,11 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(K_SEARCH, JSON.stringify(searchCounts));
       localStorage.setItem(K_OWNED, JSON.stringify(owned));
       localStorage.setItem(K_DISC, JSON.stringify(discovered));
+      localStorage.setItem(K_WORN, JSON.stringify(worn));
     } catch {
       /* ignore */
     }
-  }, [saves, affinity, searchCounts, owned, discovered, hydrated]);
+  }, [saves, affinity, searchCounts, owned, discovered, worn, hydrated]);
 
   const bump = useCallback((key: MoodKey, w: number) => {
     setAffinity((prev) => ({ ...prev, [key]: (prev[key] ?? 0) + w }));
@@ -195,6 +202,12 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // #9 [입었어] — 조용한 카운트(팡파레·보상 없음). user_actions.worn 대응(로컬)
+  const recordWorn = useCallback((id: string) => {
+    setWorn((prev) => ({ ...prev, [id]: (prev[id] ?? 0) + 1 }));
+  }, []);
+  const wornOf = useCallback((id: string) => worn[id] ?? 0, [worn]);
+
   const addDiscovered = useCallback((moodKey: MoodKey) => {
     setDiscovered((prev) => {
       const id = `${moodKey}-${prev.length}`;
@@ -257,6 +270,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       clearSpaceDot,
       discovered,
       addDiscovered,
+      recordWorn,
+      wornOf,
       toast,
       showToast,
     }),
@@ -281,6 +296,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       clearSpaceDot,
       discovered,
       addDiscovered,
+      recordWorn,
+      wornOf,
       toast,
       showToast,
     ]

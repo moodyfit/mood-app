@@ -32,7 +32,7 @@ const TABS = [
   {
     href: "/space",
     label: "나의 공간",
-    match: (p: string) => p.startsWith("/space") || p.startsWith("/shot"),
+    match: (p: string) => p.startsWith("/space") || p.startsWith("/shot") || p.startsWith("/closet"),
     icon: (
       <>
         <circle cx="12" cy="8.5" r="3.2" strokeWidth="1.6" />

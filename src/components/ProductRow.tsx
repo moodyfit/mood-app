@@ -99,7 +99,7 @@ export default function ProductRow({
         <button
           type="button"
           onClick={() =>
-            toggleOwned({ id: product.id, moodKey: product.moodKey, name: product.name })
+            toggleOwned({ id: product.id, moodKey: product.moodKey, name: product.name, category: product.category })
           }
           className={`flex-shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-medium transition ${
             owned
@@ -116,7 +116,7 @@ export default function ProductRow({
         <button
           type="button"
           onClick={() => {
-            toggleOwned({ id: product.id, moodKey: product.moodKey, name: product.name });
+            toggleOwned({ id: product.id, moodKey: product.moodKey, name: product.name, category: product.category });
             setAskBuy(false);
           }}
           className="mt-2 w-full rounded-[8px] border border-accent bg-accent/10 py-2 text-[12.5px] font-semibold text-accent"

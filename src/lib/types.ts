@@ -11,6 +11,8 @@ export interface Mood {
   /** 해설 (7.10 '길게 눌러 해줌'): 아이템 명명 + 좋아 보이는 이유 1줄.
    *  질문하는 필요 자체를 제거 — 물어보지 않고 답만 준다(제0조). */
   caption: string;
+  /** #9 입는 법 1줄(photos.caption_how). 없으면 미표시 — 판정 아닌 기준점 재제시 */
+  how?: string;
   /** 실제 룩북 이미지 URL. 없으면 gradient 자리표시자로 렌더 */
   imageUrl?: string;
   /** 프로토타입/폴백용 CSS 그라디언트 */
@@ -64,6 +66,7 @@ export interface OwnedItem {
   id: string;
   moodKey: MoodKey;
   name: string;
+  category?: ProductCategory; // #9 마지막 조각: 슬롯 매칭용
   at?: number; // 담은 시각(ms) — '내 옷' 7일 승격용
 }
 

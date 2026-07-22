@@ -106,6 +106,23 @@ export function productsFor(moodKey: MoodKey): Product[] {
   return buildLook(moodKey, "미드");
 }
 
+/** #9 마지막 조각용 슬롯 메타: 카테고리 + 기본템(미드) 이름 + 로우~미드 최저가 */
+export interface SlotPiece {
+  category: ProductCategory;
+  name: string;
+  low: number;
+  mid: number;
+}
+export function slotPieces(): SlotPiece[] {
+  return SLOTS.map((s) => {
+    const mid = s.variants["미드"]!;
+    const midPrice = Math.min(...mid.sources.map((x) => x.price));
+    const lowV = s.variants["로우"];
+    const low = lowV ? Math.min(...lowV.sources.map((x) => x.price)) : midPrice;
+    return { category: s.category, name: mid.name, low, mid: midPrice };
+  });
+}
+
 /** 상품의 대표(최저) 가격 */
 export function primaryPrice(product: Product): number {
   return product.sources[0]?.price ?? 0;
