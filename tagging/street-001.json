@@ -1,0 +1,11 @@
+{
+  "file": "street-001.png",
+  "mood_vector": {"street": 1.0},
+  "situations": ["동네", "여행"],
+  "seasons": ["spring", "fall"],
+  "body_spec": {"height": "178", "build": "regular"},
+  "caption_item": "오버핏 아치로고 후디에 와이드 팬츠, 지갑체인",
+  "caption_why": "위아래 다 크게 놀아서 힘이 안 들어가 보여 — 대신 발만 밝은 스니커즈로 띄우면 안 처져",
+  "is_flagship": false,
+  "review_note": "'놀거리'(사전 밖) → '동네'로 수정. 억지 상황 배제"
+}

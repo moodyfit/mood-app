@@ -1,0 +1,19 @@
+{
+  "name": "moodfit-generation",
+  "private": true,
+  "type": "module",
+  "description": "MOODFIT 무드 사진 배치 생성 파이프라인 (fal.ai flux)",
+  "scripts": {
+    "test": "tsx generate.ts test",
+    "test:dry": "tsx generate.ts test --dry",
+    "batch": "tsx generate.ts batch",
+    "batch-all": "tsx generate.ts batch-all"
+  },
+  "dependencies": {
+    "@fal-ai/client": "^1.2.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "@types/node": "^20.14.0"
+  }
+}

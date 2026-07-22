@@ -19,6 +19,7 @@ create table if not exists photos (
   image_url   text not null,
   body_type   text,                       -- 7.10 체형 변수 (생성 프롬프트 스펙 기록) → '내 체형으로 보기' 전제
   caption     text,                       -- 7.10 '길게 눌러 해줌': 아이템 명명 + 좋아 보이는 이유 1줄
+  gen_prompt  text,                       -- 생성 프롬프트 전문 (images/gen_log.json 소스, 재현/감성 추적)
   created_at  timestamptz not null default now()
 );
 create index if not exists photos_mood_key_idx on photos(mood_key);
