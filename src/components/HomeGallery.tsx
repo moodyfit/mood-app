@@ -15,16 +15,22 @@ import ResultToggle from "./ResultToggle";
  * 없으면 6무드 커버로 폴백(로컬/빈 DB).
  * 크기 = 추구미 적합도(개인화 시각화), 인기 랭킹 아님(헌법). 유한 구경(무한 스크롤 금지).
  */
+// 더보기 = 유한 구경(무한 스크롤 금지). 처음엔 한 화면 분량만, 눌러서 더.
+const INITIAL_VISIBLE = 12;
+const LOAD_STEP = 12;
+
 export default function HomeGallery({ photos = [] }: { photos?: Photo[] }) {
   const { affinity, savedCount, recordSearch } = useMoodStore();
 
   const hasTaste = Object.keys(affinity).length > 0;
   const formed = savedCount >= TASTE_CARD_THRESHOLD;
   const [override, setOverride] = useState<boolean | null>(null);
+  const [visible, setVisible] = useState(INITIAL_VISIBLE);
   const personal = override ?? formed; // 내 느낌(기본, 형성 시) ↔ 새로운 느낌
 
   function onToggle(p: boolean) {
     setOverride(p);
+    setVisible(INITIAL_VISIBLE); // 순서가 바뀌니 다시 처음부터 끊어 보여줌
     // user_actions: '새로운 느낌' 탭 = 탐색 의지 신호 (로컬 로깅, DB 연동 시 동일)
     if (!p) recordSearch("탐색:새로운느낌");
   }
@@ -70,6 +76,8 @@ export default function HomeGallery({ photos = [] }: { photos?: Photo[] }) {
     // 히어로(크기=적합도)는 '내 느낌' + 취향 형성 시에만. '새로운 느낌'은 탐색이라 랭크 히어로 없음
     const heroPhoto = personal && hasTaste && ordered.length > 3 ? ordered[0] : null;
     const rest = heroPhoto ? ordered.slice(1) : ordered;
+    const shown = rest.slice(0, visible);
+    const remaining = rest.length - shown.length;
 
     return (
       <div className="animate-fade px-5 pb-8">
@@ -81,12 +89,29 @@ export default function HomeGallery({ photos = [] }: { photos?: Photo[] }) {
             </div>
           )}
           <div style={{ columnCount: 2, columnGap: "12px" }}>
-            {rest.map((p, i) => (
+            {shown.map((p, i) => (
               <div key={p.id} className="mb-3 break-inside-avoid animate-rise">
                 <PhotoCard photo={p} hint={!heroPhoto && i === 0} />
               </div>
             ))}
           </div>
+
+          {/* 유한 구경: 무한 스크롤 대신 명시적 더보기. 다 보면 좁히기(검색)로 유도 */}
+          {remaining > 0 ? (
+            <button
+              type="button"
+              onClick={() => setVisible((v) => v + LOAD_STEP)}
+              className="mt-1 w-full rounded-2xl border border-line py-3 text-[13.5px] font-semibold text-ink-soft transition active:scale-[0.99]"
+            >
+              더보기 <span className="text-ink-faint">· {remaining}장 더</span>
+            </button>
+          ) : (
+            rest.length > INITIAL_VISIBLE && (
+              <div className="mt-2 text-center text-[12.5px] text-ink-faint">
+                여기까지 — 위에서 검색하면 네 느낌으로 좁혀줄게
+              </div>
+            )
+          )}
         </div>
       </div>
     );
