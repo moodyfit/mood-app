@@ -121,6 +121,56 @@ export async function getProductsForMood(moodKey: MoodKey): Promise<Product[]> {
   return db.length > 0 ? db : productsFor(moodKey);
 }
 
+/** (B) 사진 레벨 — 특정 사진에 연결된 상품(photo_products = products.photo_image_url) */
+export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]> {
+  const sb = getSupabase();
+  if (!sb) return [];
+  const { data, error } = await sb
+    .from("products")
+    .select("name,category,price,source,gradient,affiliate_url,mood_key")
+    .eq("photo_image_url", imageUrl);
+  if (error || !data) return []; // 컬럼 미존재/미연결 → 빈 배열, 호출부가 무드 폴백
+  const byName = new Map<string, Product>();
+  for (const r of data as (ProductRow & { mood_key: string })[]) {
+    let p = byName.get(r.name);
+    if (!p) {
+      p = {
+        id: `${imageUrl}-${r.name}`,
+        moodKey: r.mood_key as MoodKey,
+        name: r.name,
+        category: r.category as Product["category"],
+        tier: tierOf(r.price),
+        gradient: r.gradient,
+        sources: [],
+      };
+      byName.set(r.name, p);
+    }
+    p.sources.push({ name: r.source, price: r.price, affiliateUrl: r.affiliate_url ?? undefined });
+  }
+  const list = [...byName.values()];
+  for (const p of list) p.sources.sort((a, b) => a.price - b.price);
+  return list;
+}
+
+/** 사진 연결 상품 있으면 그것, 없으면 무드 폴백 → 로컬 더미 (부분 교체·무중단) */
+export async function getProductsForPhoto(imageUrl: string, moodKey: MoodKey): Promise<Product[]> {
+  const p = await fetchProductsByPhoto(imageUrl);
+  return p.length > 0 ? p : getProductsForMood(moodKey);
+}
+
+/** 사진 1건 조회(사진 전용 상품 뷰용) — slug(clean-001) 로, 확장자 무관(.jpg/.png 모두) */
+export async function fetchPhotoBySlug(slug: string): Promise<Photo | null> {
+  const sb = getSupabase();
+  if (!sb) return null;
+  const { data, error } = await sb
+    .from("photos")
+    .select("id,image_url,mood_vector,situations,seasons,caption_item,caption_why,caption_how,is_flagship,aspect_ratio")
+    .ilike("image_url", `moods/${slug}.%`)
+    .limit(1);
+  if (error || !data || data.length === 0) return null;
+  return data[0] as Photo;
+}
+
 /**
  * 검색어가 해석한 무드축 가중치로 photos 랭킹.
  * 매칭 0이어도 배열은 유지(그리드가 비지 않게) — 첫 DB 그리드 마일스톤 보장.

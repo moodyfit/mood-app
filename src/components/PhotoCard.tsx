@@ -28,6 +28,8 @@ export default function PhotoCard({
   const { isSaved, toggleSave } = useMoodStore();
   const key = dominantMood(photo.mood_vector);
   const saved = isSaved(key);
+  // (B) 사진 전용 상품 뷰로 — slug = 파일명(moods/clean-001.jpg → clean-001)
+  const slug = photo.image_url.split("/").pop()?.replace(/\.\w+$/, "") ?? "";
   const hero = size === "hero";
   const showCaption = hero || hint;
   const ratio = hero ? 0.78 : cardRatio(photo);
@@ -50,7 +52,7 @@ export default function PhotoCard({
       longPressed.current = false;
       return;
     }
-    if (key) router.push(`/mood/${key}`);
+    if (slug) router.push(`/photo/${slug}`);
   }
 
   const url = photoUrl(photo.image_url);
@@ -66,7 +68,7 @@ export default function PhotoCard({
         setCaption(false);
       }}
       onContextMenu={(e) => e.preventDefault()}
-      onKeyDown={(e) => key && e.key === "Enter" && router.push(`/mood/${key}`)}
+      onKeyDown={(e) => slug && e.key === "Enter" && router.push(`/photo/${slug}`)}
       style={{ aspectRatio: String(ratio) }}
       className="group relative block w-full cursor-pointer select-none overflow-hidden rounded-2xl transition active:scale-[0.98]"
     >
