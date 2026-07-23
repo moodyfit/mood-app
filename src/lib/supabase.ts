@@ -11,7 +11,11 @@ export function getSupabase(): SupabaseClient | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) return null; // 미설정 → 로컬 시드 사용
-  if (!cached) cached = createClient(url, key);
+  if (!cached)
+    cached = createClient(url, key, {
+      // Next 가 supabase GET 을 fetch 캐시에 굳혀 옛 데이터를 반환하는 문제 방지 — 항상 최신.
+      global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
+    });
   return cached;
 }
 
