@@ -33,6 +33,14 @@ async function run() {
   if (!url || !key) { console.error("SUPABASE_URL / SUPABASE_SERVICE_KEY 필요(.env)"); process.exit(1); }
   const sb = createClient(url, key);
 
+  // moods 버킷 보장(public). 없으면 생성 — 이미지 공개 URL 이 앱 photoUrl 과 일치해야 함.
+  const { data: buckets } = await sb.storage.listBuckets();
+  if (!buckets?.some((b) => b.name === "moods")) {
+    const { error: be } = await sb.storage.createBucket("moods", { public: true });
+    if (be) { console.error(`버킷 생성 실패: ${be.message}`); process.exit(1); }
+    console.log("moods 버킷 생성됨(public).");
+  }
+
   // 업로드 대상 = 승인 90장(축×15)만 명시 화이트리스트
   const files: string[] = [];
   for (const ax of AXES) for (let i = 1; i <= 15; i++) files.push(`${ax}-${String(i).padStart(3, "0")}.jpg`);
@@ -41,7 +49,8 @@ async function run() {
   for (const f of files) {
     try {
       const buf = await fs.readFile(path.join(POST, f));
-      const { error } = await sb.storage.from("moods").upload(`moods/${f}`, buf, {
+      // 오브젝트 키 = 파일명만(f). 앱 photoUrl 이 .../public/moods/<f> 로 조립하므로 버킷명 중복 금지.
+      const { error } = await sb.storage.from("moods").upload(f, buf, {
         contentType: "image/jpeg", upsert: true,
       });
       if (error) throw error;
