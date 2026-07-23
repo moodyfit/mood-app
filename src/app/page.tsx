@@ -2,9 +2,15 @@ import Link from "next/link";
 import SearchScreen from "@/components/SearchScreen";
 import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
+import { isSupabaseEnabled } from "@/lib/supabase";
+import { fetchPhotos } from "@/lib/photos";
 
 // 홈 = 검색창(위 고정) + 약속 모드 진입 카드(유일) + 종합 취향 상시 메이슨리 전시
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  // 홈 상시 전시 = 실제 사진 볼륨(90장) 메이슨리. 미설정/빈 DB면 HomeGallery가 6무드로 폴백.
+  const photos = isSupabaseEnabled() ? await fetchPhotos() : [];
   return (
     <div className="animate-fade">
       <SearchScreen />
@@ -27,7 +33,7 @@ export default function HomePage() {
       <HomeCloset />
 
       <div className="pt-5">
-        <HomeGallery />
+        <HomeGallery photos={photos} />
       </div>
     </div>
   );
