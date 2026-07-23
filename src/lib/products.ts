@@ -19,10 +19,13 @@ import { MOODS } from "./moods";
  * (로컬 6무드 = 간판 룩으로 취급, 티어 완비. 실데이터는 간판 10개만 완비 → hasDial)
  */
 type Variant = { name: string; sources: ProductSource[] };
+// 모든 슬롯에 로우/미드/하이 완비 — 예산을 내려도 아이템을 '빼지' 않고 같은 결의 저렴한 대체품으로 '교체'.
+// 구성(상의·하의·아우터·신발 4칸)은 언제나 그대로.
 const SLOTS: { category: ProductCategory; variants: Partial<Record<PriceTier, Variant>> }[] = [
   {
-    category: "아우터", // 로우 대안 없음 → 5만에서 기본템 유지
+    category: "아우터",
     variants: {
+      로우: { name: "코치 자켓", sources: [{ name: "번개장터", price: 29000 }, { name: "무신사", price: 39000 }] },
       미드: { name: "셋업 자켓", sources: [{ name: "번개장터", price: 72000 }, { name: "무신사", price: 89000 }, { name: "29CM", price: 94000 }] },
       하이: { name: "울 블레이저", sources: [{ name: "무신사", price: 159000 }, { name: "29CM", price: 179000 }] },
     },
@@ -44,8 +47,9 @@ const SLOTS: { category: ProductCategory; variants: Partial<Record<PriceTier, Va
     },
   },
   {
-    category: "신발", // 로우 대안 없음 → 5만에서 기본템 유지
+    category: "신발",
     variants: {
+      로우: { name: "캔버스 스니커", sources: [{ name: "무신사", price: 34900 }, { name: "번개장터", price: 27000 }] },
       미드: { name: "레더 스니커", sources: [{ name: "무신사", price: 79000 }, { name: "크림", price: 89000 }] },
       하이: { name: "레더 로퍼", sources: [{ name: "무신사", price: 145000 }, { name: "크림", price: 159000 }] },
     },
