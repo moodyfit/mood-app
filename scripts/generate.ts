@@ -1,6 +1,7 @@
 /**
  * MOODFIT 무드 사진 배치 생성 (GENERATION.md).
- * 스택: fal.ai · fal-ai/flux/schnell (기본). 인증: env FAL_KEY (.env, 하드코딩 금지).
+ * 스택: fal.ai · fal-ai/flux/dev (동결). 인증: env FAL_KEY (.env, 하드코딩 금지).
+ * 생성 후 반드시 scripts/postprocess.ts (표준 후처리: 그레인·롤오프·채도↓·웜+4%) 통과 — recipe.json 참조.
  * 비율 믹스(메이슨리 전시 문법): 4:5 기본 + 3:4/9:16 일부를 생성 단계에서 부여(약 7:2:1).
  *   → 세로 리듬을 크롭이 아니라 캔버스 자체로 만든다(스트릿샷 구도 보존). aspect_ratio 를 gen_log 에 기록.
  *
@@ -25,7 +26,8 @@ const LOG = path.join(IMAGES, "gen_log.json");
 
 const args = process.argv.slice(2);
 const DRY = args.includes("--dry");
-const MODEL = args.includes("--dev") ? "fal-ai/flux/dev" : "fal-ai/flux/schnell";
+// 레시피 동결 (승인): fal-ai/flux/dev 고정. schnell 폐기. (--schnell 로만 예외 강제)
+const MODEL = args.includes("--schnell") ? "fal-ai/flux/schnell" : "fal-ai/flux/dev";
 // 비율 믹스: 4:5 기본 + 3:4/9:16 일부. 크롭 금지 — 캔버스 자체로 세로 변주(①).
 const SIZES = [
   { width: 896, height: 1120, label: "4:5" }, // 0.800
@@ -39,6 +41,8 @@ function pickSize(i: number) {
   return { ...s, ratio: +(s.width / s.height).toFixed(3) };
 }
 const COST_PER_IMG = MODEL.endsWith("schnell") ? 0.003 : 0.025; // USD 대략치(미리보기용)
+// 과도한 "완성도"(매끈/광고컷) 억제 — 가이던스 낮춤
+const GUIDANCE = MODEL.endsWith("schnell") ? 2.5 : 3.0;
 
 // 최소 .env 로더 (dotenv 무의존)
 async function loadEnv() {
@@ -96,6 +100,7 @@ async function genAndSave(
       image_size: { width: size.width, height: size.height },
       num_images: 1,
       num_inference_steps: MODEL.endsWith("schnell") ? 4 : 28,
+      guidance_scale: GUIDANCE,
       enable_safety_checker: true,
     },
   });
@@ -111,8 +116,8 @@ async function genAndSave(
 async function runTest() {
   await fs.mkdir(TEST_DIR, { recursive: true });
   const jobs = TEST_AXES.map((axis, i) => {
-    const { prompt, meta } = buildPrompt(axis, 0);
-    // 테스트는 축 순서로 비율을 흩어 3종을 눈으로 비교
+    // i로 배경·시선·인물 분산(고정 0 버그 수정) + 비율도 3종으로 흩음
+    const { prompt, meta } = buildPrompt(axis, i);
     return { prompt, meta, size: pickSize(i * 3), out: path.join(TEST_DIR, `${axis}-test.png`) };
   });
   console.log(`§1 감성 테스트 ${jobs.length}장 · ${MODEL} · 예상 $${(jobs.length * COST_PER_IMG).toFixed(3)}\n`);

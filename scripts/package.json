@@ -10,10 +10,11 @@
     "batch-all": "tsx generate.ts batch-all"
   },
   "dependencies": {
-    "@fal-ai/client": "^1.2.3"
+    "@fal-ai/client": "^1.2.3",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
-    "tsx": "^4.19.2",
-    "@types/node": "^20.14.0"
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.2"
   }
 }

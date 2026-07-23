@@ -1,0 +1,34 @@
+{
+  "version": "1.0-frozen",
+  "approved": "2026-07-23",
+  "note": "감성 호환 테스트 #2 승인. 프롬프트 상수 원본 = scripts/prompts.ts (drift 방지). schnell 폐기.",
+  "generation": {
+    "model": "fal-ai/flux/dev",
+    "guidance_scale": 3.0,
+    "num_inference_steps": 28,
+    "size_mix": {
+      "4:5": { "w": 896, "h": 1120, "share": 0.6 },
+      "3:4": { "w": 864, "h": 1152, "share": 0.25 },
+      "9:16": { "w": 768, "h": 1344, "share": 0.15 }
+    },
+    "prompt_source": "scripts/prompts.ts (STYLE_ANCHOR / BODY_GUARD / GAZE / BACKGROUND / AXIS_BLOCKS)",
+    "composition": "off-center · 시선 밖(측면3:걷는2) · 배경 횡단보도 금지 · fictional person",
+    "cost_per_image_usd": 0.025
+  },
+  "postprocess": {
+    "required": true,
+    "order": ["saturation", "highlight_rolloff", "warm_shift", "gamma", "grain"],
+    "saturation": 0.92,
+    "highlight_rolloff_linear": [0.93, 6],
+    "warm_shift_recomb": { "R": 1.04, "B": 0.96, "approx_pct": "+4%" },
+    "gamma": 1.02,
+    "grain": {
+      "type": "luminance overlay",
+      "blend": "overlay",
+      "sigma": "힉스필드 커버 노이즈 레벨 샘플 매칭, clamp 8~16",
+      "deterministic_seed": "파일명 기반"
+    },
+    "output": "jpeg q90"
+  },
+  "discarded": ["fal-ai/flux/schnell"]
+}

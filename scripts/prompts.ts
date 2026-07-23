@@ -1,19 +1,23 @@
 // GENERATION.md §2 — 프롬프트 구조: [스타일 앵커] + [인물 변주] + [의상 블록] + [배경] + [구도]
 // 스타일 앵커/의상 블록은 임의 변경 금지(§5). 변주 축만 조합한다.
 
+// 재시도 1/3 (사람 판정 반영): 필름 질감·방향광·캔디드 문법으로 "찍힌 사람" 복원.
 export const STYLE_ANCHOR =
-  "candid street style photograph, 35mm film photography, natural daylight, " +
-  "muted color grading, subtle film grain, unposed moment, photorealistic, " +
-  "korean street fashion editorial";
+  "candid street style photograph shot on 35mm film, kodak portra 400, " +
+  "visible film grain, directional natural sunlight with soft shadows, " +
+  "muted warm color grading, slightly desaturated, " +
+  "subject caught mid-moment NOT posing, looking away from camera, " +
+  "seoul street background, photorealistic";
 
-// §2.1 Negative — 단, fal의 flux 엔드포인트는 negative_prompt를 받지 않음.
-// 따라서 몸 과장 방지는 positive(BODY_GUARD)로 접어 넣고, 로고/텍스트 회피도 명시.
+// §2.1 Negative — flux/schnell 은 negative_prompt 미지원 → 핵심 회피는 positive에도 접어 넣음.
+// (flux/dev 사용 시 negative_prompt로 전달)
 export const NEGATIVE =
-  "bodybuilder, muscular flex, gym physique, watermark, text, logo focus, studio lighting, oversaturated";
+  "posing, looking at camera, centered composition, crosswalk, HDR, oversaturated, " +
+  "smooth skin, studio quality, palm trees, bodybuilder, muscular flex, watermark, text, logo";
 
-// 체험 원칙: "데깽은 최대로, 이유는 옷" — 몸이 주인공이 되는 묘사 금지
+// 체험 원칙: "데깽은 최대로, 이유는 옷" — 몸이 주인공 금지. (face visible 제거 = 캔디드로 시선 밖 허용)
 export const BODY_GUARD =
-  "full body from head to below knee, face visible, ordinary build, not muscular, no flexing, " +
+  "full body from head to below knee, ordinary build, not muscular, no flexing, " +
   "the clothing and styling are the focus, no brand logos, no text";
 
 // §2.3 의상 블록 (축별)
@@ -29,16 +33,24 @@ export const AXIS_BLOCKS: Record<string, string> = {
 // §2.2 인물 변주 (같은 인물 반복 금지). athletic 과장 금지 → slim/regular만.
 const HAIR = ["short textured hair", "medium wavy hair", "buzz cut", "permed hair"];
 const BUILD = ["slim build", "regular build"];
-const MOOD = ["calm expression", "cheerful expression", "relaxed expression"];
 
-// §2.4 배경 변주
+// 시선/동작 변주 — 측면 응시 3 : 걷는 중 2 분산(정면 응시·정자세 금지)
+const GAZE = [
+  "glancing to the side, looking away from camera", // 측면
+  "walking mid-stride, looking down the street", // 걷는 중
+  "head turned to the side, eyes off-camera", // 측면
+  "caught walking past, body angled away", // 걷는 중
+  "looking off to the side, unposed", // 측면
+];
+
+// §2.4 배경 변주 — 횡단보도 금지, 서울 거리 결로 분산
 const BACKGROUND = [
-  "city crosswalk",
   "quiet alley",
   "cafe exterior",
-  "riverside path",
   "residential street",
-  "evening street",
+  "narrow backstreet",
+  "shopfront sidewalk",
+  "riverside path",
 ];
 
 // §2.5 계절 레이어 (의상 블록에 계절 반영)
@@ -74,16 +86,17 @@ export interface PromptMeta {
 export function buildPrompt(axis: string, i: number): { prompt: string; meta: PromptMeta } {
   const seasons = AXIS_SEASONS[axis] ?? ["spring", "fall"];
   const season = seasons[i % seasons.length];
-  const background = BACKGROUND[(i * 1) % BACKGROUND.length];
-  const hair = HAIR[(i * 1) % HAIR.length];
-  const build = BUILD[(i * 1) % BUILD.length];
-  const mood = MOOD[(i * 1) % MOOD.length];
+  const background = BACKGROUND[i % BACKGROUND.length];
+  const hair = HAIR[i % HAIR.length];
+  const build = BUILD[i % BUILD.length];
+  const gaze = GAZE[i % GAZE.length];
 
-  const person = `east asian man in his mid-to-late 20s, ${hair}, ${build}, ${mood}`;
+  const person = `east asian man in his mid-to-late 20s, ${hair}, ${build}, ${gaze}`;
   const clothes = `${AXIS_BLOCKS[axis]}, ${SEASON[season]}`;
   const prompt =
-    `${STYLE_ANCHOR}. ${person}. wearing ${clothes}. ${background} background. ` +
-    `${BODY_GUARD}. fictional person, not resembling any real celebrity.`;
+    `${STYLE_ANCHOR}. ${person}, positioned off-center in the frame. wearing ${clothes}. ` +
+    `${background} background, not a crosswalk. ${BODY_GUARD}. ` +
+    `fictional person, not resembling any real celebrity.`;
 
   return { prompt, meta: { axis, season, background, hair, build } };
 }

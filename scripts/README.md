@@ -1,6 +1,17 @@
 # MOODFIT 생성 파이프라인 (GENERATION.md 구현)
 
-fal.ai `flux/schnell` 로 무드 사진을 배치 생성 → `../images/{축}-{번호}.png` → TAGGING.md 파이프라인 입력.
+**동결 레시피 v1.0 (2026-07-23 승인) — `recipe.json` 참조.**
+- 모델 **fal-ai/flux/dev** (guidance 3.0, steps 28). schnell 폐기.
+- 프롬프트 상수 = `prompts.ts` (필름·kodak portra·방향광·캔디드·off-center·시선 밖·횡단보도 금지).
+- **표준 후처리 필수**(모델 무관 감도 통일): `postprocess.ts` — 채도 0.92 · 하이라이트 롤오프 · 웜 +4% · 휘도 그레인(힉스필드 노이즈 샘플 매칭).
+- 2단계 흐름: `generate.ts` → `postprocess.ts`. 후처리 안 거친 원본은 배치에 넣지 않는다.
+
+```bash
+npx tsx generate.ts batch-all 15            # 6축×15=90 (dev)
+npx tsx postprocess.ts ../images ../images/post   # 표준 후처리 → 최종본
+```
+
+fal.ai `flux/dev` 로 무드 사진을 배치 생성 → `../images/{축}-{번호}.png` → 후처리 → TAGGING.md 입력.
 
 ## 준비
 ```bash
