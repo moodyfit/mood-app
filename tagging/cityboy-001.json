@@ -1,11 +1,1 @@
-{
-  "file": "cityboy-001.png",
-  "mood_vector": {"cityboy": 0.7, "classic": 0.3},
-  "situations": ["출근", "데이트"],
-  "seasons": ["spring", "fall"],
-  "body_spec": {"height": "178", "build": "regular"},
-  "caption_item": "어깨에 걸친 베이지 셋업 재킷에 네이비 토트백",
-  "caption_why": "위아래 베이지로 톤 맞추고 흰 티로 가운데를 끊었어 — 셋업인데 안 딱딱하고 데일리로 풀려",
-  "is_flagship": true,
-  "review_note": "토르소 크롭(머리 위 잘림) → 대표컷 사용 금지, 보조컷으로만. classic 0.3은 셋업 재킷 정장기 기여로 유지"
-}
+{"file":"cityboy-001.png","mood_vector":{"cityboy":1.0},"situations":["주말카페","동네"],"seasons":["summer"],"body_spec":{"height":"180","build":"slim"},"caption_item":"베이지 오픈셔츠에 화이트 티·카키 와이드","caption_why":"셔츠를 걸치듯 열고 티로 받쳐 힘 뺐는데 층이 생겨","caption_how":"단추 풀고 소매 걷어 안 티를 보여","is_flagship":true,"flagship_reason":"오픈셔츠+화이트 티+와이드+토트 = 슬롯 기본템 재현, 전신·여름 대표","review_note":"시티보이 정석. cityboy 단일."}

@@ -1,11 +1,1 @@
-{
-  "file": "classic-002.png",
-  "mood_vector": {"classic": 0.7, "cityboy": 0.3},
-  "situations": ["출근", "데이트"],
-  "seasons": ["fall", "winter"],
-  "body_spec": {"height": "175", "build": "regular"},
-  "caption_item": "카멜 울 코트에 네이비 니트 폴로, 그레이 슬랙스",
-  "caption_why": "코트도 니트도 슬랙스도 차분하게 깔고 브라운 구두로 마무리 — 색을 안 튀게 묶으면 그냥 고급스러워",
-  "is_flagship": true,
-  "review_note": "cityboy 0.3은 카멜 코트+니트폴로+플리츠 와이드의 시티보이 크로스오버. 안경·웨이브로 인물 변주"
-}
+{"file":"classic-002.png","mood_vector":{"classic":1.0},"situations":["출근","데이트"],"seasons":["fall","winter"],"body_spec":{"height":"182","build":"regular"},"caption_item":"브라운 셋업 블레이저에 카멜 터틀넥·브라운 슬랙스","caption_why":"브라운 톤온톤으로 정장기를 부드럽게","caption_how":"단추 풀고 터틀넥 받쳐","is_flagship":false}

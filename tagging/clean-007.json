@@ -1,0 +1,12 @@
+{
+  "file": "clean-007.png",
+  "mood_vector": {"clean": 1.0},
+  "situations": ["출근", "동네"],
+  "seasons": ["winter"],
+  "body_spec": {"height": "183", "build": "slim"},
+  "caption_item": "그레이 울 코트에 크림 니트·차콜 슬랙스",
+  "caption_why": "무채색 톤으로 붙여 겨울에도 군더더기가 없어",
+  "caption_how": "코트는 열고 니트를 살짝 보여야 답답하지 않아",
+  "is_flagship": false,
+  "review_note": "하의 청색기 없음 → 네이비 아닌 차콜로 정정(why '무채색' 참). 코트+스니커=캐주얼 유지 → classic 아님, clean 단일."
+}

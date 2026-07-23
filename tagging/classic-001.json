@@ -1,11 +1,1 @@
-{
-  "file": "classic-001.png",
-  "mood_vector": {"classic": 0.8, "clean": 0.2},
-  "situations": ["면접", "결혼식하객"],
-  "seasons": ["spring", "fall"],
-  "body_spec": {"height": "183", "build": "athletic"},
-  "caption_item": "차콜 싱글 수트에 화이트 셔츠, 블랙 더비",
-  "caption_why": "타이 없이 셔츠 단추 두어 개 풀어서 각 잡힌 수트가 안 답답해 — 정장인데 데이트도 가능",
-  "is_flagship": true,
-  "review_note": "clean 0.2는 노타이·미니멀 스타일링의 정제된 기여(정장기 위 clean 톤). 전신·머리 포함 → 대표컷 가능"
-}
+{"file":"classic-001.png","mood_vector":{"classic":1.0},"situations":["출근","결혼식하객"],"seasons":["winter"],"body_spec":{"height":"180","build":"slim"},"caption_item":"차콜 오버코트에 블랙 터틀넥·차콜 슬랙스","caption_why":"무채색으로 붙여 각을 세워","caption_how":"코트 열고 세로로","is_flagship":true,"flagship_reason":"울 오버코트+터틀넥+슬랙스+더비 = 슬롯 기본템 재현, 전신·FW 대표"}

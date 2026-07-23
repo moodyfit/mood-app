@@ -11,6 +11,7 @@ export interface Photo {
   seasons: string[] | null;
   caption_item: string | null;
   caption_why: string | null;
+  caption_how?: string | null;
   is_flagship: boolean | null;
   // 메이슨리(전시 문법)용 세로 비율 = width/height. null이면 기본값.
   // 실값은 생성 단계(GENERATION)에서 부여(4:5 기본 + 3:4/9:16 일부) — 크롭으로 위조 금지.
@@ -60,10 +61,10 @@ export function photoUrl(imagePath: string): string {
 export async function fetchPhotos(): Promise<Photo[]> {
   const sb = getSupabase();
   if (!sb) return [];
-  // aspect_ratio 는 컬럼이 있을 때만 select 에 추가(없으면 쿼리 에러 → 그리드 붕괴). 없으면 cardRatio 가 0.8 폴백.
+  // photos-seed.sql 마이그레이션으로 caption_how·aspect_ratio 컬럼 보장됨(입고 후). 실측 비율로 메이슨리.
   const { data, error } = await sb
     .from("photos")
-    .select("id,image_url,mood_vector,situations,seasons,caption_item,caption_why,is_flagship");
+    .select("id,image_url,mood_vector,situations,seasons,caption_item,caption_why,caption_how,is_flagship,aspect_ratio");
   if (error || !data) return [];
   return data as Photo[];
 }

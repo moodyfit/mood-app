@@ -1,0 +1,12 @@
+{
+  "file": "clean-010.png",
+  "mood_vector": {"clean": 1.0},
+  "situations": ["동네"],
+  "seasons": ["spring", "fall"],
+  "body_spec": {"height": "183", "build": "slim"},
+  "caption_item": "아이보리 니트에 차콜 슬랙스",
+  "caption_why": "톤을 아이보리로 올리고 하의만 차콜로 눌러 깔끔해",
+  "caption_how": "니트 소매는 손목까지 딱 맞게 내려 입어",
+  "is_flagship": false,
+  "review_note": "3:4 토르소 크롭 → 보조컷(대표 아님). 상황 1개(과충전 회피)."
+}

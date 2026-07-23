@@ -13,12 +13,15 @@ export const STYLE_ANCHOR =
 // (flux/dev 사용 시 negative_prompt로 전달)
 export const NEGATIVE =
   "posing, looking at camera, centered composition, crosswalk, HDR, oversaturated, " +
-  "smooth skin, studio quality, palm trees, bodybuilder, muscular flex, watermark, text, logo";
+  "smooth skin, studio quality, palm trees, bodybuilder, muscular flex, watermark, text, " +
+  "brand logo, wordmark, nike swoosh, adidas stripes, identifiable graphic print";
 
 // 체험 원칙: "데깽은 최대로, 이유는 옷" — 몸이 주인공 금지. (face visible 제거 = 캔디드로 시선 밖 허용)
+// 로고 무관용(§5): 식별 가능한 브랜드 로고·워드마크 금지, 무지 신발·의류.
 export const BODY_GUARD =
   "full body from head to below knee, ordinary build, not muscular, no flexing, " +
-  "the clothing and styling are the focus, no brand logos, no text";
+  "the clothing and styling are the focus, plain unbranded clothing and footwear, " +
+  "no visible brand logos, no wordmarks, no graphic prints, no text";
 
 // §2.3 의상 블록 (축별)
 export const AXIS_BLOCKS: Record<string, string> = {
@@ -71,6 +74,24 @@ export const AXIS_SEASONS: Record<string, string[]> = {
   soft: ["spring", "fall", "winter"],
 };
 
+// 승인된 배치 계절 배분(축당 15) — clean·cityboy 겨울+3, classic 여름 리넨 1. 겨울24(27%)·여름19(21%)
+export const SEASON_PLAN: Record<string, string[]> = {
+  clean:   ["summer","summer","summer","summer","summer","summer","winter","winter","winter","spring","spring","spring","fall","fall","fall"],
+  cityboy: ["summer","summer","summer","summer","summer","summer","winter","winter","winter","spring","spring","spring","fall","fall","fall"],
+  street:  ["winter","winter","winter","winter","summer","summer","summer","spring","spring","spring","spring","fall","fall","fall","fall"],
+  amekaji: ["winter","winter","winter","winter","winter","spring","spring","spring","spring","spring","fall","fall","fall","fall","fall"],
+  classic: ["winter","winter","winter","winter","winter","summer","fall","fall","fall","fall","fall","spring","spring","spring","spring"],
+  soft:    ["winter","winter","winter","winter","summer","summer","summer","spring","spring","spring","spring","fall","fall","fall","fall"],
+};
+
+// 비율 계획(축당 15): 4:5 ×9 / 3:4 ×4 / 9:16 ×2 → 90장 54/24/12
+export const RATIO_PLAN: string[] = [
+  "4:5","4:5","3:4","4:5","9:16","4:5","4:5","3:4","4:5","3:4","4:5","9:16","4:5","3:4","4:5",
+];
+
+// 유채(색 악센트) 인덱스 — 축당 4장(전체 24, 27%). 나머지는 웜 뮤티드
+const COLOR_ACCENT_IDX = new Set([2, 7, 11, 14]);
+
 export interface PromptMeta {
   axis: string;
   season: string;
@@ -84,15 +105,16 @@ export interface PromptMeta {
  * (계절 |S|, 배경 6, 헤어 4, 체형 2, 무드 3 → 최소공배수까지 중복 없음)
  */
 export function buildPrompt(axis: string, i: number): { prompt: string; meta: PromptMeta } {
-  const seasons = AXIS_SEASONS[axis] ?? ["spring", "fall"];
-  const season = seasons[i % seasons.length];
+  const plan = SEASON_PLAN[axis];
+  const season = plan ? plan[i % plan.length] : (AXIS_SEASONS[axis] ?? ["spring", "fall"])[i % 2];
   const background = BACKGROUND[i % BACKGROUND.length];
   const hair = HAIR[i % HAIR.length];
   const build = BUILD[i % BUILD.length];
   const gaze = GAZE[i % GAZE.length];
+  const accent = COLOR_ACCENT_IDX.has(i % 15) ? ", one muted color-accent piece" : "";
 
   const person = `east asian man in his mid-to-late 20s, ${hair}, ${build}, ${gaze}`;
-  const clothes = `${AXIS_BLOCKS[axis]}, ${SEASON[season]}`;
+  const clothes = `${AXIS_BLOCKS[axis]}, ${SEASON[season]}${accent}`;
   const prompt =
     `${STYLE_ANCHOR}. ${person}, positioned off-center in the frame. wearing ${clothes}. ` +
     `${background} background, not a crosswalk. ${BODY_GUARD}. ` +

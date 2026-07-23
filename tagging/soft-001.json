@@ -1,11 +1,1 @@
-{
-  "file": "soft-001.png",
-  "mood_vector": {"soft": 0.8, "clean": 0.2},
-  "situations": ["동네", "주말카페"],
-  "seasons": ["spring", "fall"],
-  "body_spec": {"height": "172", "build": "slim"},
-  "caption_item": "오트밀 라운드 가디건에 크림 티, 베이지 와이드 팬츠",
-  "caption_why": "위아래 다 아이보리 톤으로 붙이고 니트로 편하게 풀었어 — 색을 안 섞으니까 대충 입어도 포근하게 정리돼",
-  "is_flagship": true,
-  "review_note": "와이드 슬랙스 보여도 정체성은 니트/톤 → classic 미부여(규칙3 준수). clean 0.2는 올아이보리 톤온톤. 정수리 살짝 잘림·얼굴 보임"
-}
+{"file":"soft-001.png","mood_vector":{"soft":1.0},"situations":["데이트","동네"],"seasons":["fall","winter"],"body_spec":{"height":"178","build":"slim"},"caption_item":"오트밀 크루넥 니트에 오트밀 슬랙스","caption_why":"톤을 오트밀로 다 맞춰 포근하게 감싸","caption_how":"니트 밑단 살짝 덮어","is_flagship":false}

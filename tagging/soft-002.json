@@ -1,11 +1,1 @@
-{
-  "file": "soft-002.png",
-  "mood_vector": {"soft": 1.0},
-  "situations": ["동네", "주말카페"],
-  "seasons": ["spring", "fall"],
-  "body_spec": {"height": "185", "build": "regular"},
-  "caption_item": "파스텔 블루 크루넥 니트에 토프 치노",
-  "caption_why": "채도 낮은 하늘색 니트에 흙빛 치노로 톤 눌렀어 — 파스텔도 색을 죽이면 안 유치하고 부드럽게 나와",
-  "is_flagship": true,
-  "review_note": "치노·캔버스는 캐주얼 → classic 미부여. 2차축 억지 없어 soft 단일. 곱슬·콧수염·185로 인물 변주"
-}
+{"file":"soft-002.png","mood_vector":{"soft":1.0},"situations":["동네","주말카페"],"seasons":["winter"],"body_spec":{"height":"181","build":"regular"},"caption_item":"크림 플리스 블루종에 베이지 치노","caption_why":"보들한 플리스로 겨울 인상을 부드럽게","caption_how":"지퍼 반 열고 걸어","is_flagship":true,"flagship_reason":"플리스 블루종+치노 = 슬롯 기본템 재현, 전신·FW 대표"}

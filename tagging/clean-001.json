@@ -1,11 +1,13 @@
 {
   "file": "clean-001.png",
   "mood_vector": {"clean": 1.0},
-  "situations": ["출근", "소개팅"],
-  "seasons": ["spring", "summer"],
-  "body_spec": {"height": "178", "build": "regular"},
-  "caption_item": "화이트 라운드 반팔에 차콜 슬랙스",
-  "caption_why": "색을 흰색·차콜 둘로만 끊어서 군더더기가 없어 — 그래서 대충 입어도 정돈돼 보여",
+  "situations": ["주말카페", "동네"],
+  "seasons": ["summer"],
+  "body_spec": {"height": "178", "build": "slim"},
+  "caption_item": "화이트 라운드 티에 아이보리 슬랙스",
+  "caption_why": "위아래 톤을 밝게 붙여 색을 안 늘리니까 대충 입어도 정돈돼 보여",
+  "caption_how": "티는 앞만 살짝 넣어야 슬랙스 라인이 살아",
   "is_flagship": true,
-  "review_note": "차콜 슬랙스는 클린의 재료지 클래식 신호 아님 → classic 제거, clean 단일 지배. 핏한 티라 재생성 후보 등록(그리드 목업에서 최종 판정)"
+  "flagship_reason": "라운드 티+슬랙스 = 유니클로급 슬롯 기본템으로 재현 가능, 전신·얼굴 노출",
+  "review_note": "원톤 반팔이라 '데이트' 제거(약한 답) → 주말카페·동네. clean 단일 지배."
 }

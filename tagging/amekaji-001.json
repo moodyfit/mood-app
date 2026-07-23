@@ -1,11 +1,1 @@
-{
-  "file": "amekaji-001.png",
-  "mood_vector": {"amekaji": 0.8, "classic": 0.2},
-  "situations": ["주말카페", "여행"],
-  "seasons": ["spring", "fall"],
-  "body_spec": {"height": "177", "build": "regular"},
-  "caption_item": "올리브 밀리터리 코트에 청청 데님",
-  "caption_why": "위아래 청으로 깔고 카키 코트 하나 얹었어 — 흙색 톤으로 붙어서 낡은 느낌이 멋으로 읽혀",
-  "is_flagship": true,
-  "review_note": "토르소 크롭 → 대표컷 금지, 보조컷만. classic 0.2는 브라운 부츠·벨트 정장기 기여로 유지"
-}
+{"file":"amekaji-001.png","mood_vector":{"amekaji":1.0},"situations":["동네"],"seasons":["spring","fall"],"body_spec":{"height":"178","build":"slim"},"caption_item":"데님 셔츠자켓에 블랙 티·블루 진","caption_why":"청청을 톤차로 붙이고 검정 티로 눌러","caption_how":"셔츠자켓 단추 풀어 티를 보여","is_flagship":false}

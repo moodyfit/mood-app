@@ -1,11 +1,1 @@
-{
-  "file": "street-001.png",
-  "mood_vector": {"street": 1.0},
-  "situations": ["동네", "여행"],
-  "seasons": ["spring", "fall"],
-  "body_spec": {"height": "178", "build": "regular"},
-  "caption_item": "오버핏 아치로고 후디에 와이드 팬츠, 지갑체인",
-  "caption_why": "위아래 다 크게 놀아서 힘이 안 들어가 보여 — 대신 발만 밝은 스니커즈로 띄우면 안 처져",
-  "is_flagship": false,
-  "review_note": "'놀거리'(사전 밖) → '동네'로 수정. 억지 상황 배제"
-}
+{"file":"street-001.png","mood_vector":{"street":1.0},"situations":["동네"],"seasons":["fall","winter"],"body_spec":{"height":"181","build":"slim"},"caption_item":"블랙 오버핏 후디에 올리브 카고","caption_why":"위아래 다 크게 놀리고 캡으로 눌러 힘을 뺐어","caption_how":"후디 밑단은 카고 위로 덮어","is_flagship":true,"flagship_reason":"오버핏 후디+카고+캡+청키 스니커 = 슬롯 기본템 재현, 전신·FW 대표"}

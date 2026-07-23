@@ -16,7 +16,7 @@ import { fal } from "@fal-ai/client";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildPrompt, TEST_AXES, ALL_AXES } from "./prompts.ts";
+import { buildPrompt, TEST_AXES, ALL_AXES, RATIO_PLAN, NEGATIVE } from "./prompts.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -34,10 +34,15 @@ const SIZES = [
   { width: 864, height: 1152, label: "3:4" }, // 0.750
   { width: 768, height: 1344, label: "9:16" }, // 0.571
 ] as const;
-// 인덱스 기반 결정적 분포(재현성): 0~6 → 4:5, 7~8 → 3:4, 9 → 9:16 (약 7:2:1)
+// 인덱스 기반 결정적 분포(테스트용): 0~6 → 4:5, 7~8 → 3:4, 9 → 9:16
 function pickSize(i: number) {
   const r = ((i % 10) + 10) % 10;
   const s = r <= 6 ? SIZES[0] : r <= 8 ? SIZES[1] : SIZES[2];
+  return { ...s, ratio: +(s.width / s.height).toFixed(3) };
+}
+// 배치용: 승인된 RATIO_PLAN(축당 15) 라벨 → 사이즈
+function sizeForRatio(label: string) {
+  const s = label === "3:4" ? SIZES[1] : label === "9:16" ? SIZES[2] : SIZES[0];
   return { ...s, ratio: +(s.width / s.height).toFixed(3) };
 }
 const COST_PER_IMG = MODEL.endsWith("schnell") ? 0.003 : 0.025; // USD 대략치(미리보기용)
@@ -94,23 +99,35 @@ async function genAndSave(
     console.log(`[dry] ${name} · ${size.label}(${size.ratio})\n      ${prompt}\n`);
     return;
   }
-  const res: any = await fal.subscribe(MODEL, {
-    input: {
-      prompt,
-      image_size: { width: size.width, height: size.height },
-      num_images: 1,
-      num_inference_steps: MODEL.endsWith("schnell") ? 4 : 28,
-      guidance_scale: GUIDANCE,
-      enable_safety_checker: true,
-    },
-  });
-  const url = res?.data?.images?.[0]?.url;
-  if (!url) throw new Error(`no image url for ${name}`);
-  const buf = Buffer.from(await (await fetch(url)).arrayBuffer());
-  await fs.mkdir(path.dirname(outPath), { recursive: true });
-  await fs.writeFile(outPath, buf);
-  await appendLog({ file: path.relative(ROOT, outPath), prompt, model: MODEL, aspect_ratio: size.ratio, size: size.label, ...meta });
-  console.log(`saved ${name}`);
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res: any = await fal.subscribe(MODEL, {
+        input: {
+          prompt,
+          image_size: { width: size.width, height: size.height },
+          num_images: 1,
+          num_inference_steps: MODEL.endsWith("schnell") ? 4 : 28,
+          guidance_scale: GUIDANCE,
+          negative_prompt: NEGATIVE, // dev는 반영, schnell은 무시될 수 있음
+          enable_safety_checker: true,
+        },
+      });
+      const url = res?.data?.images?.[0]?.url;
+      if (!url) throw new Error("no image url");
+      const buf = Buffer.from(await (await fetch(url)).arrayBuffer());
+      if (buf.length < 3000) throw new Error("too small");
+      await fs.mkdir(path.dirname(outPath), { recursive: true });
+      await fs.writeFile(outPath, buf);
+      await appendLog({ file: path.relative(ROOT, outPath), prompt, model: MODEL, aspect_ratio: size.ratio, size: size.label, ...meta });
+      console.log(`saved ${name}`);
+      return;
+    } catch (e) {
+      lastErr = e;
+      await new Promise((r) => setTimeout(r, 3000 * (attempt + 1)));
+    }
+  }
+  console.error(`FAILED ${name}: ${(lastErr as Error).message}`);
 }
 
 async function runTest() {
@@ -131,7 +148,8 @@ async function runBatch(axis: string, count: number) {
     const num = String(start + k).padStart(3, "0");
     const idx = start + k - 1;
     const { prompt, meta } = buildPrompt(axis, idx);
-    await genAndSave(prompt, path.join(IMAGES, `${axis}-${num}.png`), meta, pickSize(idx));
+    const size = sizeForRatio(RATIO_PLAN[idx % RATIO_PLAN.length]);
+    await genAndSave(prompt, path.join(IMAGES, `${axis}-${num}.png`), meta, size);
   }
 }
 

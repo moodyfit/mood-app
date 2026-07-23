@@ -1,0 +1,12 @@
+{
+  "file": "clean-006.png",
+  "mood_vector": {"clean": 1.0},
+  "situations": ["동네"],
+  "seasons": ["summer"],
+  "body_spec": {"height": "178", "build": "slim"},
+  "caption_item": "크림 니트 티에 블랙 와이드 슬랙스",
+  "caption_why": "밝은 니트 상의에 검정 하의로 두 색만 써서 산책룩인데 정돈돼",
+  "caption_how": "슬랙스는 발등에 한 번 접히게 길이를 잡아",
+  "is_flagship": false,
+  "review_note": "강변 산책=동네 1개만(과충전 회피). 크림/블랙 2색 = clean 단일."
+}

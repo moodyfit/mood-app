@@ -1,0 +1,13 @@
+{
+  "file": "clean-012.png",
+  "mood_vector": {"clean": 1.0},
+  "situations": ["동네", "출근"],
+  "seasons": ["spring", "fall"],
+  "body_spec": {"height": "182", "build": "regular"},
+  "caption_item": "아이보리 크루넥 니트에 차콜 슬랙스",
+  "caption_why": "니트와 슬랙스를 톤차만 줘 붙이고 검정 크로스백으로 포인트",
+  "caption_how": "크로스백은 짧게 메 허리선을 끊지 않게",
+  "is_flagship": true,
+  "flagship_reason": "크루넥 니트+슬랙스+스니커 = 슬롯 기본템 재현, 전신·간절기 대표컷",
+  "review_note": "간절기 대표 1장. 크로스백=무채색(색 서술 무관)."
+}
