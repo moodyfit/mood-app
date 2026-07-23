@@ -1,12 +1,23 @@
 -- 6단계 (B) 사진 레벨 상품 연결 — 첫 배치(검수용): clean-001
 -- 어필리에이트 소스 = 공개 링크 interim (무신사 통합검색 딥링크). verified=false (실링크·실가 확정 전).
--- 스키마 확장(products 재사용, photo_image_url 로 사진 연결)
-alter table products add column if not exists photo_image_url text;
-alter table products add column if not exists is_default boolean default true;
-alter table products add column if not exists verified boolean default false;
-
--- 멱등: 이 사진의 기존 연결 제거 후 재삽입
-delete from products where photo_image_url = 'moods/clean-001.jpg';
+-- products 테이블 정규화 (연결 DB에 옛 스키마 잔재 → 빈 테이블이므로 clean 재생성)
+-- 앱이 쓰는 컬럼만: 무드 폴백(mood_key) + 사진 연결(photo_image_url) 겸용
+drop table if exists products cascade;
+create table products (
+  id uuid primary key default gen_random_uuid(),
+  mood_key text,
+  photo_image_url text,          -- (B) 사진 연결. null 이면 무드 레벨 상품
+  name text not null,
+  category text not null,
+  price_tier text,
+  price integer not null,
+  source text not null,
+  gradient text,
+  affiliate_url text,
+  is_default boolean default true,
+  verified boolean default false,
+  created_at timestamptz default now()
+);
 
 -- clean-001 (화이트 라운드 티 + 아이보리 슬랙스 + 로퍼, 여름) — 3슬롯(아우터 없음)
 -- 상의 (2 소스: 횡단 가격)
