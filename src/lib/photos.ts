@@ -61,10 +61,8 @@ export function photoUrl(imagePath: string): string {
 export async function fetchPhotos(): Promise<Photo[]> {
   const sb = getSupabase();
   if (!sb) return [];
-  // photos-seed.sql 마이그레이션으로 caption_how·aspect_ratio 컬럼 보장됨(입고 후). 실측 비율로 메이슨리.
-  const { data, error } = await sb
-    .from("photos")
-    .select("id,image_url,mood_vector,situations,seasons,caption_item,caption_why,caption_how,is_flagship,aspect_ratio");
+  // select("*") — caption_how·aspect_ratio 컬럼이 마이그레이션 전이어도 쿼리가 안 깨지게(있으면 포함).
+  const { data, error } = await sb.from("photos").select("*");
   if (error || !data) return [];
   return data as Photo[];
 }
@@ -164,7 +162,7 @@ export async function fetchPhotoBySlug(slug: string): Promise<Photo | null> {
   if (!sb) return null;
   const { data, error } = await sb
     .from("photos")
-    .select("id,image_url,mood_vector,situations,seasons,caption_item,caption_why,caption_how,is_flagship,aspect_ratio")
+    .select("*")
     .ilike("image_url", `moods/${slug}.%`)
     .limit(1);
   if (error || !data || data.length === 0) return null;
