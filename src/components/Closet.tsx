@@ -9,15 +9,25 @@ import { useMoodStore } from "@/lib/store";
  * 카드 탭 → 원본 소환(/closet/[id]). [입었어]는 조용한 카운트(팡파레 없음).
  * 착용 0 아이템에만 살리기 문구, 1+ 아이템엔 착용 수만.
  */
-export default function Closet({ promotedName }: { promotedName?: string }) {
+export default function Closet({
+  promotedName,
+  hideHeader = false,
+}: {
+  promotedName?: string;
+  hideHeader?: boolean;
+}) {
   const { owned, wornOf, recordWorn } = useMoodStore();
-  if (owned.length === 0) return null;
+  if (owned.length === 0) {
+    return <p className="text-[13px] text-ink-soft">아직 담은 옷이 없어.</p>;
+  }
 
   return (
     <div>
-      <div className="mb-2 text-[12px] text-ink-faint">
-        {promotedName ? `새로 온 ${promotedName}, 입어볼 조합` : "내 옷"}
-      </div>
+      {!hideHeader && (
+        <div className="mb-2 text-[12px] text-ink-faint">
+          {promotedName ? `새로 온 ${promotedName}, 입어볼 조합` : "내 옷"}
+        </div>
+      )}
       <div className="flex flex-col gap-2">
         {owned.map((item) => {
           const mood = MOODS[item.moodKey];

@@ -5,8 +5,8 @@ import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import TasteProfile from "@/components/TasteProfile";
 import Room from "@/components/Room";
-import Closet from "@/components/Closet";
 import Discovered from "@/components/Discovered";
+import { MOODS } from "@/lib/moods";
 import { useMoodStore } from "@/lib/store";
 
 /**
@@ -34,11 +34,25 @@ export default function SpacePage() {
 
       <TasteProfile />
 
-      {/* 승격: 새로 온 옷의 입어볼 조합을 카드 바로 아래 */}
-      {promoted && (
-        <div className="mt-4">
-          <Closet promotedName={newest.name} />
-        </div>
+      {/* 승격(7일): 새로 온 옷 스포트라이트 — 단일 카드, 탭 시 원본 소환 */}
+      {promoted && newest && MOODS[newest.moodKey] && (
+        <Link
+          href={`/closet/${newest.id}`}
+          className="mt-4 flex items-center gap-3 rounded-2xl border border-line bg-white p-3 transition hover:border-accent"
+        >
+          <div
+            className="h-14 w-12 flex-shrink-0 rounded-lg"
+            style={
+              MOODS[newest.moodKey]!.imageUrl
+                ? { backgroundImage: `url(${MOODS[newest.moodKey]!.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+                : { background: MOODS[newest.moodKey]!.gradient }
+            }
+          />
+          <div className="min-w-0 flex-1">
+            <div className="text-[12px] text-ink-faint">새로 온 {newest.name}</div>
+            <div className="mt-0.5 text-[13px] font-semibold">입어볼 조합 보기 ›</div>
+          </div>
+        </Link>
       )}
 
       <Link
@@ -68,11 +82,15 @@ export default function SpacePage() {
         <Discovered />
       </div>
 
-      {/* 소유 결 — 승격 중이 아닐 때만 하단(7일 경과 시 여기로 복귀) */}
-      {!promoted && (
-        <div className="mt-8">
-          <Closet />
-        </div>
+      {/* 소유 결 — 리스트는 하위 페이지(/closet)로. 여기선 컴팩트 진입만(길어짐 방지) */}
+      {owned.length > 0 && (
+        <Link
+          href="/closet"
+          className="mt-8 flex items-center justify-between rounded-[12px] border border-line px-4 py-3.5 transition hover:bg-paper-2"
+        >
+          <span className="text-[14px] font-semibold">내 옷</span>
+          <span className="font-latin text-[13px] text-ink-soft">{owned.length}벌 ›</span>
+        </Link>
       )}
     </div>
   );
