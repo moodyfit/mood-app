@@ -54,7 +54,7 @@ export default function HomeGallery({ photos = [] }: { photos?: Photo[] }) {
         savedCount={savedCount}
         changedCount={0}
         onChange={onToggle}
-        labels={["새로운 느낌", "내 느낌"]}
+        labels={["새로운 느낌", "나의 느낌"]}
         invite="3장만 저장하면 네 느낌이 생겨"
         rightNote=""
         leftNote="안 가본 느낌들이야"
@@ -67,14 +67,18 @@ export default function HomeGallery({ photos = [] }: { photos?: Photo[] }) {
     // 내 느낌 = 추구미 가중 정렬(적합도 큰 게 앞·히어로). 새로운 느낌 = 하위 축 먼저(탐색).
     const scored = photos.map((p) => ({
       p,
-      s: Object.entries(p.mood_vector ?? {}).reduce((a, [k, v]) => a + (affinity[k] ?? 0) * v, 0),
+      s: Object.entries(p.mood_vector ?? {}).reduce(
+        (a, [k, v]) => a + (affinity[k] ?? 0) * v,
+        0,
+      ),
     }));
     const personalOrder = [...scored].sort((a, b) => b.s - a.s).map((x) => x.p);
     const newOrder = [...scored].sort((a, b) => a.s - b.s).map((x) => x.p);
     const ordered = personal ? personalOrder : newOrder;
 
     // 히어로(크기=적합도)는 '내 느낌' + 취향 형성 시에만. '새로운 느낌'은 탐색이라 랭크 히어로 없음
-    const heroPhoto = personal && hasTaste && ordered.length > 3 ? ordered[0] : null;
+    const heroPhoto =
+      personal && hasTaste && ordered.length > 3 ? ordered[0] : null;
     const rest = heroPhoto ? ordered.slice(1) : ordered;
     const shown = rest.slice(0, visible);
     const remaining = rest.length - shown.length;
@@ -119,9 +123,12 @@ export default function HomeGallery({ photos = [] }: { photos?: Photo[] }) {
 
   // ── 폴백: 6무드 커버 (빈 DB/로컬) ──────────────────────────
   const personalKeys = personalizeOrder([...ALL_MOOD_KEYS], affinity);
-  const newKeys = [...ALL_MOOD_KEYS].sort((a, b) => (affinity[a] ?? 0) - (affinity[b] ?? 0));
+  const newKeys = [...ALL_MOOD_KEYS].sort(
+    (a, b) => (affinity[a] ?? 0) - (affinity[b] ?? 0),
+  );
   const orderedKeys = personal ? personalKeys : newKeys;
-  const heroKey = personal && hasTaste && orderedKeys.length > 3 ? orderedKeys[0] : null;
+  const heroKey =
+    personal && hasTaste && orderedKeys.length > 3 ? orderedKeys[0] : null;
   const restKeys = heroKey ? orderedKeys.slice(1) : orderedKeys;
 
   return (
@@ -139,7 +146,7 @@ export default function HomeGallery({ photos = [] }: { photos?: Photo[] }) {
               <div key={k} className="mb-3 break-inside-avoid animate-rise">
                 <MoodCard mood={MOODS[k]} hint={!heroKey && i === 0} />
               </div>
-            ) : null
+            ) : null,
           )}
         </div>
       </div>
