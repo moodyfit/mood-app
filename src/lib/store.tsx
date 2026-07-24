@@ -23,6 +23,7 @@ export interface DiscoveredItem {
 }
 
 const K_SAVES = "mood.saves.v1";
+const K_SAVED_PHOTOS = "mood.savedPhotos.v1"; // 사진별 저장(전시 하트) — 무드 저장과 별개
 const K_CARD = "mood.cardIssued.v1";
 const K_AFFINITY = "mood.affinity.v1"; // 7.6 프로필 무드 벡터
 const K_SEARCH = "mood.searchCounts.v1"; // 7.8 검색 기억
@@ -46,6 +47,8 @@ interface MoodStore {
   affinity: Affinity;
   isSaved: (key: MoodKey) => boolean;
   toggleSave: (key: MoodKey, query?: string) => void;
+  isPhotoSaved: (id: string) => boolean;
+  togglePhotoSave: (id: string, moodKey?: MoodKey, query?: string) => void;
   recordView: (key: MoodKey) => void;
   recordScanLike: (key: MoodKey) => void;
   recordSearch: (query: string) => void;
@@ -74,6 +77,7 @@ const Ctx = createContext<MoodStore | null>(null);
 
 export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [saves, setSaves] = useState<SaveRecord[]>([]);
+  const [savedPhotoIds, setSavedPhotoIds] = useState<string[]>([]);
   const [affinity, setAffinity] = useState<Affinity>({});
   const [searchCounts, setSearchCounts] = useState<Record<string, number>>({});
   const [owned, setOwned] = useState<OwnedItem[]>([]);
@@ -93,6 +97,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       // 캐논 6축에 없는 스테일 키(옛 버전 localStorage 잔재)는 로드 시 제거 → self-heal
       const s = localStorage.getItem(K_SAVES);
       if (s) setSaves((JSON.parse(s) as SaveRecord[]).filter((r) => isKnownMood(r.moodKey)));
+      const sp = localStorage.getItem(K_SAVED_PHOTOS);
+      if (sp) setSavedPhotoIds(JSON.parse(sp) as string[]);
       const a = localStorage.getItem(K_AFFINITY);
       if (a) {
         const raw = JSON.parse(a) as Affinity;
@@ -120,6 +126,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     if (!hydrated) return;
     try {
       localStorage.setItem(K_SAVES, JSON.stringify(saves));
+      localStorage.setItem(K_SAVED_PHOTOS, JSON.stringify(savedPhotoIds));
       localStorage.setItem(K_AFFINITY, JSON.stringify(affinity));
       localStorage.setItem(K_SEARCH, JSON.stringify(searchCounts));
       localStorage.setItem(K_OWNED, JSON.stringify(owned));
@@ -128,7 +135,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     } catch {
       /* ignore */
     }
-  }, [saves, affinity, searchCounts, owned, discovered, worn, hydrated]);
+  }, [saves, savedPhotoIds, affinity, searchCounts, owned, discovered, worn, hydrated]);
 
   const bump = useCallback((key: MoodKey, w: number) => {
     setAffinity((prev) => ({ ...prev, [key]: (prev[key] ?? 0) + w }));
@@ -157,6 +164,39 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         bump(key, W_SAVE); // 프로필 가중 (저장은 강한 신호)
 
         // 카드 '발급'은 조용히 — 모달·알림 금지(스펙). 신호는 탭바 dot 하나뿐.
+        if (next.length >= TASTE_CARD_THRESHOLD && !cardEverIssued) {
+          setCardEverIssued(true);
+          setSpaceDot(true);
+          try {
+            localStorage.setItem(K_CARD, "1");
+            localStorage.setItem(K_DOT, "1");
+          } catch {
+            /* ignore */
+          }
+        }
+        return next;
+      });
+    },
+    [cardEverIssued, showToast, bump]
+  );
+
+  const isPhotoSaved = useCallback(
+    (id: string) => savedPhotoIds.includes(id),
+    [savedPhotoIds]
+  );
+
+  // 사진별 저장(전시 하트). 무드 affinity는 그대로 올려 개인화 유지. 취향카드 발급도 사진 저장 수 기준.
+  const togglePhotoSave = useCallback(
+    (id: string, moodKey?: MoodKey, query?: string) => {
+      setSavedPhotoIds((prev) => {
+        if (prev.includes(id)) return prev.filter((x) => x !== id);
+        const next = [...prev, id];
+        showToast("저장했어");
+        haptic();
+        if (moodKey) {
+          bump(moodKey, W_SAVE);
+          setSaves((s) => (s.some((r) => r.moodKey === moodKey) ? s : [...s, { moodKey, savedAt: Date.now(), query }]));
+        }
         if (next.length >= TASTE_CARD_THRESHOLD && !cardEverIssued) {
           setCardEverIssued(true);
           setSpaceDot(true);
@@ -248,10 +288,13 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<MoodStore>(
     () => ({
       saves,
-      savedCount: saves.length,
+      // 취향 형성 기준 = 사진 저장 수(전시 주 경로), 폴백(무드 저장)도 포괄
+      savedCount: Math.max(savedPhotoIds.length, saves.length),
       affinity,
       isSaved,
       toggleSave,
+      isPhotoSaved,
+      togglePhotoSave,
       recordView,
       recordScanLike,
       recordSearch,
@@ -277,9 +320,12 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     }),
     [
       saves,
+      savedPhotoIds,
       affinity,
       isSaved,
       toggleSave,
+      isPhotoSaved,
+      togglePhotoSave,
       recordView,
       recordScanLike,
       recordSearch,

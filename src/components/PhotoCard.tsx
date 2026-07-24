@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Photo } from "@/lib/photos";
+import type { MoodKey } from "@/lib/types";
 import { photoUrl, dominantMood, cardRatio } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 
@@ -25,9 +26,9 @@ export default function PhotoCard({
   size?: "hero" | "sm";
 }) {
   const router = useRouter();
-  const { isSaved, toggleSave } = useMoodStore();
+  const { isPhotoSaved, togglePhotoSave } = useMoodStore();
   const key = dominantMood(photo.mood_vector);
-  const saved = isSaved(key);
+  const saved = isPhotoSaved(photo.id); // 사진별 저장 — 같은 무드의 다른 사진과 독립
   // (B) 사진 전용 상품 뷰로 — slug = 파일명(moods/clean-001.jpg → clean-001)
   const slug = photo.image_url.split("/").pop()?.replace(/\.\w+$/, "") ?? "";
   const hero = size === "hero";
@@ -83,7 +84,7 @@ export default function PhotoCard({
         onPointerUp={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
-          toggleSave(key, query);
+          togglePhotoSave(photo.id, key as MoodKey, query);
         }}
         aria-label={saved ? "저장 취소" : "저장"}
         className={`absolute right-2.5 top-2.5 flex h-[34px] w-[34px] items-center justify-center rounded-full border text-base backdrop-blur transition ${

@@ -4,7 +4,7 @@ import { fetchPhotoBySlug, getProductsForPhoto, dominantMood } from "@/lib/photo
 import PhotoProductView from "@/components/PhotoProductView";
 
 // (B) 사진 전용 상품 뷰. slug = 파일명(clean-001), 확장자 무관 조회
-export const dynamic = "force-dynamic";
+export const revalidate = 60; // 슬러그별 60초 캐시
 
 export default async function PhotoPage({ params }: { params: { slug: string } }) {
   const photo = await fetchPhotoBySlug(params.slug);

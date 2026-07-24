@@ -6,7 +6,7 @@ import { fetchPhotos, rankPhotos } from "@/lib/photos";
 import { resolveMoods } from "@/lib/moods";
 
 // ?q= 는 매 요청 달라지므로 동적 렌더
-export const dynamic = "force-dynamic";
+export const revalidate = 60; // 검색 파라미터로 동적이되, photos fetch는 60초 캐시 재사용
 
 export default async function ResultsPage({
   searchParams,

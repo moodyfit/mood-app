@@ -8,6 +8,10 @@ import PhotoCard from "./PhotoCard";
 import GridTail from "./GridTail";
 import ResultToggle from "./ResultToggle";
 
+// 성능: 한 번에 90장(≈23MB) 로드 대신 12장씩 끊어서 — 초기 이미지 로드 급감
+const INITIAL_VISIBLE = 12;
+const LOAD_STEP = 12;
+
 /**
  * DB photos 메이슨리 + 모먼트3 [모두의 결과 ↔ 너의 결과] 토글.
  * 균등 격자(커머스 문법=비교) 대신 메이슨리(전시 문법=갤러리/무드보드).
@@ -28,7 +32,13 @@ export default function PhotoGrid({
   // 프로필 형성 = 저장 3장 이상. 형성되면 기본값이 '너의 결과'.
   const formed = savedCount >= TASTE_CARD_THRESHOLD;
   const [override, setOverride] = useState<boolean | null>(null);
+  const [visible, setVisible] = useState(INITIAL_VISIBLE);
   const personal = override ?? (you || formed);
+
+  function onToggle(v: boolean) {
+    setOverride(v);
+    setVisible(INITIAL_VISIBLE); // 순서 바뀌니 처음부터 다시 끊어 보여줌
+  }
 
   const neutral = photos;
   const personalOrder = [...photos]
@@ -49,7 +59,9 @@ export default function PhotoGrid({
 
   // B6: 1번 카드는 모두/너의 무관하게 항상 대형 고정 + 해설 펼침(표본 충분할 때)
   const hero = ordered.length > 3 ? ordered[0] : null;
-  const rest = hero ? ordered.slice(1) : ordered;
+  const allRest = hero ? ordered.slice(1) : ordered;
+  const rest = allRest.slice(0, visible);
+  const remaining = allRest.length - rest.length;
 
   return (
     <div>
@@ -62,7 +74,7 @@ export default function PhotoGrid({
         formed={formed}
         savedCount={savedCount}
         changedCount={changedCount}
-        onChange={setOverride}
+        onChange={onToggle}
       />
 
       {/* 개인화 전용 히어로: 너의 결과에서만 최상위 매치를 전면폭으로 = 크기로 적합도를 말한다 */}
@@ -81,8 +93,18 @@ export default function PhotoGrid({
         ))}
       </div>
 
-      {/* 유한 구경(③) + v2.6 검색어 제안: 무한 스크롤 대신 재검색 유도 */}
-      <GridTail query={query} count={ordered.length} unit="장" />
+      {/* 유한 구경(③): 우선 더보기로 끊고(성능·리듬), 다 보면 재검색 유도 */}
+      {remaining > 0 ? (
+        <button
+          type="button"
+          onClick={() => setVisible((v) => v + LOAD_STEP)}
+          className="mt-1 w-full rounded-2xl border border-line py-3 text-[13.5px] font-semibold text-ink-soft transition active:scale-[0.99]"
+        >
+          더보기 <span className="text-ink-faint">· {remaining}장 더</span>
+        </button>
+      ) : (
+        <GridTail query={query} count={ordered.length} unit="장" />
+      )}
     </div>
   );
 }

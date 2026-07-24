@@ -13,8 +13,9 @@ export function getSupabase(): SupabaseClient | null {
   if (!url || !key) return null; // 미설정 → 로컬 시드 사용
   if (!cached)
     cached = createClient(url, key, {
-      // Next 가 supabase GET 을 fetch 캐시에 굳혀 옛 데이터를 반환하는 문제 방지 — 항상 최신.
-      global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
+      // 읽기 데이터는 자주 안 바뀜 → 60초 ISR 캐시로 이동 속도↑(개인화는 클라이언트라 무관).
+      // SQL/이미지 변경은 최대 60초 뒤 반영.
+      global: { fetch: (input, init) => fetch(input, { ...init, next: { revalidate: 60 } }) },
     });
   return cached;
 }
