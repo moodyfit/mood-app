@@ -119,6 +119,7 @@ export default function MoodCard({
         <button
           type="button"
           onPointerDown={(e) => e.stopPropagation()}
+          onPointerUp={(e) => e.stopPropagation()}
           onClick={(e) => {
             e.stopPropagation();
             toggleSave(mood.key, query);

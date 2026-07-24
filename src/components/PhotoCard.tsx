@@ -80,6 +80,7 @@ export default function PhotoCard({
       <button
         type="button"
         onPointerDown={(e) => e.stopPropagation()}
+        onPointerUp={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
           toggleSave(key, query);
