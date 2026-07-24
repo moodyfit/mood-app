@@ -32,5 +32,9 @@ next-env.d.ts
 
 # 태깅 소스 이미지(대용량) — 로그·태깅 산출물은 유지
 /images/**/*.png
+/images/**/*.jpg
+/images/**/*.jpeg
 /scripts/node_modules
 public/review/
+.env*
+moodfit-qr.png

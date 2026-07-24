@@ -1,0 +1,7 @@
+# 런타임에 불필요한 생성/도구 자산 — Vercel 업로드·빌드에서 제외 (앱은 src/ + public/ 만 필요)
+images/
+cardnews/
+scripts/
+supabase/
+docs/
+tagging/
