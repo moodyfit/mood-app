@@ -32,6 +32,14 @@ const K_SCAN = "mood.scanDone.v1"; // 스캔 1회 완료 — 이후 스캔 탭�
 const K_DOT = "mood.spaceDot.v1"; // B5 카드 발급 dot (나의 공간 미확인 신호)
 const K_DISC = "mood.discovered.v1"; // C7 '발견' 결 (스크린샷 입주)
 const K_WORN = "mood.worn.v1"; // #9 [입었어] 착용 횟수 (아이템 id별)
+const K_BODY = "mood.bodyProfile.v1"; // 영상(룩북) 탭 — 신체 프로필(고정 검색축·락인)
+
+// 신체 프로필: 한 번 넣으면 이후 모든 룩 검색이 이걸로 걸러짐(쌓일수록 나가기 어려움).
+export interface BodyProfile {
+  bodyType?: "마른" | "보통" | "통통" | "근육";
+  personalColor?: "웜" | "쿨" | "모름";
+  height?: number; // cm
+}
 
 // 프로필 가중치: 저장은 클릭보다 강한 신호
 const W_SAVE = 2;
@@ -69,6 +77,8 @@ interface MoodStore {
   addDiscovered: (moodKey: MoodKey) => void;
   recordWorn: (id: string) => void;
   wornOf: (id: string) => number;
+  bodyProfile: BodyProfile;
+  setBodyProfile: (p: BodyProfile) => void;
   toast: string | null;
   showToast: (msg: string) => void;
 }
@@ -87,6 +97,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [spaceDot, setSpaceDot] = useState(false);
   const [discovered, setDiscovered] = useState<DiscoveredItem[]>([]);
   const [worn, setWorn] = useState<Record<string, number>>({});
+  const [bodyProfile, setBodyProfileState] = useState<BodyProfile>({});
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -115,6 +126,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       if (d) setDiscovered((JSON.parse(d) as DiscoveredItem[]).filter((x) => isKnownMood(x.moodKey)));
       const w = localStorage.getItem(K_WORN);
       if (w) setWorn(JSON.parse(w));
+      const bp = localStorage.getItem(K_BODY);
+      if (bp) setBodyProfileState(JSON.parse(bp));
     } catch {
       /* ignore */
     }
@@ -248,6 +261,15 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   }, []);
   const wornOf = useCallback((id: string) => worn[id] ?? 0, [worn]);
 
+  const setBodyProfile = useCallback((p: BodyProfile) => {
+    setBodyProfileState(p);
+    try {
+      localStorage.setItem(K_BODY, JSON.stringify(p));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   const addDiscovered = useCallback((moodKey: MoodKey) => {
     setDiscovered((prev) => {
       const id = `${moodKey}-${prev.length}`;
@@ -315,6 +337,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       addDiscovered,
       recordWorn,
       wornOf,
+      bodyProfile,
+      setBodyProfile,
       toast,
       showToast,
     }),
@@ -344,6 +368,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       addDiscovered,
       recordWorn,
       wornOf,
+      bodyProfile,
+      setBodyProfile,
       toast,
       showToast,
     ]

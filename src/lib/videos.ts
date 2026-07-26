@@ -1,124 +1,168 @@
-// 픽어뷰 패션판 — 고민(자연어) 검색 → 관련 패션 유튜버 영상 + 핵심 요약.
-// 기본: 큐레이션 시드(키 없이 즉시 동작). 라이브: YOUTUBE_API_KEY 있으면 실검색으로 승격.
-// 정체성 주의: '취향 전시(홈)'와 다른 실용 축(7.7) — "이 고민 어떻게?"에 전문가 영상으로 직답.
+// 픽어뷰 패션판 — "유튜브를 룩북으로 재편집".
+// 뷰티: 고민→방법 요약(텍스트). 패션: 상황→영상에서 룩만 뽑은 카드(프레임+아이템 분해+왜 맞는지).
+// 핀터레스트엔 없는 '만든 사람의 설명', 유튜브엔 없는 '훑어보기' — 그 사이를 먹는 자리.
+// 락인: 신체 프로필(체형·키·퍼컬)을 한 번 받아두면 이후 모든 검색이 필터링됨.
 
-export interface FashionVideo {
-  id: string; // YouTube video id
-  title: string;
+import type { BodyProfile } from "./store";
+
+export interface LookItem {
+  name: string;
+  category: string; // 아우터/상의/하의/신발/가방 ...
+}
+
+export interface LookCard {
+  id: string; // 카드 고유 id (videoId + 순번)
+  videoId: string;
+  timestamp?: number; // 룩 등장 지점(초) — 있으면 그 순간으로 딥링크
+  title: string; // 룩 한 줄 이름
   channel: string;
-  topics: string[]; // 자연어 매칭용 태그
-  summary: string[]; // 핵심 3줄 (시드는 제목·주제 기반, 라이브는 설명/자막 기반)
+  situations: string[]; // 상황 검색축(가변)
+  items: LookItem[]; // 아이템 분해
+  whyFits: string; // "왜 이 상황에 맞는지" 한 줄
+  bodyType?: BodyProfile["bodyType"][]; // 이 룩이 특히 맞는 체형(있으면 프로필 부스트)
+  personalColor?: BodyProfile["personalColor"][]; // 퍼스널컬러 적합
+  lookImageUrl?: string; // 캡처 프레임(있으면 우선). 없으면 썸네일 폴백
 }
 
 export function youtubeThumb(id: string): string {
   return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 }
-export function youtubeWatchUrl(id: string): string {
-  return `https://www.youtube.com/watch?v=${id}`;
+export function youtubeWatchUrl(id: string, t?: number): string {
+  return `https://www.youtube.com/watch?v=${id}${t ? `&t=${t}s` : ""}`;
+}
+export function lookImage(l: LookCard): string {
+  return l.lookImageUrl ?? youtubeThumb(l.videoId);
 }
 
-// 큐레이션 시드 — 전부 실제 영상(실검색으로 수집한 실 video id). 요약은 제목·주제 기반 핵심.
-export const VIDEO_SEED: FashionVideo[] = [
+// 큐레이션 시드 — 실제 영상에서 뽑은 룩 카드. (timestamp·캡처 프레임은 큐레이션/파이프라인으로 보강)
+export const LOOK_SEED: LookCard[] = [
   {
-    id: "14UQ8qCvBOk",
-    title: "요즘 입기 좋은 남자 여름 코디 30개",
+    id: "14UQ8qCvBOk-1",
+    videoId: "14UQ8qCvBOk",
+    title: "린넨 셔츠 여름 데일리",
     channel: "남자 패션 코디",
-    topics: ["여름", "계절", "데일리", "코디아이디어", "린넨", "더위"],
-    summary: [
-      "여름에 바로 입을 수 있는 코디 30가지를 아이템 조합 단위로 훑어줘.",
-      "톤 줄이고 시원한 소재(린넨·시어서커)로 더위에도 정돈돼 보이게.",
-      "따라 사기 쉽게 아이템별로 끊어서 보여줌.",
+    situations: ["여름", "데일리", "주말", "더위"],
+    items: [
+      { name: "린넨 오픈 셔츠", category: "상의" },
+      { name: "코튼 이지 쇼츠", category: "하의" },
+      { name: "스웨이드 로퍼", category: "신발" },
     ],
+    whyFits: "린넨으로 더위에도 늘어지지 않고 단정해 보여.",
+    personalColor: ["웜"],
   },
   {
-    id: "hia93-3Ha0k",
-    title: "따라만 입어도 호감 300% 남자 여름 코디",
+    id: "hia93-3Ha0k-1",
+    videoId: "hia93-3Ha0k",
+    title: "소개팅 화이트 셔츠 룩",
     channel: "남자 패션 코디",
-    topics: ["소개팅", "데이트", "호감", "첫인상", "여름", "깔끔"],
-    summary: [
-      "첫인상에서 호감 주는 여름 코디를 상황별로 제안.",
-      "과하지 않게, 색을 줄여 단정하게 잡는 게 핵심.",
-      "소개팅·데이트에 바로 쓰는 조합 위주.",
+    situations: ["소개팅", "데이트", "첫인상", "여름"],
+    items: [
+      { name: "화이트 코튼 셔츠", category: "상의" },
+      { name: "그레이 슬랙스", category: "하의" },
+      { name: "미니멀 로퍼", category: "신발" },
     ],
+    whyFits: "색을 둘로만 끊어 과하지 않게 — 첫인상에서 단정한 호감.",
+    personalColor: ["쿨"],
   },
   {
-    id: "pjLruE5lzFQ",
-    title: "남자 캐주얼무드 데일리룩 코디",
+    id: "pjLruE5lzFQ-1",
+    videoId: "pjLruE5lzFQ",
+    title: "톤온톤 캐주얼 데일리",
     channel: "데일리룩",
-    topics: ["미니멀", "데일리", "캐주얼", "무드", "기본템", "꾸안꾸"],
-    summary: [
-      "힘 뺀 캐주얼 무드로 매일 입기 좋은 데일리룩.",
-      "톤 맞추고 핏만 신경 써도 정돈돼 보이는 법.",
-      "기본 아이템으로 무드 만드는 조합.",
+    situations: ["데일리", "미니멀", "주말", "카페"],
+    items: [
+      { name: "무지 크루넥 티", category: "상의" },
+      { name: "와이드 코튼 팬츠", category: "하의" },
+      { name: "레더 스니커즈", category: "신발" },
     ],
+    whyFits: "힘 뺀 톤온톤이라 매일 입어도 정돈돼 보여.",
   },
   {
-    id: "e9MdY-OwHik",
-    title: "뚱뚱한 남자 코디 노하우 다 뿌림",
+    id: "e9MdY-OwHik-1",
+    videoId: "e9MdY-OwHik",
+    title: "체형 커버 세미오버 룩",
     channel: "식스타일",
-    topics: ["체형커버", "통통", "배", "살", "핏", "덩치"],
-    summary: [
-      "체형을 편하게 보이게 하는 핏·기장 노하우.",
-      "너무 붙는 핏 피하고 세로 라인 살리기.",
-      "짧고 굵게 핵심만.",
+    situations: ["데일리", "체형커버", "출근"],
+    items: [
+      { name: "세미오버 셔츠", category: "상의" },
+      { name: "스트레이트 슬랙스", category: "하의" },
     ],
+    whyFits: "붙지 않는 핏 + 세로 라인으로 체형을 편하게 눌러줘.",
+    bodyType: ["통통", "보통"],
   },
   {
-    id: "16puo9K3fog",
-    title: "셔츠 하나로 멋쟁이 되기, 이 영상 하나로 끝",
+    id: "16puo9K3fog-1",
+    videoId: "16puo9K3fog",
+    title: "셔츠 한 장 오피스·데일리",
     channel: "데일리룩",
-    topics: ["셔츠", "데일리", "레이어드", "기본템", "봄", "가을"],
-    summary: [
-      "셔츠 한 장으로 인상 바꾸는 활용법.",
-      "걸치기·레이어드로 층 만드는 팁.",
-      "기본템 셔츠 200% 쓰기.",
+    situations: ["오피스", "출근", "데일리", "면접"],
+    items: [
+      { name: "옥스포드 셔츠", category: "상의" },
+      { name: "네이비 슬랙스", category: "하의" },
     ],
+    whyFits: "셔츠 하나로 오피스도 데일리도 커버되는 기본 조합.",
+    bodyType: ["마른", "보통"],
   },
 ];
 
-// 고민(자연어) → 주제 확장 사전. 변형어를 주제로 접어 매칭률↑ (검색 실패 없음 원칙).
-const CONCERN_SYNONYMS: Record<string, string[]> = {
-  체형커버: ["배", "뱃살", "통통", "뚱뚱", "살", "가리", "덩치", "체형", "커버"],
-  소개팅: ["소개팅", "첫만남", "첫인상", "호감", "데이트", "썸"],
+// 상황(자연어) → 상황축 확장 사전. 신체 관련어는 프로필로 유도(검색축은 상황 고정).
+const SITUATION_SYNONYMS: Record<string, string[]> = {
+  소개팅: ["소개팅", "첫만남", "첫인상", "호감", "썸"],
+  데이트: ["데이트", "여자친구", "여친"],
   여름: ["여름", "더위", "더울", "장마", "휴가"],
   겨울: ["겨울", "추울", "패딩", "코트"],
   미니멀: ["미니멀", "깔끔", "심플", "단정", "베이직"],
-  데일리: ["데일리", "매일", "평소", "일상", "출근", "학교"],
-  셔츠: ["셔츠", "남방"],
-  오피스: ["오피스", "직장", "출근", "회사", "면접", "정장"],
-  꾸안꾸: ["꾸안꾸", "꾸안못", "힘빼", "자연스럽"],
+  데일리: ["데일리", "매일", "평소", "일상", "학교", "카페", "주말"],
+  오피스: ["오피스", "직장", "출근", "회사", "면접", "정장", "첫출근"],
+  체형커버: ["배", "뱃살", "통통", "뚱뚱", "살", "가리", "덩치", "체형", "커버"],
 };
 
-function expandQueryToTopics(q: string): string[] {
+function expandToSituations(q: string): string[] {
   const hits = new Set<string>();
-  for (const [topic, syns] of Object.entries(CONCERN_SYNONYMS)) {
+  for (const [topic, syns] of Object.entries(SITUATION_SYNONYMS)) {
     if (syns.some((s) => q.includes(s))) hits.add(topic);
   }
   return [...hits];
 }
 
-/** 시드 대상 자연어 검색 — 주제 확장 + 제목/토픽 키워드 점수. 매칭 0이어도 전부 반환(실패 없는 검색). */
-export function searchVideos(query: string): FashionVideo[] {
+/** 상황 검색(시드). 매칭 0이어도 전부 반환(실패 없는 검색). */
+export function searchLooks(query: string): LookCard[] {
   const q = query.trim().toLowerCase();
-  if (!q) return VIDEO_SEED;
-  const topics = expandQueryToTopics(q);
+  if (!q) return LOOK_SEED;
+  const situ = expandToSituations(q);
   const tokens = q.split(/\s+/).filter(Boolean);
 
-  const scored = VIDEO_SEED.map((v) => {
+  const scored = LOOK_SEED.map((l) => {
     let s = 0;
-    for (const t of v.topics) {
-      if (topics.includes(t)) s += 3;
+    for (const t of l.situations) {
+      if (situ.includes(t)) s += 3;
       if (q.includes(t)) s += 2;
     }
     for (const tok of tokens) {
-      if (v.title.toLowerCase().includes(tok)) s += 1;
-      if (v.topics.some((t) => t.includes(tok))) s += 1;
+      if (l.title.toLowerCase().includes(tok)) s += 1;
+      if (l.items.some((it) => it.name.toLowerCase().includes(tok))) s += 1;
     }
-    return { v, s };
+    return { l, s };
   });
-  const anyHit = scored.some((x) => x.s > 0);
-  if (!anyHit) return VIDEO_SEED; // 폴백: 전부 보여줌
-  return scored.sort((a, b) => b.s - a.s).map((x) => x.v);
+  if (!scored.some((x) => x.s > 0)) return LOOK_SEED;
+  return scored.sort((a, b) => b.s - a.s).map((x) => x.l);
+}
+
+/**
+ * 락인 축 — 신체 프로필로 재정렬(필터). 프로필이 쌓일수록 결과가 '내 몸'에 맞춰짐.
+ * 하드 필터가 아니라 부스트(콘텐츠 적을 때 빈 결과 방지). 콘텐츠 늘수록 강하게.
+ */
+export function applyProfile(looks: LookCard[], p: BodyProfile): LookCard[] {
+  if (!p || (!p.bodyType && !p.personalColor)) return looks;
+  return [...looks]
+    .map((l, i) => {
+      let boost = 0;
+      if (p.bodyType && l.bodyType?.includes(p.bodyType)) boost += 5;
+      if (p.personalColor && p.personalColor !== "모름" && l.personalColor?.includes(p.personalColor)) boost += 3;
+      return { l, boost, i };
+    })
+    .sort((a, b) => b.boost - a.boost || a.i - b.i)
+    .map((x) => x.l);
 }
 
 export const isVideoSearchLive = () => Boolean(process.env.YOUTUBE_API_KEY);
@@ -129,38 +173,39 @@ interface YtItem {
 }
 
 /**
- * 라이브: YouTube Data API 검색(서버 전용). 키 없으면 시드 검색으로 폴백.
- * 요약은 설명(description) 기반 3줄 — 자막·LLM 요약은 후속(정직 표기: '설명 기반').
+ * 라이브: YouTube Data API 검색(서버 전용) → 룩 카드로 매핑. 키 없으면 시드.
+ * 아이템 분해·정확한 프레임 타임스탬프는 자막/비전 파이프라인의 몫(후속) — 지금은 근사.
  */
-export async function searchVideosLive(query: string): Promise<FashionVideo[]> {
+export async function searchLooksLive(query: string): Promise<LookCard[]> {
   const key = process.env.YOUTUBE_API_KEY;
-  if (!key) return searchVideos(query);
+  if (!key) return searchLooks(query);
   try {
-    const q = `${query} 남자 패션 코디`;
+    const q = `${query} 남자 코디 룩북`;
     const url =
       `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video` +
       `&maxResults=9&relevanceLanguage=ko&regionCode=KR&q=${encodeURIComponent(q)}&key=${key}`;
     const res = await fetch(url, { next: { revalidate: 3600 } });
-    if (!res.ok) return searchVideos(query);
+    if (!res.ok) return searchLooks(query);
     const data = (await res.json()) as { items?: YtItem[] };
     const items = (data.items ?? []).filter((it) => it.id?.videoId);
-    if (items.length === 0) return searchVideos(query);
+    if (items.length === 0) return searchLooks(query);
+    const situ = expandToSituations(query.toLowerCase());
     return items.map((it) => ({
-      id: it.id.videoId as string,
+      id: `${it.id.videoId}-1`,
+      videoId: it.id.videoId as string,
       title: it.snippet.title,
       channel: it.snippet.channelTitle,
-      topics: expandQueryToTopics(query.toLowerCase()),
-      summary: summarizeDescription(it.snippet.description),
+      situations: situ,
+      items: [], // 라이브 아이템 분해는 자막/비전 파이프라인 연결 시 채움
+      whyFits: firstSentence(it.snippet.description) || "영상에서 이 룩의 포인트를 확인해봐.",
     }));
   } catch {
-    return searchVideos(query);
+    return searchLooks(query);
   }
 }
 
-// 설명 → 핵심 3줄(문장 분리 후 상위 3). 자막·LLM 요약 대체 전까지의 정직한 근사.
-function summarizeDescription(desc: string): string[] {
+function firstSentence(desc: string): string {
   const clean = desc.replace(/https?:\/\/\S+/g, "").replace(/\s+/g, " ").trim();
-  if (!clean) return ["영상 설명이 짧아 요약이 제한적이야 — 눌러서 직접 확인해봐."];
-  const sentences = clean.split(/(?<=[.!?。])\s+|\n+|·/).map((s) => s.trim()).filter((s) => s.length > 6);
-  return sentences.slice(0, 3);
+  const s = clean.split(/(?<=[.!?。])\s+|\n+|·/)[0]?.trim() ?? "";
+  return s.length > 6 ? s : "";
 }

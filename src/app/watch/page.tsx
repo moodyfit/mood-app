@@ -1,8 +1,9 @@
 import VideoSearch from "@/components/VideoSearch";
-import VideoCard from "@/components/VideoCard";
-import { searchVideosLive, isVideoSearchLive } from "@/lib/videos";
+import ProfileBar from "@/components/ProfileBar";
+import LookResults from "@/components/LookResults";
+import { searchLooksLive, isVideoSearchLive } from "@/lib/videos";
 
-// 픽어뷰 패션판 — 고민 검색 → 관련 패션 영상 + 요약. YOUTUBE_API_KEY 있으면 실검색, 없으면 시드.
+// 유튜브를 룩북으로 재편집 — 상황 검색 → 영상에서 뽑은 룩 카드. 신체 프로필로 필터(락인).
 export const revalidate = 60;
 
 export default async function WatchPage({
@@ -11,41 +12,14 @@ export default async function WatchPage({
   searchParams: { q?: string };
 }) {
   const q = (searchParams.q ?? "").trim();
-  const videos = await searchVideosLive(q);
+  const looks = await searchLooksLive(q); // 상황 후보(서버). 프로필 필터는 클라이언트에서.
   const live = isVideoSearchLive();
 
   return (
     <div className="animate-fade">
       <VideoSearch initial={q} />
-
-      <div className="px-5 pb-24 pt-5">
-        <div className="mb-4 flex items-baseline justify-between">
-          <h2 className="text-[18px] font-bold tracking-[-0.4px]">
-            {q ? `‘${q}’ 관련 영상` : "이런 고민, 이 영상들"}
-          </h2>
-          <span className="text-[12px] text-ink-faint">{videos.length}개</span>
-        </div>
-
-        {videos.length === 0 ? (
-          <div className="rounded-2xl border border-line bg-white p-6 text-center text-[13.5px] text-ink-soft">
-            딱 맞는 영상을 못 찾았어. 다른 말로 검색해봐.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {videos.map((v) => (
-              <VideoCard key={v.id} video={v} />
-            ))}
-          </div>
-        )}
-
-        {!live && (
-          <p className="mt-6 text-center text-[11.5px] leading-relaxed text-ink-faint">
-            지금은 큐레이션된 영상에서 찾고 있어.
-            <br />
-            실시간 유튜브 검색은 API 키 연결 후 켜져.
-          </p>
-        )}
-      </div>
+      <ProfileBar />
+      <LookResults looks={looks} query={q} live={live} />
     </div>
   );
 }
