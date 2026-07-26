@@ -30,6 +30,17 @@ const TABS = [
     ),
   },
   {
+    href: "/watch",
+    label: "영상",
+    match: (p: string) => p.startsWith("/watch"),
+    icon: (
+      <>
+        <rect x="3.5" y="5.5" width="17" height="13" rx="3" strokeWidth="1.6" />
+        <path d="M10.5 9.5v5l4-2.5z" strokeWidth="1.6" strokeLinejoin="round" />
+      </>
+    ),
+  },
+  {
     href: "/space",
     label: "나의 공간",
     match: (p: string) => p.startsWith("/space") || p.startsWith("/shot") || p.startsWith("/closet"),
@@ -46,7 +57,7 @@ export default function TabBar() {
   const pathname = usePathname() || "/";
   const { spaceDot } = useMoodStore();
   return (
-    <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-frame -translate-x-1/2 grid grid-cols-3 border-t border-line bg-paper pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-frame -translate-x-1/2 grid grid-cols-4 border-t border-line bg-paper pb-[env(safe-area-inset-bottom)]">
       {TABS.map((t) => {
         const active = t.match(pathname);
         return (
