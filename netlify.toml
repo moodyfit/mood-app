@@ -1,0 +1,12 @@
+# Netlify 배포 설정 — Next.js 14 App Router (SSR·ISR). 무료 플랜 + 비공개 조직 레포 자동배포.
+# 리포 루트가 곧 Next 앱 루트라 base 설정 불필요.
+
+[build]
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Next.js 런타임(서버 컴포넌트·ISR·server fetch 지원). Netlify가 자동 감지하지만 명시로 고정.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
