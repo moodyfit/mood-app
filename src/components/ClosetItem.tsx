@@ -16,7 +16,16 @@ export default function ClosetItem({ id }: { id: string }) {
 
   if (!hydrated) return null;
 
-  const item = owned.find((o) => o.id === id);
+  // params.id 가 인코딩된 채 올 수도(%2F 미해제), 디코딩돼 올 수도 있어 양쪽 다 매칭.
+  let decoded = id;
+  try {
+    decoded = decodeURIComponent(id);
+  } catch {
+    /* 잘못된 인코딩이면 원본 사용 */
+  }
+  const item = owned.find(
+    (o) => o.id === id || o.id === decoded || encodeURIComponent(o.id) === id
+  );
   if (!item || !MOODS[item.moodKey]) {
     return (
       <div className="animate-fade px-5 pb-14">
