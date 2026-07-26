@@ -37,7 +37,7 @@ export default function SpacePage() {
       {/* 승격(7일): 새로 온 옷 스포트라이트 — 단일 카드, 탭 시 원본 소환 */}
       {promoted && newest && MOODS[newest.moodKey] && (
         <Link
-          href={`/closet/${newest.id}`}
+          href={`/closet/${encodeURIComponent(newest.id)}`}
           className="mt-4 flex items-center gap-3 rounded-2xl border border-line bg-white p-3 transition hover:border-accent"
         >
           <div

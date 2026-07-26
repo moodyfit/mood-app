@@ -133,7 +133,8 @@ export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]>
     let p = byName.get(r.name);
     if (!p) {
       p = {
-        id: `${imageUrl}-${r.name}`,
+        // 슬래시 금지 — 이 id가 /closet/[id] 라우트 세그먼트로 쓰여서 'moods/xxx'는 다중 세그먼트로 깨짐
+        id: `${imageUrl.split("/").pop()?.replace(/\.\w+$/, "") ?? imageUrl}-${r.name}`,
         moodKey: r.mood_key as MoodKey,
         name: r.name,
         category: r.category as Product["category"],

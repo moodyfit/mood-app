@@ -37,7 +37,7 @@ export default function Closet({
               key={item.id}
               className="flex items-center gap-3 rounded-xl border border-line bg-white p-3"
             >
-              <Link href={`/closet/${item.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+              <Link href={`/closet/${encodeURIComponent(item.id)}`} className="flex min-w-0 flex-1 items-center gap-3">
                 <div
                   className="h-11 w-11 flex-shrink-0 rounded-lg"
                   style={
