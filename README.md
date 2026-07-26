@@ -7,15 +7,6 @@
 **내 예산 안에서 그 느낌을 실행 가능하게** 재구성해준다(자연 번역기).
 자책이 아니라 복구 — "너는 취향이 없는 게 아니라 이름을 몰랐던 거다"(원칙 7).
 
-전략 v2.5 반영 노트: [`docs/strategy-v2.5.md`](docs/strategy-v2.5.md)
-전략 v2.1 반영 노트: [`docs/strategy-v2.1.md`](docs/strategy-v2.1.md)
-전략 v1.9 반영 노트: [`docs/strategy-v1.9.md`](docs/strategy-v1.9.md)
-전략 v1.8 반영 노트: [`docs/strategy-v1.8.md`](docs/strategy-v1.8.md)
-전략 v1.5 반영 노트: [`docs/strategy-v1.5.md`](docs/strategy-v1.5.md)
-전략 v1.4 반영 노트: [`docs/strategy-v1.4.md`](docs/strategy-v1.4.md)
-이미지 소싱 전략 v1.4: [`docs/image-sourcing-v1.4.md`](docs/image-sourcing-v1.4.md)
-UI/UX 가이드라인 v2 적용 노트: [`docs/uiux-v2.md`](docs/uiux-v2.md)
-
 ## 시그니처 모먼트 3종 (체감 차별화 본체)
 
 1. **아무말 검색 → "알아먹는다"** — 미매핑·빈 입력도 최근접 무드로 응답 (실패 없는 검색)
