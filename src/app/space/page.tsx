@@ -82,16 +82,16 @@ export default function SpacePage() {
         <Discovered />
       </div>
 
-      {/* 소유 결 — 리스트는 하위 페이지(/closet)로. 여기선 컴팩트 진입만(길어짐 방지) */}
-      {owned.length > 0 && (
-        <Link
-          href="/closet"
-          className="mt-8 flex items-center justify-between rounded-[12px] border border-line px-4 py-3.5 transition hover:bg-paper-2"
-        >
-          <span className="text-[14px] font-semibold">내 옷</span>
-          <span className="font-latin text-[13px] text-ink-soft">{owned.length}벌 ›</span>
-        </Link>
-      )}
+      {/* 소유 결 — 리스트는 하위 페이지(/closet)로. 항상 노출(0벌이어도 발견 가능) */}
+      <Link
+        href="/closet"
+        className="mt-8 flex items-center justify-between rounded-[12px] border border-line px-4 py-3.5 transition hover:bg-paper-2"
+      >
+        <span className="text-[14px] font-semibold">내 옷</span>
+        <span className="font-latin text-[13px] text-ink-soft">
+          {owned.length > 0 ? `${owned.length}벌 ›` : "담은 옷 없음 ›"}
+        </span>
+      </Link>
     </div>
   );
 }
