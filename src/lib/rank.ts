@@ -21,6 +21,15 @@ function hash(s: string): number {
   return h;
 }
 
+// 극적 대표성 — 콜드 스타트에서 '확 다른 스타일'을 앞세우기 위한 점수.
+// flagship(큐레이션된 강한 컷) + 순수 단일무드(전형적일수록)일수록 높음.
+function prominence(p: Photo): number {
+  const flag = p.is_flagship ? 1 : 0;
+  const v = p.mood_vector ?? {};
+  const purity = Object.values(v).length ? Math.max(...Object.values(v)) : 0;
+  return flag * 1 + purity * 0.3;
+}
+
 /**
  * 개인화 재정렬(greedy MMR): value = α·적합도 − 다양성페널티·(이미 뽑은 같은무드 수).
  * - α=0(콜드): 적합도 0 + 강한 다양성 → 무드 라운드로빈(최대 다양성).
@@ -59,7 +68,9 @@ export function rankPersonalized(
     for (let j = 0; j < remaining.length; j++) {
       const { p, i } = remaining[j];
       const dom = dominantMood(p.mood_vector ?? {});
-      const val = a * score(i) - penalty * (moodCount[dom] ?? 0) + (hash(p.id) % 100) / 1e5;
+      // (1-α)·극적대표성: 콜드일수록 flagship/전형 컷을 앞세워 '확 다른 스타일'로 시작, 개인화되면 소멸.
+      const promoTerm = opts.explore ? 0 : (1 - alpha) * 0.5 * prominence(p);
+      const val = a * score(i) - penalty * (moodCount[dom] ?? 0) + promoTerm + (hash(p.id) % 100) / 1e5;
       if (val > bestVal) {
         bestVal = val;
         bestJ = j;

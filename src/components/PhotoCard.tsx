@@ -26,7 +26,7 @@ export default function PhotoCard({
   size?: "hero" | "sm";
 }) {
   const router = useRouter();
-  const { isPhotoSaved, togglePhotoSave } = useMoodStore();
+  const { isPhotoSaved, togglePhotoSave, recordView } = useMoodStore();
   const key = dominantMood(photo.mood_vector);
   const saved = isPhotoSaved(photo.id); // 사진별 저장 — 같은 무드의 다른 사진과 독립
   // (B) 사진 전용 상품 뷰로 — slug = 파일명(moods/clean-001.jpg → clean-001)
@@ -53,7 +53,10 @@ export default function PhotoCard({
       longPressed.current = false;
       return;
     }
-    if (slug) router.push(`/photo/${slug}`);
+    if (slug) {
+      recordView(key as MoodKey); // 클릭(상세 열기)도 취향 신호 → 점점 개인화
+      router.push(`/photo/${slug}`);
+    }
   }
 
   const url = photoUrl(photo.image_url);

@@ -27,7 +27,8 @@ export default function HomeGallery({ photos = [] }: { photos?: Photo[] }) {
   const formed = savedCount >= TASTE_CARD_THRESHOLD;
   const [override, setOverride] = useState<boolean | null>(null);
   const [visible, setVisible] = useState(INITIAL_VISIBLE);
-  const personal = override ?? formed; // 내 느낌(기본, 형성 시) ↔ 새로운 느낌
+  // 기본 = 메인 피드(콜드는 flagship 다양성 → 신호 쌓이면 개인화). '새로운 느낌'은 명시 토글 시에만 explore.
+  const personal = override ?? true;
 
   function onToggle(p: boolean) {
     setOverride(p);
