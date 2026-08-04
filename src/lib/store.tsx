@@ -14,6 +14,22 @@ import { TASTE_CARD_THRESHOLD } from "./taste";
 import { MOODS } from "./moods";
 import { haptic } from "./haptic";
 import { trackEvent, syncTaste, fetchTaste } from "./track";
+import { getSupabase } from "./supabase";
+
+export interface AuthUser {
+  id: string;
+  email: string | null;
+}
+interface AuthResult {
+  error: string | null;
+  needsConfirm?: boolean;
+}
+/** 두 취향 벡터 병합 — 축별 최댓값(익명+계정 continuity). */
+function mergeAffinity(a: Affinity, b: Affinity): Affinity {
+  const out: Affinity = { ...a };
+  for (const [k, v] of Object.entries(b)) out[k] = Math.max(out[k] ?? 0, v);
+  return out;
+}
 
 const isKnownMood = (k: string): boolean => Boolean(MOODS[k]);
 
@@ -81,6 +97,10 @@ interface MoodStore {
   wornOf: (id: string) => number;
   bodyProfile: BodyProfile;
   setBodyProfile: (p: BodyProfile) => void;
+  user: AuthUser | null;
+  signUp: (email: string, password: string) => Promise<AuthResult>;
+  signIn: (email: string, password: string) => Promise<AuthResult>;
+  signOut: () => Promise<void>;
   toast: string | null;
   showToast: (msg: string) => void;
 }
@@ -103,7 +123,14 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hydrated, setHydrated] = useState(false);
-  const userIdRef = useRef<string | null>(null); // 익명 신원(이벤트·취향 적재 키)
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const userIdRef = useRef<string | null>(null); // 현재 신원(로그인 시 auth id, 아니면 익명 id)
+  const anonIdRef = useRef<string | null>(null); // 익명 id(로그아웃 시 복귀용)
+  // 병합/동기화 콜백에서 최신 상태를 읽기 위한 미러 ref(클로저 stale 방지)
+  const affinityRef = useRef<Affinity>({});
+  const savedRef = useRef<string[]>([]);
+  affinityRef.current = affinity;
+  savedRef.current = savedPhotoIds;
 
   // 초기 로드 (localStorage)
   useEffect(() => {
@@ -147,11 +174,12 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       /* ignore */
     }
     userIdRef.current = uid;
+    anonIdRef.current = uid;
     setHydrated(true);
 
     // 서버 취향 복구 — 로컬이 비었을 때만 하이드레이트(로컬 우선, 세션 내 최신 보존)
-    (async () => {
-      const t = await fetchTaste(uid);
+    const hydrateTaste = async (forId: string | null) => {
+      const t = await fetchTaste(forId);
       if (!t) return;
       if (t.mood_vector && Object.keys(t.mood_vector).length > 0) {
         const clean = Object.fromEntries(Object.entries(t.mood_vector).filter(([k]) => isKnownMood(k)));
@@ -160,7 +188,46 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(t.saved_photo_ids) && t.saved_photo_ids.length > 0) {
         setSavedPhotoIds((prev) => (prev.length > 0 ? prev : (t.saved_photo_ids as string[])));
       }
-    })();
+    };
+
+    // 인증(로그인) — 세션 있으면 신원=auth id. 로그인 순간 익명 취향 ↔ 계정 취향 병합(크로스기기).
+    const sb = getSupabase();
+    if (!sb) {
+      void hydrateTaste(uid);
+      return;
+    }
+    sb.auth.getSession().then(({ data }) => {
+      const u = data.session?.user;
+      if (u) {
+        userIdRef.current = u.id;
+        setUser({ id: u.id, email: u.email ?? null });
+        void hydrateTaste(u.id);
+      } else {
+        void hydrateTaste(uid);
+      }
+    });
+    const { data: sub } = sb.auth.onAuthStateChange((event, session) => {
+      const u = session?.user;
+      if (u) {
+        userIdRef.current = u.id;
+        setUser({ id: u.id, email: u.email ?? null });
+        if (event === "SIGNED_IN") {
+          // 병합: 계정 서버 취향 ∪ 현재(익명) 로컬 취향 → 로컬 반영 + 계정으로 저장
+          void (async () => {
+            const server = await fetchTaste(u.id);
+            const mergedAff = mergeAffinity(server?.mood_vector ?? {}, affinityRef.current);
+            const mergedSaved = Array.from(new Set([...(server?.saved_photo_ids ?? []), ...savedRef.current]));
+            setAffinity(mergedAff);
+            setSavedPhotoIds(mergedSaved);
+            syncTaste(u.id, mergedAff, mergedSaved);
+          })();
+        }
+      } else {
+        userIdRef.current = anonIdRef.current; // 로그아웃 → 익명 신원 복귀
+        setUser(null);
+      }
+    });
+    return () => sub.subscription.unsubscribe();
   }, []);
 
   // 취향 스냅샷 → 서버 upsert(영속·복구·로그인 병합 대비). 로컬 변경 시마다.
@@ -324,6 +391,27 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const signUp = useCallback(async (email: string, password: string): Promise<AuthResult> => {
+    const sb = getSupabase();
+    if (!sb) return { error: "서버 연결이 안 돼 있어" };
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if (error) return { error: error.message };
+    trackEvent(userIdRef.current, "profile_set", { meta: { auth: "signup" } });
+    return { error: null, needsConfirm: !data.session };
+  }, []);
+
+  const signIn = useCallback(async (email: string, password: string): Promise<AuthResult> => {
+    const sb = getSupabase();
+    if (!sb) return { error: "서버 연결이 안 돼 있어" };
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    return { error: error?.message ?? null };
+  }, []);
+
+  const signOut = useCallback(async () => {
+    const sb = getSupabase();
+    if (sb) await sb.auth.signOut();
+  }, []);
+
   const recordSearch = useCallback((query: string) => {
     const q = normalizeQuery(query);
     if (!q) return;
@@ -387,6 +475,10 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       wornOf,
       bodyProfile,
       setBodyProfile,
+      user,
+      signUp,
+      signIn,
+      signOut,
       toast,
       showToast,
     }),
@@ -418,6 +510,10 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       wornOf,
       bodyProfile,
       setBodyProfile,
+      user,
+      signUp,
+      signIn,
+      signOut,
       toast,
       showToast,
     ]

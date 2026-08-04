@@ -16,7 +16,7 @@ import { useMoodStore } from "@/lib/store";
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 export default function SpacePage() {
-  const { savedCount, clearSpaceDot, owned } = useMoodStore();
+  const { savedCount, clearSpaceDot, owned, user, signOut } = useMoodStore();
 
   // B5: 나의 공간 진입 시 카드 발급 dot 제거
   useEffect(() => {
@@ -92,6 +92,31 @@ export default function SpacePage() {
           {owned.length > 0 ? `${owned.length}벌 ›` : "담은 옷 없음 ›"}
         </span>
       </Link>
+
+      {/* 계정 — 로그인하면 취향이 기기 넘어 이어짐 */}
+      {user ? (
+        <div className="mt-8 flex items-center justify-between rounded-[12px] border border-line px-4 py-3.5">
+          <div className="min-w-0">
+            <div className="text-[12px] text-ink-faint">로그인됨</div>
+            <div className="truncate text-[13.5px] font-medium">{user.email}</div>
+          </div>
+          <button
+            type="button"
+            onClick={() => signOut()}
+            className="flex-shrink-0 rounded-full border border-line px-3 py-1.5 text-[12.5px] font-semibold text-ink-soft transition hover:border-accent"
+          >
+            로그아웃
+          </button>
+        </div>
+      ) : (
+        <Link
+          href="/login"
+          className="mt-8 flex items-center justify-between rounded-[12px] border border-line px-4 py-3.5 transition hover:bg-paper-2"
+        >
+          <span className="text-[14px] font-semibold">로그인 / 회원가입</span>
+          <span className="text-[13px] text-ink-soft">취향 이어가기 ›</span>
+        </Link>
+      )}
     </div>
   );
 }
