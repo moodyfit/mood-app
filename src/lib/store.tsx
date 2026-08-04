@@ -13,6 +13,7 @@ import type { Affinity, MoodKey, OwnedItem, SaveRecord } from "./types";
 import { TASTE_CARD_THRESHOLD } from "./taste";
 import { MOODS } from "./moods";
 import { haptic } from "./haptic";
+import { trackEvent, syncTaste, fetchTaste } from "./track";
 
 const isKnownMood = (k: string): boolean => Boolean(MOODS[k]);
 
@@ -33,6 +34,7 @@ const K_DOT = "mood.spaceDot.v1"; // B5 카드 발급 dot (나의 공간 미확�
 const K_DISC = "mood.discovered.v1"; // C7 '발견' 결 (스크린샷 입주)
 const K_WORN = "mood.worn.v1"; // #9 [입었어] 착용 횟수 (아이템 id별)
 const K_BODY = "mood.bodyProfile.v1"; // 영상(룩북) 탭 — 신체 프로필(고정 검색축·락인)
+const K_UID = "mood.uid.v1"; // 익명 기기 신원(개인화 서버 적재 키. 로그인 도입 시 병합)
 
 // 신체 프로필: 한 번 넣으면 이후 모든 룩 검색이 이걸로 걸러짐(쌓일수록 나가기 어려움).
 export interface BodyProfile {
@@ -101,6 +103,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const userIdRef = useRef<string | null>(null); // 익명 신원(이벤트·취향 적재 키)
 
   // 초기 로드 (localStorage)
   useEffect(() => {
@@ -131,8 +134,40 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     } catch {
       /* ignore */
     }
+
+    // 익명 신원 확보(없으면 발급·영속). 개인화 서버 적재 키.
+    let uid: string | null = null;
+    try {
+      uid = localStorage.getItem(K_UID);
+      if (!uid) {
+        uid = crypto.randomUUID();
+        localStorage.setItem(K_UID, uid);
+      }
+    } catch {
+      /* ignore */
+    }
+    userIdRef.current = uid;
     setHydrated(true);
+
+    // 서버 취향 복구 — 로컬이 비었을 때만 하이드레이트(로컬 우선, 세션 내 최신 보존)
+    (async () => {
+      const t = await fetchTaste(uid);
+      if (!t) return;
+      if (t.mood_vector && Object.keys(t.mood_vector).length > 0) {
+        const clean = Object.fromEntries(Object.entries(t.mood_vector).filter(([k]) => isKnownMood(k)));
+        setAffinity((prev) => (Object.keys(prev).length > 0 ? prev : clean));
+      }
+      if (Array.isArray(t.saved_photo_ids) && t.saved_photo_ids.length > 0) {
+        setSavedPhotoIds((prev) => (prev.length > 0 ? prev : (t.saved_photo_ids as string[])));
+      }
+    })();
   }, []);
+
+  // 취향 스냅샷 → 서버 upsert(영속·복구·로그인 병합 대비). 로컬 변경 시마다.
+  useEffect(() => {
+    if (!hydrated || !userIdRef.current) return;
+    syncTaste(userIdRef.current, affinity, savedPhotoIds);
+  }, [affinity, savedPhotoIds, hydrated]);
 
   // 영속화
   useEffect(() => {
@@ -167,6 +202,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
 
   const toggleSave = useCallback(
     (key: MoodKey, query?: string) => {
+      const exists0 = saves.some((s) => s.moodKey === key);
+      trackEvent(userIdRef.current, exists0 ? "unsave" : "save", { mood_key: key });
       setSaves((prev) => {
         const exists = prev.some((s) => s.moodKey === key);
         if (exists) return prev.filter((s) => s.moodKey !== key);
@@ -190,7 +227,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         return next;
       });
     },
-    [cardEverIssued, showToast, bump]
+    [cardEverIssued, showToast, bump, saves]
   );
 
   const isPhotoSaved = useCallback(
@@ -201,6 +238,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   // 사진별 저장(전시 하트). 무드 affinity는 그대로 올려 개인화 유지. 취향카드 발급도 사진 저장 수 기준.
   const togglePhotoSave = useCallback(
     (id: string, moodKey?: MoodKey, query?: string) => {
+      const exists0 = savedPhotoIds.includes(id);
+      trackEvent(userIdRef.current, exists0 ? "unsave" : "save", { photo_id: id, mood_key: moodKey });
       setSavedPhotoIds((prev) => {
         if (prev.includes(id)) return prev.filter((x) => x !== id);
         const next = [...prev, id];
@@ -223,17 +262,23 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         return next;
       });
     },
-    [cardEverIssued, showToast, bump]
+    [cardEverIssued, showToast, bump, savedPhotoIds]
   );
 
   const recordView = useCallback(
-    (key: MoodKey) => bump(key, W_VIEW),
+    (key: MoodKey) => {
+      trackEvent(userIdRef.current, "view", { mood_key: key });
+      bump(key, W_VIEW);
+    },
     [bump]
   );
 
   // 7.10 3초 취향 스캔: '좋아'는 저장에 준하는 신호(보드엔 안 담고 프로필만 적재)
   const recordScanLike = useCallback(
-    (key: MoodKey) => bump(key, W_SAVE),
+    (key: MoodKey) => {
+      trackEvent(userIdRef.current, "scan_like", { mood_key: key });
+      bump(key, W_SAVE);
+    },
     [bump]
   );
 
@@ -257,11 +302,13 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
 
   // #9 [입었어] — 조용한 카운트(팡파레·보상 없음). user_actions.worn 대응(로컬)
   const recordWorn = useCallback((id: string) => {
+    trackEvent(userIdRef.current, "worn", { photo_id: id });
     setWorn((prev) => ({ ...prev, [id]: (prev[id] ?? 0) + 1 }));
   }, []);
   const wornOf = useCallback((id: string) => worn[id] ?? 0, [worn]);
 
   const setBodyProfile = useCallback((p: BodyProfile) => {
+    trackEvent(userIdRef.current, "profile_set", { meta: p as Record<string, unknown> });
     setBodyProfileState(p);
     try {
       localStorage.setItem(K_BODY, JSON.stringify(p));
@@ -280,6 +327,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const recordSearch = useCallback((query: string) => {
     const q = normalizeQuery(query);
     if (!q) return;
+    trackEvent(userIdRef.current, "search", { query: q });
     setSearchCounts((prev) => ({ ...prev, [q]: (prev[q] ?? 0) + 1 }));
   }, []);
 
