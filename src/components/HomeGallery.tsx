@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ALL_MOOD_KEYS, MOODS } from "@/lib/moods";
 import { personalizeOrder, TASTE_CARD_THRESHOLD } from "@/lib/taste";
+import { rankPersonalized, personalizationStrength, HERO_MIN_STRENGTH } from "@/lib/rank";
 import { useMoodStore } from "@/lib/store";
 import type { Photo } from "@/lib/photos";
 import MoodCard from "./MoodCard";
@@ -64,21 +65,13 @@ export default function HomeGallery({ photos = [] }: { photos?: Photo[] }) {
 
   // ── 사진 볼륨 전시 (기본 경로) ──────────────────────────────
   if (photos.length > 0) {
-    // 내 느낌 = 추구미 가중 정렬(적합도 큰 게 앞·히어로). 새로운 느낌 = 하위 축 먼저(탐색).
-    const scored = photos.map((p) => ({
-      p,
-      s: Object.entries(p.mood_vector ?? {}).reduce(
-        (a, [k, v]) => a + (affinity[k] ?? 0) * v,
-        0,
-      ),
-    }));
-    const personalOrder = [...scored].sort((a, b) => b.s - a.s).map((x) => x.p);
-    const newOrder = [...scored].sort((a, b) => a.s - b.s).map((x) => x.p);
-    const ordered = personal ? personalOrder : newOrder;
+    // 콜드=최대 다양성 → 신호 쌓일수록 매끄럽게 개인화(탐색 항상 잔존). 새로운 느낌=안 가본 결 우선.
+    const strength = personalizationStrength(affinity);
+    const ordered = rankPersonalized(photos, affinity, { explore: !personal });
 
-    // 히어로(크기=적합도)는 '내 느낌' + 취향 형성 시에만. '새로운 느낌'은 탐색이라 랭크 히어로 없음
+    // 히어로(크기=적합도)는 '내 느낌' + 개인화가 유의미해진 뒤에만(콜드엔 다양한 격자, 히어로 없음)
     const heroPhoto =
-      personal && hasTaste && ordered.length > 3 ? ordered[0] : null;
+      personal && strength >= HERO_MIN_STRENGTH && ordered.length > 3 ? ordered[0] : null;
     const rest = heroPhoto ? ordered.slice(1) : ordered;
     const shown = rest.slice(0, visible);
     const remaining = rest.length - shown.length;

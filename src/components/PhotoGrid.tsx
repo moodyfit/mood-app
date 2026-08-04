@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Photo } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 import { TASTE_CARD_THRESHOLD } from "@/lib/taste";
+import { rankPersonalized, personalizationStrength, HERO_MIN_STRENGTH } from "@/lib/rank";
 import PhotoCard from "./PhotoCard";
 import GridTail from "./GridTail";
 import ResultToggle from "./ResultToggle";
@@ -40,14 +41,10 @@ export default function PhotoGrid({
     setVisible(INITIAL_VISIBLE); // 순서 바뀌니 처음부터 다시 끊어 보여줌
   }
 
-  const neutral = photos;
-  const personalOrder = [...photos]
-    .map((p) => ({
-      p,
-      s: Object.entries(p.mood_vector ?? {}).reduce((a, [k, v]) => a + (affinity[k] ?? 0) * v, 0),
-    }))
-    .sort((a, b) => b.s - a.s)
-    .map((x) => x.p);
+  const neutral = photos; // 모두의 결과 = 검색 관련도 순(중립)
+  // 너의 결과 = 콜드 다양성 → 신호 쌓일수록 개인화(탐색 잔존). 개인화 엔진 공용.
+  const personalOrder = rankPersonalized(photos, affinity);
+  const strength = personalizationStrength(affinity);
 
   // 두 정렬에서 자리가 바뀐 장수 (모먼트3 "너를 배웠다")
   const changedCount = neutral.reduce(
@@ -57,8 +54,8 @@ export default function PhotoGrid({
 
   const ordered = personal ? personalOrder : neutral;
 
-  // B6: 1번 카드는 모두/너의 무관하게 항상 대형 고정 + 해설 펼침(표본 충분할 때)
-  const hero = ordered.length > 3 ? ordered[0] : null;
+  // B6: 1번 카드 대형 히어로 — 개인화 결과일 때만(콜드/중립은 히어로 없이 다양한 격자)
+  const hero = personal && strength >= HERO_MIN_STRENGTH && ordered.length > 3 ? ordered[0] : null;
   const allRest = hero ? ordered.slice(1) : ordered;
   const rest = allRest.slice(0, visible);
   const remaining = allRest.length - rest.length;
