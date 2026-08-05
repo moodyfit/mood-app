@@ -11,7 +11,7 @@ import {
 } from "react";
 import type { Affinity, MoodKey, OwnedItem, SaveRecord } from "./types";
 import { TASTE_CARD_THRESHOLD } from "./taste";
-import { MOODS } from "./moods";
+import { MOODS, resolveMoods } from "./moods";
 import { haptic } from "./haptic";
 import { trackEvent, syncTaste, fetchTaste } from "./track";
 import { getSupabase } from "./supabase";
@@ -78,6 +78,7 @@ interface MoodStore {
   recordView: (key: MoodKey) => void;
   recordScanLike: (key: MoodKey) => void;
   recordSearch: (query: string) => void;
+  recordProductClick: (moodKey: MoodKey, name: string) => void;
   searchCount: (query: string) => number;
   owned: OwnedItem[];
   isOwned: (id: string) => boolean;
@@ -412,11 +413,22 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     if (sb) await sb.auth.signOut();
   }, []);
 
-  const recordSearch = useCallback((query: string) => {
-    const q = normalizeQuery(query);
-    if (!q) return;
-    trackEvent(userIdRef.current, "search", { query: q });
-    setSearchCounts((prev) => ({ ...prev, [q]: (prev[q] ?? 0) + 1 }));
+  const recordSearch = useCallback(
+    (query: string) => {
+      const q = normalizeQuery(query);
+      if (!q) return;
+      trackEvent(userIdRef.current, "search", { query: q });
+      setSearchCounts((prev) => ({ ...prev, [q]: (prev[q] ?? 0) + 1 }));
+      // 검색 의도도 취향 신호 — 해석된 무드축에 가중(1순위 강, 이후 약). 검색할수록 개인화 반영.
+      resolveMoods(query)
+        .slice(0, 3)
+        .forEach((k, i) => bump(k, i === 0 ? W_VIEW : W_VIEW * 0.5));
+    },
+    [bump]
+  );
+
+  const recordProductClick = useCallback((moodKey: MoodKey, name: string) => {
+    trackEvent(userIdRef.current, "product_click", { mood_key: moodKey, meta: { name } });
   }, []);
 
   const searchCount = useCallback(
@@ -437,10 +449,13 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         }
         showToast("내 옷에 담았어 — 도착하면 입을 조합 알려줄게");
         haptic();
+        // 내 옷 담기 = 강한 취향 신호(저장에 준함) — affinity 반영 + 적재
+        bump(item.moodKey, W_SAVE);
+        trackEvent(userIdRef.current, "owned", { mood_key: item.moodKey, photo_id: item.id });
         return [...prev, { ...item, at: Date.now() }];
       });
     },
-    [showToast]
+    [showToast, bump]
   );
 
   const value = useMemo<MoodStore>(
@@ -456,6 +471,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       recordView,
       recordScanLike,
       recordSearch,
+      recordProductClick,
       searchCount,
       owned,
       isOwned,
@@ -493,6 +509,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       recordView,
       recordScanLike,
       recordSearch,
+      recordProductClick,
       searchCount,
       owned,
       isOwned,

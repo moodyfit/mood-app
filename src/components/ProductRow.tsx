@@ -12,7 +12,7 @@ export default function ProductRow({
   product: Product;
   muted?: boolean;
 }) {
-  const { showToast, isOwned, toggleOwned } = useMoodStore();
+  const { showToast, isOwned, toggleOwned, recordProductClick } = useMoodStore();
   const cheapest = product.sources[0];
   const owned = isOwned(product.id);
 
@@ -33,6 +33,7 @@ export default function ProductRow({
 
   function goTo(url?: string) {
     if (url) {
+      recordProductClick(product.moodKey, product.name); // 구매의도 신호(해자 데이터)
       window.open(url, "_blank", "noopener");
       setAwaiting(true); // 복귀 감지 준비
     } else {

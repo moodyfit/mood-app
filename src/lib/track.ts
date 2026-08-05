@@ -13,6 +13,8 @@ export type EventType =
   | "search"
   | "photo_open"
   | "worn"
+  | "owned"
+  | "product_click"
   | "profile_set";
 
 interface EventPayload {
