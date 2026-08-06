@@ -3,16 +3,12 @@
 import type { Photo } from "./photos";
 import { dominantMood } from "./photos";
 import type { Affinity } from "./types";
+import { getConfig } from "./config";
 
-// 신호 총량이 이 정도면 개인화 최대(≈저장 6회분). 그 전까진 α가 선형 상승 → '점점' 개인화.
-const SATURATE = 12;
-// 같은 무드 연속 억제(다양성). 콜드일수록 강하게, 개인화될수록 완화하되 0은 아님(탐색 잔존).
-const DIVERSITY = 0.6;
-
-/** 개인화 강도 0(콜드)~1(충분). affinity 신호 총량 기반 — 부드러운 램프. */
+/** 개인화 강도 0(콜드)~1(충분). affinity 신호 총량 기반 — 부드러운 램프. 포화값은 튜닝 가능(config). */
 export function personalizationStrength(affinity: Affinity): number {
   const total = Object.values(affinity).reduce((a, b) => a + (b || 0), 0);
-  return Math.min(1, total / SATURATE);
+  return Math.min(1, total / getConfig().saturate);
 }
 
 function hash(s: string): number {
@@ -56,8 +52,8 @@ export function rankPersonalized(
   // 새로운 느낌: 낮은 적합도(안 가본 결) 우선. α는 탐색 의지로 최소 0.5 보장.
   const score = (i: number) => (opts.explore ? 1 - affNorm(i) : affNorm(i));
   const a = opts.explore ? Math.max(0.5, alpha) : alpha;
-  // 다양성 페널티: 콜드일수록 큼(라운드로빈), 개인화될수록 완화하되 바닥 유지(탐색 잔존).
-  const penalty = DIVERSITY * (1 - 0.7 * alpha);
+  // 다양성 페널티: 콜드일수록 큼(라운드로빈), 개인화될수록 완화하되 바닥 유지(탐색 잔존). 강도 튜닝 가능.
+  const penalty = getConfig().diversity * (1 - 0.7 * alpha);
 
   const remaining = photos.map((p, i) => ({ p, i }));
   const moodCount: Record<string, number> = {};

@@ -15,6 +15,7 @@ import { MOODS, resolveMoods } from "./moods";
 import { haptic } from "./haptic";
 import { trackEvent, syncTaste, fetchTaste } from "./track";
 import { getSupabase } from "./supabase";
+import { getConfig, fetchConfig } from "./config";
 
 export interface AuthUser {
   id: string;
@@ -58,10 +59,6 @@ export interface BodyProfile {
   personalColor?: "웜" | "쿨" | "모름";
   height?: number; // cm
 }
-
-// 프로필 가중치: 저장은 클릭보다 강한 신호
-const W_SAVE = 2;
-const W_VIEW = 1;
 
 function normalizeQuery(q: string): string {
   return q.trim().toLowerCase();
@@ -177,6 +174,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     userIdRef.current = uid;
     anonIdRef.current = uid;
     setHydrated(true);
+    void fetchConfig(); // 개인화 파라미터(가중치·포화·다양성) 서버값 반영
 
     // 서버 취향 복구 — 로컬이 비었을 때만 하이드레이트(로컬 우선, 세션 내 최신 보존)
     const hydrateTaste = async (forId: string | null) => {
@@ -279,7 +277,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         const next = [...prev, { moodKey: key, savedAt: Date.now(), query }];
         showToast("저장했어");
         haptic(); // soft impact
-        bump(key, W_SAVE); // 프로필 가중 (저장은 강한 신호)
+        bump(key, getConfig().wSave); // 프로필 가중 (저장은 강한 신호)
 
         // 카드 '발급'은 조용히 — 모달·알림 금지(스펙). 신호는 탭바 dot 하나뿐.
         if (next.length >= TASTE_CARD_THRESHOLD && !cardEverIssued) {
@@ -314,7 +312,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         showToast("저장했어");
         haptic();
         if (moodKey) {
-          bump(moodKey, W_SAVE);
+          bump(moodKey, getConfig().wSave);
           setSaves((s) => (s.some((r) => r.moodKey === moodKey) ? s : [...s, { moodKey, savedAt: Date.now(), query }]));
         }
         if (next.length >= TASTE_CARD_THRESHOLD && !cardEverIssued) {
@@ -336,7 +334,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const recordView = useCallback(
     (key: MoodKey) => {
       trackEvent(userIdRef.current, "view", { mood_key: key });
-      bump(key, W_VIEW);
+      bump(key, getConfig().wView);
     },
     [bump]
   );
@@ -345,7 +343,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const recordScanLike = useCallback(
     (key: MoodKey) => {
       trackEvent(userIdRef.current, "scan_like", { mood_key: key });
-      bump(key, W_SAVE);
+      bump(key, getConfig().wSave);
     },
     [bump]
   );
@@ -422,7 +420,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       // 검색 의도도 취향 신호 — 해석된 무드축에 가중(1순위 강, 이후 약). 검색할수록 개인화 반영.
       resolveMoods(query)
         .slice(0, 3)
-        .forEach((k, i) => bump(k, i === 0 ? W_VIEW : W_VIEW * 0.5));
+        .forEach((k, i) => bump(k, i === 0 ? getConfig().wView : getConfig().wView * 0.5));
     },
     [bump]
   );
@@ -450,7 +448,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         showToast("내 옷에 담았어 — 도착하면 입을 조합 알려줄게");
         haptic();
         // 내 옷 담기 = 강한 취향 신호(저장에 준함) — affinity 반영 + 적재
-        bump(item.moodKey, W_SAVE);
+        bump(item.moodKey, getConfig().wSave);
         trackEvent(userIdRef.current, "owned", { mood_key: item.moodKey, photo_id: item.id });
         return [...prev, { ...item, at: Date.now() }];
       });

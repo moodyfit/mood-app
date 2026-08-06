@@ -5,13 +5,24 @@ import BackButton from "@/components/BackButton";
 import { useMoodStore } from "@/lib/store";
 import { getSupabase } from "@/lib/supabase";
 
+interface Config { wSave: number; wView: number; saturate: number; diversity: number }
 interface Insights {
   totals: { events: number; users: number; formedUsers: number };
   byType: Record<string, number>;
   topSearches: { query: string; n: number }[];
   moodDist: Record<string, number>;
+  moodAffinity: Record<string, number>;
+  alphaBuckets: { cold: number; warming: number; warm: number };
+  config: Config;
   recent: { type: string; query: string | null; mood: string | null; at: string }[];
 }
+
+const CFG_FIELDS: { key: keyof Config; label: string; hint: string; step: number }[] = [
+  { key: "wSave", label: "저장 가중", hint: "저장/좋아요/내옷담기 신호 크기", step: 0.5 },
+  { key: "wView", label: "조회 가중", hint: "클릭/조회/검색 신호 크기", step: 0.5 },
+  { key: "saturate", label: "α 포화", hint: "이 신호총량이면 개인화 최대(작을수록 빨리 개인화)", step: 1 },
+  { key: "diversity", label: "다양성", hint: "클수록 여러 무드 섞임(쏠림 억제)", step: 0.1 },
+];
 
 const TYPE_LABEL: Record<string, string> = {
   save: "저장", unsave: "저장취소", view: "조회", scan_like: "스캔좋아",
@@ -23,6 +34,27 @@ export default function AdminPage() {
   const [data, setData] = useState<Insights | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [draft, setDraft] = useState<Config | null>(null);
+  const [savedMsg, setSavedMsg] = useState<string | null>(null);
+
+  async function token(): Promise<string | null> {
+    const sb = getSupabase();
+    const { data: s } = (await sb?.auth.getSession()) ?? { data: { session: null } };
+    return s?.session?.access_token ?? null;
+  }
+
+  async function saveConfig() {
+    if (!draft) return;
+    const t = await token();
+    if (!t) return;
+    setSavedMsg("저장 중…");
+    const res = await fetch("/api/admin/insights", {
+      method: "POST",
+      headers: { authorization: `Bearer ${t}`, "content-type": "application/json" },
+      body: JSON.stringify(draft),
+    });
+    setSavedMsg(res.ok ? "저장됨 · 새로고침 시 전 유저 랭킹에 반영" : "저장 실패");
+  }
 
   useEffect(() => {
     if (!hydrated || !user) return;
@@ -44,6 +76,7 @@ export default function AdminPage() {
           return;
         }
         setData(json as Insights);
+        setDraft((json as Insights).config);
       } catch {
         setErr("네트워크 오류");
       } finally {
@@ -92,6 +125,65 @@ export default function AdminPage() {
             <Tile label="유저" value={data.totals.users} />
             <Tile label="취향형성" value={data.totals.formedUsers} />
           </div>
+
+          {/* 개인화 파라미터 — 실시간 튜닝 */}
+          {draft && (
+            <Section title="개인화 파라미터 (튜닝)">
+              <div className="grid grid-cols-2 gap-2.5">
+                {CFG_FIELDS.map((f) => (
+                  <label key={f.key} className="rounded-xl border border-line bg-white p-3">
+                    <div className="text-[12px] font-semibold">{f.label}</div>
+                    <div className="mb-1.5 text-[10.5px] leading-tight text-ink-faint">{f.hint}</div>
+                    <input
+                      type="number"
+                      step={f.step}
+                      value={draft[f.key]}
+                      onChange={(e) => setDraft({ ...draft, [f.key]: Number(e.target.value) })}
+                      className="w-full rounded-lg border border-line px-2.5 py-1.5 text-[14px] font-latin outline-none focus:border-accent"
+                    />
+                  </label>
+                ))}
+              </div>
+              <div className="mt-2.5 flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={saveConfig}
+                  className="rounded-full bg-ink px-4 py-2 text-[13px] font-semibold text-white active:scale-[0.99]"
+                >
+                  저장
+                </button>
+                {savedMsg && <span className="text-[12px] text-ink-soft">{savedMsg}</span>}
+              </div>
+            </Section>
+          )}
+
+          {/* 개인화 분포 — α 버킷 + 무드 affinity 합 */}
+          <Section title="개인화 단계 (유저 분포)">
+            <div className="grid grid-cols-3 gap-2.5">
+              <Tile label="콜드(다양)" value={data.alphaBuckets.cold} />
+              <Tile label="워밍" value={data.alphaBuckets.warming} />
+              <Tile label="따뜻(개인화)" value={data.alphaBuckets.warm} />
+            </div>
+          </Section>
+
+          <Section title="무드 취향 총합 (전체 유저 affinity)">
+            {Object.keys(data.moodAffinity).length === 0 ? <Empty /> : (
+              <div className="space-y-1.5">
+                {Object.entries(data.moodAffinity).sort((a, b) => b[1] - a[1]).map(([m, n]) => {
+                  const mx = Math.max(1, ...Object.values(data.moodAffinity));
+                  return (
+                    <div key={m} className="flex items-center gap-2 text-[12.5px]">
+                      <span className="w-16 shrink-0">{m}</span>
+                      <div className="h-2 flex-1 overflow-hidden rounded-full bg-paper-2">
+                        <div className="h-full rounded-full bg-accent" style={{ width: `${(n / mx) * 100}%` }} />
+                      </div>
+                      <span className="w-10 text-right font-latin text-ink-soft">{n}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </Section>
 
           {/* 행동 유형 */}
           <Section title="행동 유형">
