@@ -10,7 +10,6 @@ interface Insights {
   totals: { events: number; users: number; formedUsers: number };
   byType: Record<string, number>;
   topSearches: { query: string; n: number }[];
-  moodDist: Record<string, number>;
   moodAffinity: Record<string, number>;
   alphaBuckets: { cold: number; warming: number; warm: number };
   config: Config;
@@ -97,7 +96,6 @@ export default function AdminPage() {
     );
   }
 
-  const maxMood = Math.max(1, ...Object.values(data?.moodDist ?? {}));
 
   return (
     <div className="animate-fade px-5 pb-24">
@@ -197,22 +195,6 @@ export default function AdminPage() {
             </div>
           </Section>
 
-          {/* 무드 분포 */}
-          <Section title="무드 분포 (유저 최상위 취향)">
-            {Object.keys(data.moodDist).length === 0 ? <Empty /> : (
-              <div className="space-y-1.5">
-                {Object.entries(data.moodDist).sort((a, b) => b[1] - a[1]).map(([m, n]) => (
-                  <div key={m} className="flex items-center gap-2 text-[12.5px]">
-                    <span className="w-16 shrink-0">{m}</span>
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-paper-2">
-                      <div className="h-full rounded-full bg-accent" style={{ width: `${(n / maxMood) * 100}%` }} />
-                    </div>
-                    <span className="w-6 text-right font-latin text-ink-soft">{n}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Section>
 
           {/* 인기 검색어 */}
           <Section title="인기 검색어">
