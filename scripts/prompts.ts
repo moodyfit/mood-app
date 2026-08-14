@@ -14,14 +14,17 @@ export const STYLE_ANCHOR =
 export const NEGATIVE =
   "posing, looking at camera, centered composition, crosswalk, HDR, oversaturated, " +
   "smooth skin, studio quality, palm trees, bodybuilder, muscular flex, watermark, text, " +
-  "brand logo, wordmark, nike swoosh, adidas stripes, identifiable graphic print, " +
-  "bag, tote bag, crossbody bag, shoulder bag, backpack, handbag";
+  "brand logo, wordmark, nike swoosh, adidas stripes, identifiable graphic print, branded sneakers, sneaker logo, " +
+  "bag, tote bag, crossbody bag, shoulder bag, backpack, handbag, " +
+  "other people, second person, bystanders, crowd, background people, " +
+  "cropped body, cut off at waist or thigh, feet out of frame, missing shoes";
 
 // 체험 원칙: "데깽은 최대로, 이유는 옷" — 몸이 주인공 금지. (face visible 제거 = 캔디드로 시선 밖 허용)
 // 로고 무관용(§5): 식별 가능한 브랜드 로고·워드마크 금지, 무지 신발·의류.
 // 비율·피지컬 상향(케빈): 키 크고 다리 길고 잘빠진 모델 비율 — 단 근육 과시 아님(옷이 주인공, 헌법).
 export const BODY_GUARD =
-  "full-length full-body shot from head to toe, the entire outfit clearly visible including the top layer, " +
+  "full-length full-body shot from head to toe with the shoes and feet fully visible, the entire outfit clearly visible including the top layer, " +
+  "solo subject completely alone in the frame with no other people anywhere, " +
   "any jacket or coat worn open to reveal the shirt or knit underneath, nothing cropped out of frame, " +
   "tall with long legs and lean well-proportioned model physique, " +
   "small head-to-body ratio, broad straight shoulders, good posture, natural build not bulky, no muscle flexing, " +
@@ -57,7 +60,7 @@ export const AXIS_LOOK: Record<string, AxisLook> = {
     energy: "laid-back and unpretentious, everyday ease",
   },
   street: {
-    clothes: "heavily oversized baggy streetwear, boxy oversized hoodie or long-sleeve or denim/work jacket, very wide carpenter or cargo pants with long puddling hems, cap or beanie worn low, chunky sneakers or work boots with visible socks, washed denim blue/olive/black/grey, volume is the point, no bag",
+    clothes: "clearly oversized baggy streetwear (NOT military or workwear), boxy oversized hoodie or graphic-free heavyweight long-sleeve, very wide baggy pants or wide washed denim with long puddling hems, cap or beanie worn low, chunky sneakers with visible socks, washed denim blue/black/grey, exaggerated oversized volume is the point, no field jacket, no bag",
     palette: "gritty urban daylight, washed faded earth tones and dark neutrals, high contrast",
     locations: ["concrete wall and alley", "parking structure", "gritty urban backstreet"],
     light: "harsh daylight, gritty snapshot look",
@@ -78,7 +81,7 @@ export const AXIS_LOOK: Record<string, AxisLook> = {
     energy: "mature sprezzatura, old-money confidence",
   },
   soft: {
-    clothes: "elevated soft knitwear, minimal zip or button cardigan or cashmere-blend crewneck layered over a tee, wide tapered trousers, leather loafers or clean sneakers, cream/oatmeal/grey tonal layering, refined cozy, no bag",
+    clothes: "elevated soft knitwear with pronounced chunky cable or waffle knit texture as the clear hero piece, thick cozy cardigan or chunky crewneck sweater, wide tapered trousers, leather loafers or clean sneakers, cream/oatmeal/grey tonal, visibly soft and fuzzy knit, no bag",
     palette: "soft warm daylight, cream oatmeal and pastel neutrals, gentle and airy",
     locations: ["sunny quiet neighborhood", "warm-lit shop window", "golden-hour lane"],
     light: "soft warm light, cozy",
