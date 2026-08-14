@@ -51,7 +51,7 @@ const GUIDANCE = MODEL.endsWith("schnell") ? 2.5 : 3.0;
 
 // 최소 .env 로더 (dotenv 무의존)
 async function loadEnv() {
-  for (const p of [path.join(ROOT, ".env"), path.join(__dirname, ".env")]) {
+  for (const p of [path.join(ROOT, ".env.local"), path.join(ROOT, ".env"), path.join(__dirname, ".env")]) {
     try {
       const txt = await fs.readFile(p, "utf8");
       for (const line of txt.split("\n")) {

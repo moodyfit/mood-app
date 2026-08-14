@@ -5,7 +5,8 @@
 export const STYLE_ANCHOR =
   "candid street style photograph shot on 35mm film, kodak portra 400, " +
   "visible film grain, subject caught mid-moment NOT posing, looking away from camera, " +
-  "off-center composition, photorealistic, real person, editorial menswear lookbook";
+  "off-center composition, photorealistic, real person, " +
+  "high-fashion editorial menswear lookbook, modern refined contemporary 2025 styling, elevated and sophisticated";
 
 // §2.1 Negative — flux/schnell 은 negative_prompt 미지원 → 핵심 회피는 positive에도 접어 넣음.
 // (flux/dev 사용 시 negative_prompt로 전달)
@@ -16,8 +17,10 @@ export const NEGATIVE =
 
 // 체험 원칙: "데깽은 최대로, 이유는 옷" — 몸이 주인공 금지. (face visible 제거 = 캔디드로 시선 밖 허용)
 // 로고 무관용(§5): 식별 가능한 브랜드 로고·워드마크 금지, 무지 신발·의류.
+// 비율·피지컬 상향(케빈): 키 크고 다리 길고 잘빠진 모델 비율 — 단 근육 과시 아님(옷이 주인공, 헌법).
 export const BODY_GUARD =
-  "full body from head to below knee, ordinary build, not muscular, no flexing, " +
+  "full body from head to toe, tall with long legs and lean well-proportioned model physique, " +
+  "small head-to-body ratio, broad straight shoulders, good posture, natural build not bulky, no muscle flexing, " +
   "the clothing and styling are the focus, plain unbranded clothing and footwear, " +
   "no visible brand logos, no wordmarks, no graphic prints, no text";
 
@@ -35,42 +38,42 @@ export const AXIS_BLOCKS: Record<string, string> = {
 interface AxisLook { clothes: string; palette: string; locations: string[]; light: string; energy: string }
 export const AXIS_LOOK: Record<string, AxisLook> = {
   clean: {
-    clothes: "monochrome minimal outfit, white or ivory crewneck knit or tee, light pressed slacks, minimal white sneakers or loafers, no patterns",
+    clothes: "elevated minimal outfit, boxy or slightly cropped fine-gauge crewneck knit or heavyweight tee, wide tapered trousers, low-profile leather loafers or retro sneakers, tonal white/ivory/grey, clean modern fit, no patterns",
     palette: "high-key clean color grading, crisp cool whites and light greys, low saturation, bright and airy",
     locations: ["bright white concrete wall", "sunlit glass building facade", "clean minimal plaza"],
     light: "bright midday direct sunlight with sharp clean shadows",
     energy: "calm and composed",
   },
   cityboy: {
-    clothes: "relaxed layered look, open shirt or coach jacket worn over a tee, wide chinos, canvas tote bag, retro runner sneakers",
+    clothes: "contemporary city-casual, relaxed unstructured overshirt or blouson layered over a tee, wide tapered trousers, leather tote bag, low-profile retro sneakers or loafers, tonal beige/navy/off-white, refined layering",
     palette: "warm neutral color grading, beige camel navy and off-white, gentle natural tones",
     locations: ["cafe exterior with passersby", "lively shopping street", "tree-lined city sidewalk"],
     light: "soft overcast to golden-hour daylight",
     energy: "casual but put-together, mid-stroll",
   },
   street: {
-    clothes: "heavily oversized hoodie or heavyweight tee, wide cargo pants or baggy washed denim, ball cap, chunky sneakers, strong voluminous silhouette",
+    clothes: "intentional oversized I-line silhouette, boxy heavyweight hoodie with proper shoulder seams, long baggy puddle-hem wide pants or pleated denim, cap or beanie, chunky retro sneakers, current modern streetwear",
     palette: "dark low-key color grading, deep blacks charcoal and washed olive, moody high contrast",
     locations: ["narrow dark backstreet", "metal shutter alley", "dim underpass at dusk"],
     light: "overcast or low evening light with deep shadows",
     energy: "nonchalant and cool, edgy",
   },
   amekaji: {
-    clothes: "vintage workwear, denim trucker or sherpa or work jacket, straight raw or washed denim, leather work boots or derby shoes, worn-in rugged texture",
+    clothes: "modern amekaji mixing vintage workwear with a contemporary piece, selvedge denim trucker or work jacket over a collegiate knit, straight or wide selvedge denim, leather service boots, refined vintage character",
     palette: "warm earthy color grading, indigo ecru olive brown and tan, nostalgic, heavy film grain",
     locations: ["old market street", "weathered wooden storefront", "rusty iron shutters"],
     light: "warm low afternoon sunlight, nostalgic haze",
     energy: "understated and rugged, vintage",
   },
   classic: {
-    clothes: "tailored wool overcoat or unstructured blazer, turtleneck or knit polo, tailored wool trousers, leather derby or penny loafers, long vertical elegant line",
+    clothes: "relaxed modern tailoring (comfort classic), oversized wool overcoat or unstructured blazer, fine turtleneck or knit, wide tapered wool trousers, leather loafers or chelsea boots, toffee/charcoal/deep-navy, elegant contemporary line",
     palette: "deep muted refined color grading, charcoal navy grey and brown, low saturation, elegant",
     locations: ["stone building facade", "quiet boulevard in the evening", "grand hotel entrance"],
     light: "soft refined evening light",
     energy: "poised and dignified",
   },
   soft: {
-    clothes: "chunky knit cardigan or fleece, cream and oatmeal palette, soft rounded silhouette, relaxed chinos, loafers or clean sneakers, cozy texture",
+    clothes: "elevated soft knitwear, minimal zip or button cardigan or cashmere-blend crewneck, wide tapered trousers, leather loafers or retro sneakers, cream/oatmeal tones, refined cozy modern fit",
     palette: "warm soft high-key color grading, cream oatmeal and pastel, gentle and airy",
     locations: ["sunny quiet neighborhood", "shop window with warm light", "golden-hour lane"],
     light: "soft warm golden-hour light, cozy glow",
@@ -80,7 +83,7 @@ export const AXIS_LOOK: Record<string, AxisLook> = {
 
 // §2.2 인물 변주 (같은 인물 반복 금지). athletic 과장 금지 → slim/regular만.
 const HAIR = ["short textured hair", "medium wavy hair", "buzz cut", "permed hair"];
-const BUILD = ["slim build", "regular build"];
+const BUILD = ["tall lean model physique", "tall slim build with long legs"];
 
 // 시선/동작 변주 — 측면 응시 3 : 걷는 중 2 분산(정면 응시·정자세 금지)
 const GAZE = [
@@ -159,7 +162,7 @@ export function buildPrompt(axis: string, i: number): { prompt: string; meta: Pr
   const gaze = GAZE[i % GAZE.length];
   const accent = COLOR_ACCENT_IDX.has(i % 15) ? ", one muted color-accent piece" : "";
 
-  const person = `east asian man in his mid-to-late 20s, ${hair}, ${build}, ${gaze}`;
+  const person = `tall handsome east asian male fashion model in his mid-20s, ${build}, ${hair}, sharp refined features, ${gaze}`;
   const clothes = `${look.clothes}, ${SEASON[season]}${accent}`;
   // 축별 팔레트/장소/조명/에너지를 프롬프트에 직접 주입 → 축 간 시각 대비 확보(수렴 방지).
   const prompt =
