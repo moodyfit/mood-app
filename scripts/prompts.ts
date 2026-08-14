@@ -21,7 +21,9 @@ export const NEGATIVE =
 // 로고 무관용(§5): 식별 가능한 브랜드 로고·워드마크 금지, 무지 신발·의류.
 // 비율·피지컬 상향(케빈): 키 크고 다리 길고 잘빠진 모델 비율 — 단 근육 과시 아님(옷이 주인공, 헌법).
 export const BODY_GUARD =
-  "full body from head to toe, tall with long legs and lean well-proportioned model physique, " +
+  "full-length full-body shot from head to toe, the entire outfit clearly visible including the top layer, " +
+  "any jacket or coat worn open to reveal the shirt or knit underneath, nothing cropped out of frame, " +
+  "tall with long legs and lean well-proportioned model physique, " +
   "small head-to-body ratio, broad straight shoulders, good posture, natural build not bulky, no muscle flexing, " +
   "the clothing and styling are the focus, plain unbranded clothing and footwear, " +
   "no visible brand logos, no wordmarks, no graphic prints, no text";
