@@ -1,1 +1,24 @@
-{"file":"clean-014.png","mood_vector":{"clean":1.0},"situations":["동네","주말카페"],"seasons":["fall"],"body_spec":{"height":"181","build":"regular"},"caption_item":"크림 스웻셔츠에 다크브라운 슬랙스","caption_why":"밝은 상의에 짙은 브라운으로 톤만 대비","caption_how":"밑단 한 번 접어 발목을 띄워","is_flagship":false,"review_note":"브라운=유채 → why '무채색' 미사용(톤 대비로 서술)."}
+{
+  "file": "clean-014.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "cityboy": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "세이지 블루종에 라이트블루 티, 크림 팬츠",
+  "caption_why": "세이지랑 라이트블루 쿨톤 조합이 가을에도 산뜻하고 정핏이라 깔끔해",
+  "caption_how": "블루종은 오픈해서 티 색 보이게, 팬츠는 스트레이트로 떨어뜨려",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}

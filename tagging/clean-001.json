@@ -1,13 +1,24 @@
 {
-  "file": "clean-001.png",
-  "mood_vector": {"clean": 1.0},
-  "situations": ["주말카페", "동네"],
-  "seasons": ["summer"],
-  "body_spec": {"height": "178", "build": "slim"},
-  "caption_item": "화이트 라운드 티에 아이보리 슬랙스",
-  "caption_why": "위아래 톤을 밝게 붙여 색을 안 늘리니까 대충 입어도 정돈돼 보여",
-  "caption_how": "티는 앞만 살짝 넣어야 슬랙스 라인이 살아",
+  "file": "clean-001.jpg",
+  "mood_vector": {
+    "clean": 0.8,
+    "cityboy": 0.2
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "아이보리 오버셔츠 재킷에 화이트 티, 크림 스트레이트 팬츠",
+  "caption_why": "위아래 톤을 크림으로 맞춰서 여름에도 정돈된 느낌, 색을 두 개로 줄이니까 깔끔함이 살아",
+  "caption_how": "재킷은 단추 풀고 걸치듯 입고, 안에 티는 살짝만 빼서 레이어 티 내줘",
   "is_flagship": true,
-  "flagship_reason": "라운드 티+슬랙스 = 유니클로급 슬롯 기본템으로 재현 가능, 전신·얼굴 노출",
-  "review_note": "원톤 반팔이라 '데이트' 제거(약한 답) → 주말카페·동네. clean 단일 지배."
+  "flagship_reason": "여름 clean 대표컷 - 톤온톤 뉴트럴에 전신·얼굴 다 보이고 기본템으로 재현 쉬움",
+  "confidence": 0.9
 }

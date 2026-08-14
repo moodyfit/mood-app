@@ -1,1 +1,24 @@
-{"file":"amekaji-011.png","mood_vector":{"amekaji":1.0},"situations":["동네"],"seasons":["fall"],"body_spec":{"height":"178","build":"slim"},"caption_item":"데님 자켓에 화이트 티·블루 진","caption_why":"가장 기본 청청에 워크부츠로 마감","caption_how":"자켓 열고 티 그대로","is_flagship":false}
+{
+  "file": "amekaji-011.jpg",
+  "mood_vector": {
+    "amekaji": 0.8,
+    "cityboy": 0.2
+  },
+  "situations": [
+    "출근",
+    "저녁약속"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "182",
+    "build": "slim"
+  },
+  "caption_item": "올리브 필드자켓에 체크 플란넬·화이트 티, 카키 치노, 브라운 더비",
+  "caption_why": "올리브랑 체크 플란넬 겹치고 더비로 마무리해 워크에 도시 정돈이 붙어",
+  "caption_how": "자켓 안에 플란넬 카라 살짝 빼고 치노는 밑단 접어 더비에 딱 맞춰",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.88
+}

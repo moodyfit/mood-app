@@ -1,1 +1,24 @@
-{"file":"street-010.png","mood_vector":{"street":1.0},"situations":["동네"],"seasons":["fall"],"body_spec":{"height":"181","build":"regular"},"caption_item":"올리브 오버핏 후디에 브라운 카고","caption_why":"흙색으로 붙여 덩치를 편하게","caption_how":"후드 세우고 밑단 덮어","is_flagship":true,"flagship_reason":"오버핏 후디+카고+캡+청키 스니커 = 슬롯 기본템 재현, 전신·간절기 대표"}
+{
+  "file": "street-010.jpg",
+  "mood_vector": {
+    "street": 0.75,
+    "amekaji": 0.25
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "181",
+    "build": "slim"
+  },
+  "caption_item": "그레이 후디에 워시드 차콜 배기 카고, 화이트 플랫폼 스니커",
+  "caption_why": "바랜 카고의 빈티지한 워시감이 그레이 후디랑 편하게 붙는 무드",
+  "caption_how": "배기 폭 크니까 상의는 골반에서 끊어 다리 길어보이게 해",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

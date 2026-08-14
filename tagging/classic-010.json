@@ -1,1 +1,25 @@
-{"file":"classic-010.png","mood_vector":{"classic":1.0},"situations":["출근"],"seasons":["fall"],"body_spec":{"height":"181","build":"regular"},"caption_item":"탄 블레이저에 블랙 터틀넥·올리브 슬랙스","caption_why":"탄 재킷에 검정 니트로 대비","caption_how":"손 넣고 벨트 보여","is_flagship":false,"review_note":"올리브 슬랙스=유채 → why '무채색' 미사용."}
+{
+  "file": "classic-010.jpg",
+  "mood_vector": {
+    "classic": 0.6,
+    "clean": 0.25,
+    "soft": 0.15
+  },
+  "situations": [
+    "저녁약속",
+    "동네"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "181",
+    "build": "slim"
+  },
+  "caption_item": "네이비 블레이저에 아이보리 니트폴로, 차콜 슬랙스, 브라운 로퍼",
+  "caption_why": "네이비와 차콜 딥톤에 아이보리로 밝기 줘서 균형 좋아",
+  "caption_how": "블레이저 걸치고 니트폴로 단추 풀어 여유롭게",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.83
+}

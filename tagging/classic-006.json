@@ -1,1 +1,25 @@
-{"file":"classic-006.png","mood_vector":{"classic":1.0},"situations":["출근","결혼식하객"],"seasons":["winter"],"body_spec":{"height":"179","build":"regular"},"caption_item":"카멜 오버코트에 블랙 터틀넥·차콜 슬랙스","caption_why":"카멜 코트로 겨울 정장을 따뜻하게","caption_how":"벨트로 허리 잡아","is_flagship":false,"review_note":"계획상 summer였으나 실물 카멜코트=FW로 기록(실물 원칙)."}
+{
+  "file": "classic-006.jpg",
+  "mood_vector": {
+    "classic": 0.5,
+    "clean": 0.35,
+    "soft": 0.15
+  },
+  "situations": [
+    "여행",
+    "주말카페"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "183",
+    "build": "slim"
+  },
+  "caption_item": "네이비 오버 블레이저에 화이트 티, 그레이 슬랙스, 블랙 로퍼",
+  "caption_why": "여름에 화이트 티로 가볍게 받쳐서 테일러링이 안 답답해",
+  "caption_how": "블레이저는 오버핏으로 걸치고 티는 살짝 넣어 밸런스 잡아",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.82
+}

@@ -1,1 +1,24 @@
-{"file":"amekaji-006.png","mood_vector":{"amekaji":1.0},"situations":["동네"],"seasons":["spring"],"body_spec":{"height":"179","build":"regular"},"caption_item":"데님 자켓에 화이트 니트·블루 진","caption_why":"밝은 니트로 청청을 산뜻하게 환기","caption_how":"소매 걷어","is_flagship":false}
+{
+  "file": "amekaji-006.jpg",
+  "mood_vector": {
+    "amekaji": 0.8,
+    "cityboy": 0.2
+  },
+  "situations": [
+    "출근",
+    "동네"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "183",
+    "build": "slim"
+  },
+  "caption_item": "올리브 필드 셔츠자켓에 샴브레이 셔츠, 블루 진, 브라운 부츠",
+  "caption_why": "올리브랑 데님 레이어가 도시 골목이랑 붙으니 정돈된 워크 무드가 나와",
+  "caption_how": "셔츠자켓 열어 걸치고 진은 밑단 한 번 접어 부츠에 살짝 얹어",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.88
+}

@@ -1,1 +1,24 @@
-{"file":"cityboy-006.png","mood_vector":{"cityboy":1.0},"situations":["동네"],"seasons":["summer"],"body_spec":{"height":"179","build":"slim"},"caption_item":"올리브 하프 워크셔츠에 화이트 티·올리브 와이드","caption_why":"강변 산책룩, 토트로 무심한 포인트","caption_how":"앞 열고 소매 걷어","is_flagship":false,"review_note":"010과 조합 유사 검토 → 006 반팔 워크셔츠+올리브 와이드(강변·여름) / 010 긴팔 코치+카멜 치노(골목·봄)로 변별. 근접중복 아님."}
+{
+  "file": "cityboy-006.jpg",
+  "mood_vector": {
+    "cityboy": 0.7,
+    "amekaji": 0.3
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "183",
+    "build": "slim"
+  },
+  "caption_item": "브라운 코치 재킷에 크림 티, 그레이 조거 팬츠",
+  "caption_why": "브라운 워크 무드 겉옷이 흙톤 아메카지 결을 더한 데일리 시티보이",
+  "caption_how": "재킷 열어 걸치고 조거 밑단은 발목에서 살짝 접어 정리하기",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}

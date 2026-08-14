@@ -1,1 +1,25 @@
-{"file":"cityboy-011.png","mood_vector":{"cityboy":1.0},"situations":["동네"],"seasons":["spring"],"body_spec":{"height":"174","build":"slim"},"caption_item":"올리브 셔츠에 그린 티·올리브 카고","caption_why":"올리브 톤온톤에 크로스백으로 실용","caption_how":"열어 그린 티를 살짝","is_flagship":false,"review_note":"그린=유채 → why '무채색' 미사용."}
+{
+  "file": "cityboy-011.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "soft": 0.2,
+    "clean": 0.2
+  },
+  "situations": [
+    "캠퍼스",
+    "주말카페"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "182",
+    "build": "slim"
+  },
+  "caption_item": "머스터드 오버핏 스웨트에 화이트 셔츠, 네이비 와이드 팬츠",
+  "caption_why": "스웨트 안에 셔츠 카라만 빼주니 포근하면서도 산뜻한 레이어",
+  "caption_how": "셔츠 밑단 살짝 빼서 기장 차이 주고 카라는 스웨트 위로 정리",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

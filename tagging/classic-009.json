@@ -1,1 +1,24 @@
-{"file":"classic-009.png","mood_vector":{"classic":1.0},"situations":["출근","결혼식하객"],"seasons":["winter"],"body_spec":{"height":"183","build":"slim"},"caption_item":"브라운 오버코트에 블랙 터틀넥·차콜 슬랙스","caption_why":"브라운 코트로 정장에 기장을 더해","caption_how":"코트 열고 걸어","is_flagship":false}
+{
+  "file": "classic-009.jpg",
+  "mood_vector": {
+    "classic": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "출근",
+    "저녁약속"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "그레이 셋업 블레이저에 화이트 셔츠, 매칭 슬랙스, 블랙 로퍼",
+  "caption_why": "톤온톤 그레이 셋업이라 미니멀하면서 격식 딱 맞아",
+  "caption_how": "셋업은 색 맞춰 입고 안은 흰 셔츠로 깔끔하게",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

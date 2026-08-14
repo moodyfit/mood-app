@@ -1,1 +1,24 @@
-{"file":"amekaji-012.png","mood_vector":{"amekaji":1.0},"situations":["여행","동네"],"seasons":["fall"],"body_spec":{"height":"181","build":"regular"},"caption_item":"올리브 필드자켓에 그레이 셔츠·블루 진·백팩","caption_why":"밀리터리 필드로 청청에 유틸을 더해","caption_how":"자켓 열고 백팩 짧게","is_flagship":false,"review_note":"올리브=유채 → why '무채색' 미사용. 필드자켓=골격 변주."}
+{
+  "file": "amekaji-012.jpg",
+  "mood_vector": {
+    "amekaji": 0.85,
+    "cityboy": 0.15
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "183",
+    "build": "slim"
+  },
+  "caption_item": "브라운 워크자켓에 데님 셔츠·크림 티, 브라운 팬츠, 브라운 부츠",
+  "caption_why": "브라운 온톤에 인디고 하나 껴서 가을 흙톤이 진하게 정리돼",
+  "caption_how": "워크자켓 안에 데님 열어 크림 티 보이게 3겹 레이어로 깊이 줘",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.9
+}

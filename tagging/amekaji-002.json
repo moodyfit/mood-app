@@ -1,1 +1,24 @@
-{"file":"amekaji-002.png","mood_vector":{"amekaji":1.0},"situations":["동네","주말카페"],"seasons":["spring","fall"],"body_spec":{"height":"182","build":"regular"},"caption_item":"데님 트러커에 다크 티·블루 진","caption_why":"청청에 워크부츠로 낡은 무드를 잡아","caption_how":"트러커 열고 진은 부츠에 살짝 걸치게","is_flagship":true,"flagship_reason":"데님 트러커+티+블루 진+워크부츠 = 슬롯 기본템 재현, 전신·간절기 대표"}
+{
+  "file": "amekaji-002.jpg",
+  "mood_vector": {
+    "amekaji": 0.85,
+    "cityboy": 0.15
+  },
+  "situations": [
+    "출근",
+    "저녁약속"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "올리브 M-65풍 필드자켓에 샴브레이 셔츠, 블루 진, 브라운 부츠",
+  "caption_why": "올리브랑 인디고 두 톤만으로 밀리터리 워크 무드가 진하게 잡혀",
+  "caption_how": "자켓 열어 샴브레이 레이어 보여주고 청바지는 살짝만 접어 부츠에 걸쳐",
+  "is_flagship": true,
+  "flagship_reason": "M-65에 샴브레이·데님 정석 아메카지 조합이 도시 배경에서 제일 또렷하게 살아",
+  "confidence": 0.95
+}

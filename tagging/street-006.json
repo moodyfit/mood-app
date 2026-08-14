@@ -1,1 +1,24 @@
-{"file":"street-006.png","mood_vector":{"street":1.0},"situations":["동네"],"seasons":["fall"],"body_spec":{"height":"177","build":"regular"},"caption_item":"차콜 오버핏 후디에 베이지 카고","caption_why":"어두운 후디에 밝은 카고로 위아래 대비","caption_how":"후디는 엉덩이 덮는 길이로","is_flagship":false}
+{
+  "file": "street-006.jpg",
+  "mood_vector": {
+    "street": 0.75,
+    "amekaji": 0.25
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "183",
+    "build": "slim"
+  },
+  "caption_item": "그레이 후디에 워시드 다크 배기 카고, 아이보리 청키 스니커",
+  "caption_why": "바랜 카고의 워시감이랑 그레이 후디가 톤으로 부드럽게 이어짐",
+  "caption_how": "배기 실루엣이라 신발은 볼륨 있는 걸로 무게중심 맞춰줘",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

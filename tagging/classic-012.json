@@ -1,1 +1,25 @@
-{"file":"classic-012.png","mood_vector":{"classic":1.0},"situations":["소개팅","출근"],"seasons":["summer"],"body_spec":{"height":"180","build":"slim"},"caption_item":"네이비 니트 폴로에 그레이 슬랙스·브라운 로퍼","caption_why":"니트 폴로로 여름 정장기를 부드럽게","caption_how":"폴로 넣어 로퍼로 마감","is_flagship":true,"flagship_reason":"니트 폴로+슬랙스+로퍼 = 슬롯 기본템 재현, 전신·classic 여름 대표","review_note":"네이비=유채(why '무채색' 미사용). 소개팅 후보 지향."}
+{
+  "file": "classic-012.jpg",
+  "mood_vector": {
+    "classic": 0.6,
+    "cityboy": 0.25,
+    "clean": 0.15
+  },
+  "situations": [
+    "출근",
+    "저녁약속"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "183",
+    "build": "slim"
+  },
+  "caption_item": "카멜 블레이저에 네이비 셔츠, 차콜 플리츠 슬랙스, 블랙 로퍼",
+  "caption_why": "카멜과 네이비 대비에 플리츠로 클래식 감도를 높였어",
+  "caption_how": "셔츠 안 넣고 자연스럽게, 블레이저는 걸치듯 입어",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.83
+}

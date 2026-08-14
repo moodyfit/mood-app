@@ -1,1 +1,24 @@
-{"file":"clean-011.png","mood_vector":{"clean":1.0},"situations":["데이트"],"seasons":["summer"],"body_spec":{"height":"179","build":"slim"},"caption_item":"화이트 니트 폴로에 차콜 테일러드 쇼츠","caption_why":"밝은 폴로에 차콜 쇼츠로 두 색만 써서 여름에도 정제돼","caption_how":"폴로는 넣지 말고 반듯하게 흘려","is_flagship":false,"review_note":"재생성분(로고 슬롯) 신규 태깅. 여름 데이트 공백 패치. clean 여름 대표는 001 유지."}
+{
+  "file": "clean-011.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "soft": 0.3
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "182",
+    "build": "slim"
+  },
+  "caption_item": "베이지 셔츠재킷에 그레이 니트, 베이지 와이드 팬츠",
+  "caption_why": "그레이 니트 질감이 포근함을 더하고 베이지로 톤 맞춰서 봄에 편안하게 정돈돼",
+  "caption_how": "니트 밑단 살짝 넣고 셔츠는 걸쳐서 질감 레이어 보여줘",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}

@@ -1,1 +1,24 @@
-{"file":"street-001.png","mood_vector":{"street":1.0},"situations":["동네"],"seasons":["fall","winter"],"body_spec":{"height":"181","build":"slim"},"caption_item":"블랙 오버핏 후디에 올리브 카고","caption_why":"위아래 다 크게 놀리고 캡으로 눌러 힘을 뺐어","caption_how":"후디 밑단은 카고 위로 덮어","is_flagship":true,"flagship_reason":"오버핏 후디+카고+캡+청키 스니커 = 슬롯 기본템 재현, 전신·FW 대표"}
+{
+  "file": "street-001.jpg",
+  "mood_vector": {
+    "street": 0.85,
+    "amekaji": 0.15
+  },
+  "situations": [
+    "동네",
+    "저녁약속"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "올블랙 오버핏 후디에 블랙 카고 팬츠, 블랙 청키 부츠",
+  "caption_why": "위아래 블랙으로 깔맞춤해서 볼륨은 살고 무게감은 딱 잡힌 조합",
+  "caption_how": "비니로 얼굴 위쪽 정리하고 부츠로 밑단 눌러줘야 라인이 산다",
+  "is_flagship": true,
+  "flagship_reason": "올블랙 톤온톤에 청키 부츠까지 완성도 높은 대표컷",
+  "confidence": 0.9
+}

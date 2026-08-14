@@ -1,1 +1,24 @@
-{"file":"street-014.png","mood_vector":{"street":1.0},"situations":["여행","동네"],"seasons":["fall"],"body_spec":{"height":"179","build":"regular"},"caption_item":"올리브 자켓에 후디·올리브 카고·백팩","caption_why":"백팩까지 흙색으로 통일해 이동성 포인트","caption_how":"자켓 열고 백팩 짧게","is_flagship":false}
+{
+  "file": "street-014.jpg",
+  "mood_vector": {
+    "street": 0.7,
+    "amekaji": 0.3
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "그레이 후디에 워시드 차콜 슈퍼배기 카고, 카키 스니커",
+  "caption_why": "바랜 카고의 워시감에 카키 신발까지 흙톤으로 묶은 조합",
+  "caption_how": "슈퍼배기라 상의는 크롭하게 올려 다리 길이 확보해",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

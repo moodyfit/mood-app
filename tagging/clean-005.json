@@ -1,12 +1,24 @@
 {
-  "file": "clean-005.png",
-  "mood_vector": {"clean": 1.0},
-  "situations": ["주말카페", "동네"],
-  "seasons": ["summer"],
-  "body_spec": {"height": "180", "build": "regular"},
-  "caption_item": "오버핏 크림 티에 아이보리 치노",
-  "caption_why": "톤을 다 밝게 맞추고 핏만 크게 둬서 편한데 깔끔해",
-  "caption_how": "티 밑단이 엉덩이 덮는 길이라 그대로 흘려 입어",
+  "file": "clean-005.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "cityboy": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "저녁약속"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "182",
+    "build": "slim"
+  },
+  "caption_item": "베이지 오버셔츠에 화이트 티, 크림 팬츠, 블랙 시계",
+  "caption_why": "전체 크림톤에 시계 하나로 포인트, 오픈 셔츠 걸쳐서 무심한 시티보이 결이 나와",
+  "caption_how": "셔츠 풀어 걸치고 손목엔 얇은 시계 하나로 여백 채워줘",
   "is_flagship": false,
-  "review_note": "여름 클린은 001이 대표 → 005 flagship 제외(시즌당 대표 1장)."
+  "flagship_reason": "",
+  "confidence": 0.85
 }

@@ -1,1 +1,24 @@
-{"file":"street-008.png","mood_vector":{"street":1.0},"situations":["모임술자리","주말카페"],"seasons":["fall"],"body_spec":{"height":"183","build":"regular"},"caption_item":"블랙 봄버에 오렌지 후디·올리브 카고","caption_why":"오렌지 후디로 딱 한 포인트만 튀겨","caption_how":"봄버 열고 후디로 색을 보여","is_flagship":false,"review_note":"오렌지=유채 → why '무채색' 미사용."}
+{
+  "file": "street-008.jpg",
+  "mood_vector": {
+    "street": 0.8,
+    "amekaji": 0.2
+  },
+  "situations": [
+    "나들이",
+    "여행"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "블루그레이 오버핏 후디에 블랙 와이드 카고, 화이트 청키 스니커",
+  "caption_why": "블루 톤 상의에 블랙 하의로 위아래 대비 준 시원한 조합",
+  "caption_how": "와이드 카고는 신발 덮을 정도로 길이 넉넉히 잡아야 멋있어",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

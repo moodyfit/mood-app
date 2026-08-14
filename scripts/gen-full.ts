@@ -46,21 +46,28 @@ async function withRetry<T>(fn: () => Promise<T>, label: string): Promise<T | nu
   return null;
 }
 
-async function txt2img(prompt: string, w: number, h: number): Promise<Buffer | null> {
-  const res: any = await fal.subscribe(MODEL, {
-    input: { prompt, image_size: { width: w, height: h }, num_images: 1, num_inference_steps: 28, guidance_scale: 3.0, negative_prompt: NEGATIVE, enable_safety_checker: true },
+// 큐(fal.subscribe)가 계정 stale-lock으로 403 → 동기 엔드포인트(fal.run)로 우회. 충전 반영됨.
+async function falRun(model: string, input: Record<string, unknown>): Promise<any> {
+  const r = await fetch(`https://fal.run/${model}`, {
+    method: "POST",
+    headers: { Authorization: `Key ${process.env.FAL_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify(input),
   });
-  const url = res?.data?.images?.[0]?.url;
+  if (!r.ok) throw new Error(`${r.status} ${(await r.text()).slice(0, 200)}`);
+  return r.json();
+}
+
+async function txt2img(prompt: string, w: number, h: number): Promise<Buffer | null> {
+  const res: any = await falRun(MODEL, { prompt, image_size: { width: w, height: h }, num_images: 1, num_inference_steps: 28, guidance_scale: 3.0, negative_prompt: NEGATIVE, enable_safety_checker: true });
+  const url = res?.images?.[0]?.url;
   return url ? Buffer.from(await (await fetch(url)).arrayBuffer()) : null;
 }
 
 async function realismPass(init: Buffer, prompt: string): Promise<Buffer | null> {
   const dataUri = `data:image/png;base64,${init.toString("base64")}`;
   const realism = prompt + ", hyper-realistic candid photograph, realistic skin texture and fabric, true-to-life, indistinguishable from a real photo";
-  const res: any = await fal.subscribe(I2I, {
-    input: { image_url: dataUri, prompt: realism, strength: 0.5, num_inference_steps: 30, guidance_scale: 3.0, negative_prompt: NEGATIVE, enable_safety_checker: true },
-  });
-  const url = res?.data?.images?.[0]?.url;
+  const res: any = await falRun(I2I, { image_url: dataUri, prompt: realism, strength: 0.5, num_inference_steps: 30, guidance_scale: 3.0, negative_prompt: NEGATIVE, enable_safety_checker: true });
+  const url = res?.images?.[0]?.url;
   return url ? Buffer.from(await (await fetch(url)).arrayBuffer()) : null;
 }
 
@@ -89,7 +96,7 @@ async function main() {
       const r = (await withRetry(() => realismPass(t, prompt), `${axis}-${num} i2i`)) ?? t; // i2i 실패 시 txt 사용
       const jpg = await sharp(r).jpeg({ quality: 90 }).toBuffer();
       await fs.writeFile(out, jpg);
-      log.push({ file: `images/post/${axis}-${num}.jpg`, aspect_ratio: size.ratio, size: size.label, axis, season: meta.season, hair: meta.hair, build: meta.build, background: meta.background });
+      log.push({ file: `images/post/${axis}-${num}.jpg`, aspect_ratio: size.ratio, size: size.label, axis, season: meta.season, hair: meta.hair, build: meta.build, background: meta.background, colorway: meta.colorway });
       await fs.writeFile(LOG, JSON.stringify(log, null, 2));
       done++;
       console.log(`✓ ${axis}-${num} (${size.label}) · done ${done} skip ${skip} fail ${fail}`);

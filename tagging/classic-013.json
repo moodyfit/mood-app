@@ -1,1 +1,25 @@
-{"file":"classic-013.png","mood_vector":{"classic":1.0},"situations":["출근","면접"],"seasons":["winter"],"body_spec":{"height":"180","build":"slim"},"caption_item":"그레이 오버코트에 블랙 터틀넥·그레이 슬랙스","caption_why":"무채색 코트로 겨울 정장을 깔끔하게","caption_how":"코트 열고 세로로","is_flagship":false}
+{
+  "file": "classic-013.jpg",
+  "mood_vector": {
+    "classic": 0.55,
+    "clean": 0.3,
+    "soft": 0.15
+  },
+  "situations": [
+    "출근",
+    "주말카페"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "차콜 블레이저에 오프화이트 니트, 그레이 플리츠 슬랙스, 블랙 로퍼",
+  "caption_why": "차분한 무채색에 니트로 포근함 더해 봄에 딱 좋아",
+  "caption_how": "블레이저 단추 풀고 니트 밑단 살짝 보이게 레이어드",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.84
+}

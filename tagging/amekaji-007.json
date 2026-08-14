@@ -1,1 +1,24 @@
-{"file":"amekaji-007.png","mood_vector":{"amekaji":1.0},"situations":["동네"],"seasons":["spring"],"body_spec":{"height":"181","build":"regular"},"caption_item":"데님 셔츠에 그레이 셔츠·그레이 워크팬츠","caption_why":"청과 그레이로 톤을 낮춰 워크 무드","caption_how":"셔츠 위에 데님 셔츠를 겹쳐","is_flagship":false,"review_note":"그레이 워크팬츠=하의 골격 변주."}
+{
+  "file": "amekaji-007.jpg",
+  "mood_vector": {
+    "amekaji": 0.8,
+    "street": 0.2
+  },
+  "situations": [
+    "나들이",
+    "여행"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "무스탕 카라 올리브 자켓에 체크 플란넬·머스타드 티, 카키 카고, 브라운 부츠",
+  "caption_why": "플리스 카라랑 체크 플란넬, 카고까지 겹쳐 아메카지 레이어가 꽉 찼어",
+  "caption_how": "자켓 안에 플란넬 열어 머스타드 티 보이게 하고 카고는 부츠에 넣어 마무리해",
+  "is_flagship": true,
+  "flagship_reason": "플리스 카라 자켓에 플란넬·카고 겹친 밀리터리 워크 레이어가 제일 진하고 디테일이 살아",
+  "confidence": 0.92
+}

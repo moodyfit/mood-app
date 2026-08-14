@@ -1,1 +1,24 @@
-{"file":"cityboy-010.png","mood_vector":{"cityboy":1.0},"situations":["동네","주말카페"],"seasons":["spring"],"body_spec":{"height":"178","build":"regular"},"caption_item":"올리브 코치 오버셔츠에 화이트 티·카멜 치노","caption_why":"봄 톤으로 밝게 열고 카멜 치노로 따뜻하게","caption_how":"치노 밑단 한 번 접어 스니커를 보여","is_flagship":false,"review_note":"006과 변별(긴팔 코치+카멜 테이퍼드 vs 006 반팔+올리브 와이드) → 기록."}
+{
+  "file": "cityboy-010.jpg",
+  "mood_vector": {
+    "cityboy": 0.7,
+    "amekaji": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "181",
+    "build": "slim"
+  },
+  "caption_item": "브라운 하링턴 재킷에 화이트 티, 그레이 와이드 팬츠",
+  "caption_why": "브라운 겉옷과 버건디 스니커즈로 흙톤을 이어준 봄 시티보이",
+  "caption_how": "재킷 열어 걸치고 신발 컬러로 톤 이어주면 완성도 올라감",
+  "is_flagship": true,
+  "flagship_reason": "봄 시티보이 대표, 전신·얼굴 또렷하고 색 조합이 따라 하기 쉬움",
+  "confidence": 0.9
+}

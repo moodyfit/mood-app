@@ -1,1 +1,24 @@
-{"file":"soft-005.png","mood_vector":{"soft":1.0},"situations":["소개팅","데이트"],"seasons":["spring","fall"],"body_spec":{"height":"179","build":"slim"},"caption_item":"크림 가디건에 오트밀 니트티·카키 치노","caption_why":"가디건으로 겹을 더해 부드럽게 정돈","caption_how":"단추 두어 개만 채워","is_flagship":true,"flagship_reason":"니트 가디건+니트티+웜 치노 = 슬롯 기본템 재현, 전신·간절기 대표"}
+{
+  "file": "soft-005.jpg",
+  "mood_vector": {
+    "soft": 0.55,
+    "clean": 0.45
+  },
+  "situations": [
+    "주말카페",
+    "데이트"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "182",
+    "build": "slim"
+  },
+  "caption_item": "크림 케이블 니트 가디건에 베이지 와이드 슬랙스",
+  "caption_why": "크림 톤온톤이라 깔끔하고 포근한 느낌",
+  "caption_how": "안에 흰 티 받쳐 레이어링하고 브라운 슈즈로 톤 맞춰",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

@@ -1,1 +1,24 @@
-{"file":"cityboy-008.png","mood_vector":{"cityboy":1.0},"situations":["출근","주말카페"],"seasons":["fall","winter"],"body_spec":{"height":"182","build":"regular"},"caption_item":"네이비 코치자켓에 화이트 티·브라운 와이드","caption_why":"네이비 겉옷으로 톤을 눌러 카페에서도 갖춰 보여","caption_how":"자켓 열고 토트로 균형","is_flagship":true,"flagship_reason":"코치자켓+티+와이드+토트 = 슬롯 기본템 재현, 전신·FW 대표","review_note":"네이비=유채 → why '무채색' 미사용(톤 눌러 서술)."}
+{
+  "file": "cityboy-008.jpg",
+  "mood_vector": {
+    "cityboy": 0.55,
+    "street": 0.45
+  },
+  "situations": [
+    "동네",
+    "여행"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "오렌지 오버핏 코치 재킷에 크림 티, 라이트 데님 와이드",
+  "caption_why": "큼직한 오렌지 겉옷과 배기 데님이 만나 스트릿 볼륨이 살아난 조합",
+  "caption_how": "재킷은 오버핏 그대로 걸치고 데님은 넉넉히 흘려 볼륨 맞추기",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}

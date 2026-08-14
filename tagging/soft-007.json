@@ -1,1 +1,24 @@
-{"file":"soft-007.png","mood_vector":{"soft":1.0},"situations":["데이트","주말카페"],"seasons":["spring"],"body_spec":{"height":"182","build":"slim"},"caption_item":"오트밀 가디건에 오트밀 니트티·오트밀 팬츠","caption_why":"셋업처럼 톤 맞춘 가디건 세트로","caption_how":"단추 풀어 이너 보여","is_flagship":false}
+{
+  "file": "soft-007.jpg",
+  "mood_vector": {
+    "soft": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "여행",
+    "동네"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "파우더블루 케이블 니트에 라이트그레이 슬랙스",
+  "caption_why": "연한 블루에 그레이라 시원하고 담백해",
+  "caption_how": "니트에 밑단 롤업 슬랙스, 화이트 스니커로 산뜻하게",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

@@ -1,1 +1,24 @@
-{"file":"amekaji-004.png","mood_vector":{"amekaji":1.0},"situations":["동네","여행"],"seasons":["winter"],"body_spec":{"height":"184","build":"slim"},"caption_item":"롱 데님코트에 니트·블루 진","caption_why":"긴 코트로 청청에 기장을 더해 묵직하게","caption_how":"코트 열고 세로로 길게","is_flagship":false,"review_note":"롱코트=데님 골격 변주."}
+{
+  "file": "amekaji-004.jpg",
+  "mood_vector": {
+    "amekaji": 0.85,
+    "cityboy": 0.15
+  },
+  "situations": [
+    "나들이",
+    "주말카페"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "181",
+    "build": "slim"
+  },
+  "caption_item": "카멜 워크 셔츠자켓에 데님 셔츠, 브라운 팬츠, 브라운 부츠",
+  "caption_why": "카멜·인디고·브라운 다 흙톤이라 가을 낙엽길에 그대로 녹아들어",
+  "caption_how": "워크자켓 안에 데님 셔츠 레이어드하고 벨트로 허리 잡아주면 깔끔해",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.9
+}

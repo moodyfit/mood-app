@@ -1,1 +1,24 @@
-{"file":"street-002.png","mood_vector":{"street":1.0},"situations":["동네","주말카페"],"seasons":["fall","winter"],"body_spec":{"height":"178","build":"regular"},"caption_item":"네이비 자켓에 후디·탄 카고","caption_why":"자켓 한 겹 걸쳐 부피를 더해","caption_how":"자켓은 열고 후디 끈은 밖으로","is_flagship":false,"review_note":"네이비=유채 → why '무채색' 미사용."}
+{
+  "file": "street-002.jpg",
+  "mood_vector": {
+    "street": 0.7,
+    "amekaji": 0.3
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "그레이 오버핏 후디에 워시드 다크 카고 데님, 블랙 스니커",
+  "caption_why": "후디의 회색이랑 워시드 데님의 바랜 톤이 자연스럽게 붙는 무드",
+  "caption_how": "팬츠가 볼륨 크니까 밑단은 살짝 접어 신발 위로 떨어뜨려",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

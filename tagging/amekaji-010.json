@@ -1,1 +1,24 @@
-{"file":"amekaji-010.png","mood_vector":{"amekaji":1.0},"situations":["동네","주말카페"],"seasons":["spring"],"body_spec":{"height":"183","build":"slim"},"caption_item":"데님 자켓에 베이지 카디건·블루 진","caption_why":"카디건으로 청청을 포근하게 눌러","caption_how":"자켓 안에 카디건 레이어","is_flagship":false}
+{
+  "file": "amekaji-010.jpg",
+  "mood_vector": {
+    "amekaji": 0.85,
+    "cityboy": 0.15
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "181",
+    "build": "slim"
+  },
+  "caption_item": "올리브 필드자켓에 샴브레이 셔츠, 딥 인디고 진, 브라운 부츠",
+  "caption_why": "올리브에 진한 인디고까지 딥톤으로 가서 차분하고 묵직한 워크 무드야",
+  "caption_how": "자켓 열어 샴브레이 보이고 벨트로 허리 잡은 뒤 진은 밑단만 살짝 접어",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.88
+}

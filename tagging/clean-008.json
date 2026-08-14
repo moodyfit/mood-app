@@ -1,13 +1,24 @@
 {
-  "file": "clean-008.png",
-  "mood_vector": {"clean": 1.0},
-  "situations": ["주말카페", "동네"],
-  "seasons": ["winter"],
-  "body_spec": {"height": "180", "build": "regular"},
-  "caption_item": "크림 카코트에 오트밀 니트·블랙 슬랙스",
-  "caption_why": "겉옷까지 아이보리로 맞추고 하의만 검정으로 눌러 균형을 잡았어",
-  "caption_how": "코트 단추는 잠그지 말고 열어 레이어를 보여",
+  "file": "clean-008.jpg",
+  "mood_vector": {
+    "clean": 0.9,
+    "cityboy": 0.1
+  },
+  "situations": [
+    "출근",
+    "소개팅"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "베이지 하링턴 재킷에 화이트 티, 크림 팬츠",
+  "caption_why": "군더더기 없이 베이지·화이트 두 색으로 끝낸 정핏, 미니멀 그 자체",
+  "caption_how": "재킷 지퍼는 반만 올리고 팬츠는 슬림하게 떨어뜨려 라인 살려줘",
   "is_flagship": true,
-  "flagship_reason": "카코트+니트+슬랙스+스니커 = 슬롯 기본템 재현 가능, 전신·정면·겨울 클린 대표컷",
-  "review_note": "레이어드지만 4슬롯 유니클로급 재현 가능. 겨울 대표 1장."
+  "flagship_reason": "겨울 clean 대표컷 - 무채+뉴트럴 2색 정핏에 전신·얼굴 선명, 재현 난이도 낮음",
+  "confidence": 0.9
 }

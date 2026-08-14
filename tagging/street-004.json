@@ -1,1 +1,24 @@
-{"file":"street-004.png","mood_vector":{"street":1.0},"situations":["모임술자리","동네"],"seasons":["winter"],"body_spec":{"height":"179","build":"regular"},"caption_item":"블랙 자켓에 후디·올리브 카고","caption_why":"검정으로 다 눌러 밤에도 묵직하게","caption_how":"캡 깊이 눌러","is_flagship":false}
+{
+  "file": "street-004.jpg",
+  "mood_vector": {
+    "street": 0.8,
+    "amekaji": 0.2
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "181",
+    "build": "slim"
+  },
+  "caption_item": "블루그레이 후디에 블랙 와이드 카고 팬츠, 화이트 스니커",
+  "caption_why": "차분한 블루그레이 상의에 넓은 카고로 하체 볼륨 확 준 밸런스",
+  "caption_how": "팬츠가 넓으니 상의는 너무 길지 않게 골반쯤에서 끊어줘",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

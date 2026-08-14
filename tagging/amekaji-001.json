@@ -1,1 +1,24 @@
-{"file":"amekaji-001.png","mood_vector":{"amekaji":1.0},"situations":["동네"],"seasons":["spring","fall"],"body_spec":{"height":"178","build":"slim"},"caption_item":"데님 셔츠자켓에 블랙 티·블루 진","caption_why":"청청을 톤차로 붙이고 검정 티로 눌러","caption_how":"셔츠자켓 단추 풀어 티를 보여","is_flagship":false}
+{
+  "file": "amekaji-001.jpg",
+  "mood_vector": {
+    "amekaji": 0.8,
+    "cityboy": 0.2
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "인디고 데님 셔츠자켓에 화이트 티, 탄 치노, 브라운 워크부츠",
+  "caption_why": "청량한 인디고랑 흙톤 탄이 만나 딱 정직한 아메카지 결이 나와",
+  "caption_how": "셔츠자켓은 단추 다 풀고 안에 흰 티 살짝 보이게 걸치면 편해",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.9
+}

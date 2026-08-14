@@ -1,1 +1,25 @@
-{"file":"classic-015.png","mood_vector":{"classic":1.0},"situations":["결혼식하객","출근"],"seasons":["fall","winter"],"body_spec":{"height":"183","build":"slim"},"caption_item":"차콜 수트에 러스트 베스트·블랙 터틀넥","caption_why":"수트에 러스트 조끼로 포인트 한 겹","caption_how":"조끼 채워 정장기를 살려","is_flagship":false,"review_note":"러스트=유채 → why '무채색' 미사용. 베스트=이 배치 유일 골격 변주."}
+{
+  "file": "classic-015.jpg",
+  "mood_vector": {
+    "classic": 0.5,
+    "clean": 0.3,
+    "soft": 0.2
+  },
+  "situations": [
+    "나들이",
+    "주말카페"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "딥그린 블레이저에 아이보리 니트, 카멜 와이드 슬랙스, 블랙 몽크",
+  "caption_why": "그린과 카멜 딥톤에 와이드 실루엣이라 여유롭고 무드 있어",
+  "caption_how": "슬랙스 밑단 롤업하고 니트로 포근하게 받쳐 입어",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.82
+}

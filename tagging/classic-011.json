@@ -1,1 +1,25 @@
-{"file":"classic-011.png","mood_vector":{"classic":1.0},"situations":["출근"],"seasons":["winter"],"body_spec":{"height":"178","build":"slim"},"caption_item":"올리브 오버코트에 그레이 터틀넥·차콜 슬랙스","caption_why":"올리브 코트로 톤만 얹어","caption_how":"코트 열고 벨트","is_flagship":false,"review_note":"올리브=유채 → why '무채색' 미사용."}
+{
+  "file": "classic-011.jpg",
+  "mood_vector": {
+    "classic": 0.65,
+    "amekaji": 0.2,
+    "clean": 0.15
+  },
+  "situations": [
+    "나들이",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "182",
+    "build": "slim"
+  },
+  "caption_item": "그린 블레이저에 화이트 셔츠, 브라운 슬랙스, 블랙 로퍼",
+  "caption_why": "딥그린에 브라운 조합이 프레피하면서 안 흔한 색감",
+  "caption_how": "셔츠 단추 목까지 채우고 크롭 슬랙스로 발목 보여줘",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.83
+}

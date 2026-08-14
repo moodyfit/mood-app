@@ -1,1 +1,24 @@
-{"file":"street-013.png","mood_vector":{"street":1.0},"situations":["모임술자리","동네"],"seasons":["fall"],"body_spec":{"height":"182","build":"slim"},"caption_item":"카키 코치자켓에 후디·베이지 카고","caption_why":"유틸 자켓과 카고로 워크 무드를 크게","caption_how":"지퍼 반, 캡","is_flagship":false}
+{
+  "file": "street-013.jpg",
+  "mood_vector": {
+    "street": 0.85,
+    "amekaji": 0.15
+  },
+  "situations": [
+    "동네",
+    "저녁약속"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "올블랙 오버핏 후디에 블랙 카고 팬츠, 블랙 청키 스니커",
+  "caption_why": "루프탑 배경에 통짜 블랙 볼륨으로 각 잡히게 떨어지는 조합",
+  "caption_how": "올블랙은 후디 기장 길게 빼서 상하 경계 없애야 통일감 산다",
+  "is_flagship": true,
+  "flagship_reason": "올블랙 볼륨과 배경 대비가 깔끔하게 떨어지는 대표컷",
+  "confidence": 0.9
+}

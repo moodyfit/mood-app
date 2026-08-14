@@ -1,12 +1,24 @@
 {
-  "file": "clean-006.png",
-  "mood_vector": {"clean": 1.0},
-  "situations": ["동네"],
-  "seasons": ["summer"],
-  "body_spec": {"height": "178", "build": "slim"},
-  "caption_item": "크림 니트 티에 블랙 와이드 슬랙스",
-  "caption_why": "밝은 니트 상의에 검정 하의로 두 색만 써서 산책룩인데 정돈돼",
-  "caption_how": "슬랙스는 발등에 한 번 접히게 길이를 잡아",
+  "file": "clean-006.jpg",
+  "mood_vector": {
+    "clean": 0.6,
+    "cityboy": 0.4
+  },
+  "situations": [
+    "동네",
+    "여행"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "183",
+    "build": "slim"
+  },
+  "caption_item": "라이트블루 셔츠재킷에 화이트 티, 아이보리 와이드 팬츠",
+  "caption_why": "밝은 블루랑 아이보리 조합이 여름 햇살에 시원하게 떨어지고 레이어가 여유로워",
+  "caption_how": "와이드 팬츠엔 셔츠 오픈해서 세로 라인 길게 뽑아줘",
   "is_flagship": false,
-  "review_note": "강변 산책=동네 1개만(과충전 회피). 크림/블랙 2색 = clean 단일."
+  "flagship_reason": "",
+  "confidence": 0.85
 }

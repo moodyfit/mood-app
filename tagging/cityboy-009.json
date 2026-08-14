@@ -1,1 +1,25 @@
-{"file":"cityboy-009.png","mood_vector":{"cityboy":1.0},"situations":["출근","동네"],"seasons":["fall","winter"],"body_spec":{"height":"180","build":"slim"},"caption_item":"카키 오버셔츠에 크림 티·베이지 팬츠","caption_why":"흙색 겉옷 한 겹으로 걷는 데 편해","caption_how":"오버셔츠 소매 걷어","is_flagship":false}
+{
+  "file": "cityboy-009.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "clean": 0.2,
+    "street": 0.2
+  },
+  "situations": [
+    "저녁약속",
+    "동네"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "네이비 오버핏 카코트에 화이트 오버 티, 차콜 와이드 팬츠",
+  "caption_why": "박시한 네이비 코트에 흰 티 볼륨을 겹쳐 묵직하면서 깔끔한 겨울 무드",
+  "caption_how": "코트는 단추 풀고 카라 세워 걸치고 티는 넉넉히 내려 볼륨 살리기",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}

@@ -20,9 +20,9 @@ async function run() {
   // gen_log에서 파일별 실측 비율 매핑(마스터리 세로 리듬)
   const ratio: Record<string, number> = {};
   try {
-    const log = JSON.parse(await fs.readFile(path.join(ROOT, "images", "gen_log.json"), "utf8"));
+    const log = JSON.parse(await fs.readFile(path.join(ROOT, "images", "gen_log_v2.json"), "utf8"));
     for (const e of log) {
-      const base = String(e.file).replace(/.*\//, "").replace(/\.png$/i, "");
+      const base = String(e.file).replace(/.*\//, "").replace(/\.(jpg|png)$/i, "");
       if (typeof e.aspect_ratio === "number") ratio[base] = e.aspect_ratio;
     }
   } catch { /* 없으면 기본값 */ }

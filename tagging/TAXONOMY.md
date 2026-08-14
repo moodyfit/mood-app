@@ -101,6 +101,22 @@
 - **인터레이터**(가능하면): 2인 독립 채점 → 주축 일치율 확인.
 - **레드플래그 재검수**: confidence < 0.5 / 부축이 0.4 넘는데 근거 모호 / caption 색·소재 불일치.
 
+## 6.5 신규 사진 추가 시 태깅/채점 절차 (재현 파이프라인)
+루브릭은 **`tagging/rubric.ts` 단일 소스**(축 정의·어휘·mood_vector 계약). 채점기·검증기가 여기서만 import → 회차/사람 간 드리프트 없음. **이 규약을 바꾸려면 rubric.ts 한 곳만** 고친다.
+
+새 사진을 `images/post/{axis}-NNN.jpg`(또는 임의 이름)로 넣은 뒤:
+```
+# 0) (최초 1회) .env.local 에 ANTHROPIC_API_KEY=... 추가
+npx tsx scripts/score-photos.ts images/post/clean-016.jpg   # 이미지→tagging/*.json 자동 채점(비전)
+#   또는 폴더 통째:  npx tsx scripts/score-photos.ts images/post   (태깅 없는 것만)  · --force 로 재채점
+npx tsx scripts/validate-tags.ts                            # 계약 게이트(합=1·주축≥0.5·<0.1컷·≤3축·어휘). 위반 시 exit 1
+npx tsx scripts/upload.ts                                   # Storage 업로드(있으면 skip/overwrite)
+npx tsx scripts/apply-photos.ts                             # DB upsert(기존 UPDATE, 신규 INSERT). id·FK 보존
+```
+- **정확성 보장 장치**: 채점기는 rubric.ts의 6축 루브릭+계약으로 채점 → `normalizeMoodVector`로 <0.1컷·정규화 → `validateTag` 게이트가 계약 위반을 **차단**. `confidence<0.85`는 사람 검수 큐로 출력.
+- 모델 override: `ANTHROPIC_MODEL`(기본 claude-sonnet-5). 비용 대략 장당 $0.01 미만.
+- 축 자체를 늘리려면 §7 + rubric.ts의 `AXES`/`AXIS_RUBRIC` 갱신(에린과 마이그레이션 합의).
+
 ## 7. 축 확장 정책 (다음 이터레이션)
 - 6축으로 표현이 부족한 스타일(예: 스포티, 고프코어, 미니멀-테일러드)이 데이터로 반복 확인되면 **서브축** 도입 검토.
 - 확장 시 에린과 마이그레이션 합의(기존 벡터 재정규화 + `rank.ts`·`resolveMoods` 갱신).

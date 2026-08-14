@@ -1,1 +1,25 @@
-{"file":"cityboy-013.png","mood_vector":{"cityboy":1.0},"situations":["동네","주말카페"],"seasons":["fall"],"body_spec":{"height":"179","build":"slim"},"caption_item":"올리브 하프셔츠에 화이트 티·블랙 와이드","caption_why":"올리브 상의에 검정 하의로 대비 주고 토트로 마무리","caption_how":"오픈, 밑단 흘려","is_flagship":true,"flagship_reason":"오픈셔츠+티+와이드+토트 = 슬롯 기본템 재현, 전신·간절기 대표"}
+{
+  "file": "cityboy-013.jpg",
+  "mood_vector": {
+    "cityboy": 0.5,
+    "clean": 0.3,
+    "soft": 0.2
+  },
+  "situations": [
+    "동네",
+    "캠퍼스"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "네이비 오버핏 스웨트에 화이트 티, 카키 팬츠",
+  "caption_why": "군더더기 없는 스웨트에 흰 티 밑단만 살짝 빼 깔끔·포근을 잡은 조합",
+  "caption_how": "스웨트 밑으로 티 1~2cm만 빼서 레이어감 주고 팬츠는 살짝 접기",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}
