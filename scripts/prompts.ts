@@ -14,7 +14,8 @@ export const STYLE_ANCHOR =
 export const NEGATIVE =
   "posing, looking at camera, centered composition, crosswalk, HDR, oversaturated, " +
   "smooth skin, studio quality, palm trees, bodybuilder, muscular flex, watermark, text, " +
-  "brand logo, wordmark, nike swoosh, adidas stripes, identifiable graphic print";
+  "brand logo, wordmark, nike swoosh, adidas stripes, identifiable graphic print, " +
+  "bag, tote bag, crossbody bag, shoulder bag, backpack, handbag";
 
 // 체험 원칙: "데깽은 최대로, 이유는 옷" — 몸이 주인공 금지. (face visible 제거 = 캔디드로 시선 밖 허용)
 // 로고 무관용(§5): 식별 가능한 브랜드 로고·워드마크 금지, 무지 신발·의류.
@@ -46,7 +47,7 @@ export const AXIS_LOOK: Record<string, AxisLook> = {
     energy: "calm and composed",
   },
   cityboy: {
-    clothes: "neat retro-americana Tokyo city-boy, crisp oxford shirt or unstructured overshirt or wool overcoat layered over relaxed pants, wide tapered trousers, minimal leather crossbody or tote, lifestyle sneakers or loafers, tonal beige/navy/off-white, softly refined",
+    clothes: "neat retro-americana Tokyo city-boy, crisp oxford shirt or unstructured overshirt or wool overcoat layered over relaxed pants, wide tapered trousers, lifestyle sneakers or loafers, tonal beige/navy/off-white, softly refined, no bag",
     palette: "warm neutral color grading, beige camel navy and off-white, gentle natural tones",
     locations: ["cafe exterior with passersby", "lively shopping street", "tree-lined city sidewalk"],
     light: "soft overcast to golden-hour daylight",
