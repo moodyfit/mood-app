@@ -40,47 +40,48 @@ export const AXIS_BLOCKS: Record<string, string> = {
 
 // LOOK-BRIEF v1 반영 — 축별 [의상·팔레트·장소·조명·에너지]. 각 축이 색·장소·에너지에서 확 갈리게(수렴 방지).
 interface AxisLook { clothes: string; palette: string; locations: string[]; light: string; energy: string }
+// 케빈 레퍼런스(ref/) 무드보드 분석 반영 — 실제 요즘 코디/분위기 기준.
 export const AXIS_LOOK: Record<string, AxisLook> = {
   clean: {
-    clothes: "elevated minimal outfit, boxy or slightly cropped fine-gauge crewneck knit or heavyweight tee, wide tapered trousers, low-profile leather loafers or retro sneakers, tonal white/ivory/grey, clean modern fit, no patterns",
-    palette: "high-key clean color grading, crisp cool whites and light greys, low saturation, bright and airy",
-    locations: ["bright white concrete wall", "sunlit glass building facade", "clean minimal plaza"],
-    light: "bright midday direct sunlight with sharp clean shadows",
-    energy: "calm and composed",
+    clothes: "relaxed-neat minimal outfit, plain white or cream tee or fine-gauge knit or crisp button-up shirt, optional light overshirt or harrington jacket worn open, half-tucked top, pleated or straight wide trousers with a slight break or light-wash relaxed denim, white leather sneakers or minimal loafers, cream/ivory/beige/grey/navy neutrals, deliberate and trim, no bag",
+    palette: "bright even natural daylight, low-contrast warm neutrals, clean and airy",
+    locations: ["european stone building facade", "old-town plaster wall and doorway", "bright quiet european street"],
+    light: "bright even natural daylight",
+    energy: "effortless and quietly confident",
   },
   cityboy: {
-    clothes: "neat retro-americana Tokyo city-boy, crisp oxford shirt or unstructured overshirt or wool overcoat layered over relaxed pants, wide tapered trousers, lifestyle sneakers or loafers, tonal beige/navy/off-white, softly refined, no bag",
-    palette: "warm neutral color grading, beige camel navy and off-white, gentle natural tones",
-    locations: ["cafe exterior with passersby", "lively shopping street", "tree-lined city sidewalk"],
-    light: "soft overcast to golden-hour daylight",
-    energy: "casual but put-together, mid-stroll",
+    clothes: "laid-back Tokyo urban casual, roomy oversized crewneck sweatshirt or boxy tee or polo with an open overshirt or cardigan layered, light knit over a collar, wide pleated chinos or relaxed jeans with slight stacking, retro runner sneakers or loafers, heather grey/navy/olive/brown, soft comfortable volume, no bag",
+    palette: "natural daytime light, earthy urban neutrals grey navy olive brown",
+    locations: ["tokyo city sidewalk with storefronts", "cafe and signage streetscape", "brick city corner"],
+    light: "candid natural daytime street-snap light",
+    energy: "laid-back and unpretentious, everyday ease",
   },
   street: {
-    clothes: "intentional oversized I-line silhouette, boxy heavyweight hoodie with proper shoulder seams, long baggy puddle-hem wide pants or pleated denim, cap or beanie, chunky retro sneakers, current modern streetwear",
-    palette: "dark low-key color grading, deep blacks charcoal and washed olive, moody high contrast",
-    locations: ["narrow dark backstreet", "metal shutter alley", "dim underpass at dusk"],
-    light: "overcast or low evening light with deep shadows",
-    energy: "nonchalant and cool, edgy",
+    clothes: "heavily oversized baggy streetwear, boxy oversized hoodie or long-sleeve or denim/work jacket, very wide carpenter or cargo pants with long puddling hems, cap or beanie worn low, chunky sneakers or work boots with visible socks, washed denim blue/olive/black/grey, volume is the point, no bag",
+    palette: "gritty urban daylight, washed faded earth tones and dark neutrals, high contrast",
+    locations: ["concrete wall and alley", "parking structure", "gritty urban backstreet"],
+    light: "harsh daylight, gritty snapshot look",
+    energy: "rugged and rebellious, effortless",
   },
   amekaji: {
-    clothes: "modern amekaji mixing vintage workwear with a contemporary piece, selvedge denim trucker or work jacket over a collegiate knit, straight or wide selvedge denim, leather service boots, refined vintage character",
-    palette: "warm earthy color grading, indigo ecru olive brown and tan, nostalgic, heavy film grain",
-    locations: ["old market street", "weathered wooden storefront", "rusty iron shutters"],
-    light: "warm low afternoon sunlight, nostalgic haze",
-    energy: "understated and rugged, vintage",
+    clothes: "rugged japanese americana workwear, denim chore jacket or olive M-65 field jacket worn open over a chambray or flannel shirt or plain tee, straight raw denim or khaki chino or cargo, shirt tucked with a belt, leather work boots or moc-toe shoes, indigo/olive/khaki/tan/ecru/brown, lived-in vintage, no bag",
+    palette: "warm natural daylight, vintage military-and-workwear earth tones, heavy film grain",
+    locations: ["japanese autumn tree-lined sidewalk with fallen leaves", "canal-side old street", "weathered storefront lane"],
+    light: "warm natural daylight, nostalgic",
+    energy: "rugged nostalgic, heritage warmth",
   },
   classic: {
-    clothes: "relaxed modern tailoring (comfort classic), oversized wool overcoat or unstructured blazer, fine turtleneck or knit, wide tapered wool trousers, leather loafers or chelsea boots, toffee/charcoal/deep-navy, elegant contemporary line",
-    palette: "deep muted refined color grading, charcoal navy grey and brown, low saturation, elegant",
-    locations: ["stone building facade", "quiet boulevard in the evening", "grand hotel entrance"],
-    light: "soft refined evening light",
-    energy: "poised and dignified",
+    clothes: "sophisticated old-money tailoring, soft-structured blazer or sport coat or leather blouson worn open over a fine knit polo or unbuttoned shirt, pleated wide high-waisted dress trousers with a clean break, leather loafers or derbies, cream/ivory/beige/navy/charcoal/brown, rolled sleeves and half-tuck, refined drape",
+    palette: "warm golden-hour or soft daylight, sophisticated neutral tones, elegant",
+    locations: ["historic european stone architecture with columns", "upscale old-town facade", "quiet elegant boulevard"],
+    light: "warm golden-hour light",
+    energy: "mature sprezzatura, old-money confidence",
   },
   soft: {
-    clothes: "elevated soft knitwear, minimal zip or button cardigan or cashmere-blend crewneck, wide tapered trousers, leather loafers or retro sneakers, cream/oatmeal tones, refined cozy modern fit",
-    palette: "warm soft high-key color grading, cream oatmeal and pastel, gentle and airy",
-    locations: ["sunny quiet neighborhood", "shop window with warm light", "golden-hour lane"],
-    light: "soft warm golden-hour light, cozy glow",
+    clothes: "elevated soft knitwear, minimal zip or button cardigan or cashmere-blend crewneck layered over a tee, wide tapered trousers, leather loafers or clean sneakers, cream/oatmeal/grey tonal layering, refined cozy, no bag",
+    palette: "soft warm daylight, cream oatmeal and pastel neutrals, gentle and airy",
+    locations: ["sunny quiet neighborhood", "warm-lit shop window", "golden-hour lane"],
+    light: "soft warm light, cozy",
     energy: "relaxed and gentle",
   },
 };
@@ -171,7 +172,7 @@ export function buildPrompt(axis: string, i: number): { prompt: string; meta: Pr
   // 축별 팔레트/장소/조명/에너지를 프롬프트에 직접 주입 → 축 간 시각 대비 확보(수렴 방지).
   const prompt =
     `${STYLE_ANCHOR}, ${look.palette}. ${person}, positioned off-center, ${look.energy}. ` +
-    `wearing ${clothes}. ${location} in seoul, not a crosswalk. ${look.light}. ` +
+    `wearing ${clothes}. ${location} background, not a crosswalk. ${look.light}. ` +
     `${BODY_GUARD}. fictional person, not resembling any real celebrity.`;
 
   return { prompt, meta: { axis, season, background: location, hair, build } };
