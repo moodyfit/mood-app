@@ -6,7 +6,8 @@ export const STYLE_ANCHOR =
   "candid street style photograph shot on 35mm film, kodak portra 400, " +
   "visible film grain, subject caught mid-moment NOT posing, looking away from camera, " +
   "off-center composition, photorealistic, real person, " +
-  "high-fashion editorial menswear lookbook, modern refined contemporary 2025 styling, elevated and sophisticated";
+  "high-fashion editorial menswear lookbook, modern refined contemporary 2025 styling, elevated and sophisticated, " +
+  "intentional uncluttered styling with one or two focal points";
 
 // §2.1 Negative — flux/schnell 은 negative_prompt 미지원 → 핵심 회피는 positive에도 접어 넣음.
 // (flux/dev 사용 시 negative_prompt로 전달)
@@ -45,7 +46,7 @@ export const AXIS_LOOK: Record<string, AxisLook> = {
     energy: "calm and composed",
   },
   cityboy: {
-    clothes: "contemporary city-casual, relaxed unstructured overshirt or blouson layered over a tee, wide tapered trousers, leather tote bag, low-profile retro sneakers or loafers, tonal beige/navy/off-white, refined layering",
+    clothes: "neat retro-americana Tokyo city-boy, crisp oxford shirt or unstructured overshirt or wool overcoat layered over relaxed pants, wide tapered trousers, minimal leather crossbody or tote, lifestyle sneakers or loafers, tonal beige/navy/off-white, softly refined",
     palette: "warm neutral color grading, beige camel navy and off-white, gentle natural tones",
     locations: ["cafe exterior with passersby", "lively shopping street", "tree-lined city sidewalk"],
     light: "soft overcast to golden-hour daylight",
