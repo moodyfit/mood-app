@@ -253,8 +253,11 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   }, [saves, savedPhotoIds, affinity, searchCounts, owned, discovered, worn, hydrated]);
 
   const bump = useCallback((key: MoodKey, w: number) => {
-    // 다축 곱셈(baseWeight * axisValue, FEAT-001)이 소수라 부동소수점 오차가 누적됨 — 소수 4자리로 정리.
-    setAffinity((prev) => ({ ...prev, [key]: Math.round(((prev[key] ?? 0) + w) * 10000) / 10000 }));
+    // 다축 곱셈(FEAT-001)의 소수 오차 정리 + 음수(취소 시 되돌리기, BUG-001) 0 하한 방어.
+    setAffinity((prev) => ({
+      ...prev,
+      [key]: Math.max(0, Math.round(((prev[key] ?? 0) + w) * 10000) / 10000),
+    }));
   }, []);
 
   /** 다축 mood_vector를 축별 값에 비례해 반영(단일 bump의 다축 버전, FEAT-001). */
@@ -323,13 +326,17 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   );
 
   // 사진별 저장(전시 하트). 다축 mood_vector면 축별 값에 비례해 affinity 반영(FEAT-001). 취향카드 발급도 사진 저장 수 기준.
+  // BUG-001: 취소 시 그때 올렸던 만큼(다축 전체) 대칭으로 되돌림 — 저장/취소 반복해도 무한 누적 안 됨.
   const togglePhotoSave = useCallback(
     (id: string, moodInput?: MoodKey | Affinity, query?: string) => {
       const domKey = moodInput == null ? undefined : typeof moodInput === "string" ? moodInput : (dominantMood(moodInput) as MoodKey);
       const exists0 = savedPhotoIds.includes(id);
       trackEvent(userIdRef.current, exists0 ? "unsave" : "save", { photo_id: id, mood_key: domKey });
       setSavedPhotoIds((prev) => {
-        if (prev.includes(id)) return prev.filter((x) => x !== id);
+        if (prev.includes(id)) {
+          if (moodInput != null) bumpInput(moodInput, -getConfig().wSave);
+          return prev.filter((x) => x !== id);
+        }
         const next = [...prev, id];
         showToast("저장했어");
         haptic();
