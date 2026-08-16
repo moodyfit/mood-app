@@ -253,7 +253,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   }, [saves, savedPhotoIds, affinity, searchCounts, owned, discovered, worn, hydrated]);
 
   const bump = useCallback((key: MoodKey, w: number) => {
-    setAffinity((prev) => ({ ...prev, [key]: (prev[key] ?? 0) + w }));
+    // 다축 곱셈(baseWeight * axisValue, FEAT-001)이 소수라 부동소수점 오차가 누적됨 — 소수 4자리로 정리.
+    setAffinity((prev) => ({ ...prev, [key]: Math.round(((prev[key] ?? 0) + w) * 10000) / 10000 }));
   }, []);
 
   /** 다축 mood_vector를 축별 값에 비례해 반영(단일 bump의 다축 버전, FEAT-001). */
