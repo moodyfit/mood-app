@@ -1,1 +1,24 @@
-{"file":"classic-002.png","mood_vector":{"classic":1.0},"situations":["출근","데이트"],"seasons":["fall","winter"],"body_spec":{"height":"182","build":"regular"},"caption_item":"브라운 셋업 블레이저에 카멜 터틀넥·브라운 슬랙스","caption_why":"브라운 톤온톤으로 정장기를 부드럽게","caption_how":"단추 풀고 터틀넥 받쳐","is_flagship":false}
+{
+  "file": "classic-002.jpg",
+  "mood_vector": {
+    "classic": 0.7,
+    "cityboy": 0.3
+  },
+  "situations": [
+    "저녁약속",
+    "데이트"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "네이비 롱코트에 다크 브이넥, 그레이 슬랙스, 브라운 더비",
+  "caption_why": "코트를 걸치고 도심을 걸으니 어른스러운 무드가 확 산다",
+  "caption_how": "코트는 팔 안 끼고 어깨에 걸쳐서 실루엣을 길게 뽑아",
+  "is_flagship": true,
+  "flagship_reason": "롱코트 걸침 실루엣과 도심 배경이 무드 극대화",
+  "confidence": 0.88
+}

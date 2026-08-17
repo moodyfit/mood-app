@@ -1,12 +1,24 @@
 {
-  "file": "clean-009.png",
-  "mood_vector": {"clean": 1.0},
-  "situations": ["출근", "동네"],
-  "seasons": ["fall", "winter"],
-  "body_spec": {"height": "180", "build": "regular"},
-  "caption_item": "크림 크루넥 니트에 블랙 크롭 슬랙스",
-  "caption_why": "밝은 니트에 검정 크롭 하의로 두 색만 끊어 발목을 띄웠어",
-  "caption_how": "슬랙스는 복사뼈 위로 올려 스니커가 드러나게",
+  "file": "clean-009.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "classic": 0.3
+  },
+  "situations": [
+    "출근",
+    "저녁약속"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "세이지 롱코트에 화이트 티, 베이지 슬랙스",
+  "caption_why": "기장 긴 코트가 세로로 떨어져서 차분하고, 딥하지 않은 톤이라 부담 없이 정갈해",
+  "caption_how": "코트 오픈하고 안엔 화이트 티로 비워서 코트 라인만 보여줘",
   "is_flagship": false,
-  "review_note": "크림/블랙=무채색(색 교차검증 통과). clean 단일."
+  "flagship_reason": "",
+  "confidence": 0.8
 }

@@ -1,1 +1,24 @@
-{"file":"soft-013.png","mood_vector":{"soft":1.0},"situations":["소개팅","데이트"],"seasons":["fall"],"body_spec":{"height":"180","build":"slim"},"caption_item":"크림 크루넥 니트에 브라운 치노","caption_why":"밝은 니트에 브라운 하의로 톤 대비","caption_how":"밑단 접어","is_flagship":false}
+{
+  "file": "soft-013.jpg",
+  "mood_vector": {
+    "soft": 0.55,
+    "clean": 0.45
+  },
+  "situations": [
+    "동네",
+    "출근"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "크림 케이블 니트 가디건에 베이지 슬랙스",
+  "caption_why": "크림 톤온톤이라 담백하고 정갈해",
+  "caption_how": "안에 셔츠 받쳐 카라 빼고 화이트 스니커로 깔끔하게",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

@@ -1,1 +1,25 @@
-{"file":"classic-007.png","mood_vector":{"classic":1.0},"situations":["출근"],"seasons":["fall"],"body_spec":{"height":"177","build":"regular"},"caption_item":"차콜 블레이저에 브라운 터틀넥·차콜 슬랙스","caption_why":"재킷에 니트로 편하게 갖춰","caption_how":"단추 풀어 걸어","is_flagship":false}
+{
+  "file": "classic-007.jpg",
+  "mood_vector": {
+    "classic": 0.6,
+    "amekaji": 0.25,
+    "clean": 0.15
+  },
+  "situations": [
+    "출근",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "카키 블레이저에 아이보리 니트폴로, 브라운 슬랙스, 레더 벨트",
+  "caption_why": "흙톤 브라운에 레더 벨트로 포인트 줘서 가을 무드 제대로",
+  "caption_how": "벨트 노출되게 니트폴로 넣어 입고 딥톤끼리 매치해",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.83
+}

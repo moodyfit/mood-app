@@ -1,1 +1,25 @@
-{"file":"classic-001.png","mood_vector":{"classic":1.0},"situations":["출근","결혼식하객"],"seasons":["winter"],"body_spec":{"height":"180","build":"slim"},"caption_item":"차콜 오버코트에 블랙 터틀넥·차콜 슬랙스","caption_why":"무채색으로 붙여 각을 세워","caption_how":"코트 열고 세로로","is_flagship":true,"flagship_reason":"울 오버코트+터틀넥+슬랙스+더비 = 슬롯 기본템 재현, 전신·FW 대표"}
+{
+  "file": "classic-001.jpg",
+  "mood_vector": {
+    "classic": 0.6,
+    "clean": 0.25,
+    "soft": 0.15
+  },
+  "situations": [
+    "출근",
+    "저녁약속"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "차콜 블레이저에 오트밀 니트, 카키 슬랙스, 브라운 로퍼",
+  "caption_why": "딱딱한 셔츠 대신 니트를 받쳐서 테일러링이 부드럽게 풀렸어",
+  "caption_how": "블레이저 단추는 풀고 걸치듯 입어서 힘 빼는 게 포인트",
+  "is_flagship": true,
+  "flagship_reason": "블레이저+니트+슬랙스 코디의 정석, 색 조합이 딥하고 안정적",
+  "confidence": 0.9
+}

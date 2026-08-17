@@ -34,6 +34,9 @@ next-env.d.ts
 /images/**/*.png
 /images/**/*.jpg
 /images/**/*.jpeg
+/images/_*/
+# 레퍼런스 무드보드(핀터레스트/외부 소스) — 저작권상 공개 레포 금지, 로컬 보존
+/ref/
 /scripts/node_modules
 public/review/
 .env*

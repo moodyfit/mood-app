@@ -1,12 +1,24 @@
 {
-  "file": "clean-004.png",
-  "mood_vector": {"clean": 1.0},
-  "situations": ["여행"],
-  "seasons": ["spring", "fall"],
-  "body_spec": {"height": "175", "build": "slim"},
-  "caption_item": "크림 와플 롱슬리브에 베이지 팬츠",
-  "caption_why": "톤을 베이지로 맞추고 질감만 더해 밋밋하지 않게 정리돼",
-  "caption_how": "소매를 한 번 걷어 손목을 보여야 답답하지 않아",
+  "file": "clean-004.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "cityboy": 0.3
+  },
+  "situations": [
+    "캠퍼스",
+    "주말카페"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "181",
+    "build": "slim"
+  },
+  "caption_item": "세이지그린 셔츠재킷에 화이트 티, 라이트올리브 롤업 팬츠",
+  "caption_why": "연한 그린 톤으로 상하의 맞춰서 산뜻하고, 셔츠 걸쳐 입어 레이어가 여름스럽게 가벼워",
+  "caption_how": "셔츠는 오픈해서 걸치고 티는 반만 넣어 라인 정리해줘",
   "is_flagship": false,
-  "review_note": "백팩=여행 확신, 동네는 과충전 우려로 제외. 롱슬리브라 seasons=spring/fall(실물)."
+  "flagship_reason": "",
+  "confidence": 0.85
 }

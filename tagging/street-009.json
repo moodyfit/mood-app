@@ -1,1 +1,24 @@
-{"file":"street-009.png","mood_vector":{"street":1.0},"situations":["동네"],"seasons":["spring","fall"],"body_spec":{"height":"179","build":"slim"},"caption_item":"블랙 오버핏 후디에 올리브 카고","caption_why":"캡까지 검정으로 눌러 걷는 데 군더더기 없어","caption_how":"카고는 스니커에 살짝 쌓이게","is_flagship":false,"review_note":"011과 주축 동일 → 009 유지, 011 변주 재생성."}
+{
+  "file": "street-009.jpg",
+  "mood_vector": {
+    "street": 0.85,
+    "amekaji": 0.15
+  },
+  "situations": [
+    "동네",
+    "저녁약속"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "올블랙 오버핏 후디에 블랙 와이드 카고, 블랙 스니커",
+  "caption_why": "길 한복판에서도 통짜 블랙 볼륨만으로 존재감 잡는 조합",
+  "caption_how": "전신 블랙일 땐 팬츠 밑단 넓게 퍼뜨려 실루엣으로 승부해",
+  "is_flagship": true,
+  "flagship_reason": "거리 배경에 올블랙 볼륨 실루엣이 시원하게 사는 대표컷",
+  "confidence": 0.9
+}

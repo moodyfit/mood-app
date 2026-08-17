@@ -1,1 +1,24 @@
-{"file":"soft-011.png","mood_vector":{"soft":1.0},"situations":["동네","주말카페"],"seasons":["fall"],"body_spec":{"height":"176","build":"slim"},"caption_item":"크림 가디건에 탄 니트티·베이지 팬츠","caption_why":"가디건 안에 탄 니트티로 살짝 색","caption_how":"앞 열고 걸어","is_flagship":false,"review_note":"탄=뉴트럴(유채 아님)."}
+{
+  "file": "soft-011.jpg",
+  "mood_vector": {
+    "soft": 0.55,
+    "clean": 0.45
+  },
+  "situations": [
+    "여행",
+    "주말카페"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "182",
+    "build": "slim"
+  },
+  "caption_item": "파우더블루 케이블 니트에 화이트 와이드 팬츠",
+  "caption_why": "블루에 화이트라 깨끗하고 시원한 느낌",
+  "caption_how": "넉넉한 니트에 와이드 팬츠, 화이트 스니커로 클린하게",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

@@ -1,1 +1,24 @@
-{"file":"cityboy-001.png","mood_vector":{"cityboy":1.0},"situations":["주말카페","동네"],"seasons":["summer"],"body_spec":{"height":"180","build":"slim"},"caption_item":"베이지 오픈셔츠에 화이트 티·카키 와이드","caption_why":"셔츠를 걸치듯 열고 티로 받쳐 힘 뺐는데 층이 생겨","caption_how":"단추 풀고 소매 걷어 안 티를 보여","is_flagship":true,"flagship_reason":"오픈셔츠+화이트 티+와이드+토트 = 슬롯 기본템 재현, 전신·여름 대표","review_note":"시티보이 정석. cityboy 단일."}
+{
+  "file": "cityboy-001.jpg",
+  "mood_vector": {
+    "cityboy": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "동네"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "네이비 오픈 블루종에 화이트 티, 카키 와이드 팬츠",
+  "caption_why": "딥한 네이비 겉옷에 흰 티 대비를 주니 정돈되면서도 캐주얼한 시티보이 결",
+  "caption_how": "블루종은 단추 다 풀어 걸치고 티는 팬츠 안에 살짝만 넣어 밸런스 잡기",
+  "is_flagship": true,
+  "flagship_reason": "여름 시티보이 대표, 전신·얼굴 또렷하고 조합이 단순해 재현 쉬움",
+  "confidence": 0.9
+}

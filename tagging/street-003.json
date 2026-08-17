@@ -1,1 +1,25 @@
-{"file":"street-003.png","mood_vector":{"street":1.0},"situations":["동네"],"seasons":["fall","winter"],"body_spec":{"height":"184","build":"slim"},"caption_item":"브라운 필드자켓에 후디·올리브 카고","caption_why":"큰 자켓에 카고로 통일해 덩치를 살려","caption_how":"지퍼 반만 올려","is_flagship":false,"review_note":"브라운=유채 → why '무채색' 미사용."}
+{
+  "file": "street-003.jpg",
+  "mood_vector": {
+    "street": 0.75,
+    "amekaji": 0.15,
+    "cityboy": 0.1
+  },
+  "situations": [
+    "동네",
+    "여행"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "차콜 오버핏 후디에 블랙 카고 팬츠, 아이보리 청키 스니커",
+  "caption_why": "어두운 상하의에 밝은 신발 하나로 시선 아래로 툭 떨어뜨린 조합",
+  "caption_how": "골목 배경일수록 신발만 밝게 가면 포인트가 확실해진다",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

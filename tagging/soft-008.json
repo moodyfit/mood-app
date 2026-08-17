@@ -1,1 +1,25 @@
-{"file":"soft-008.png","mood_vector":{"soft":1.0},"situations":["소개팅","데이트"],"seasons":["spring"],"body_spec":{"height":"180","build":"regular"},"caption_item":"크림 가디건에 화이트 티·베이지 치노","caption_why":"가디건에 티로 산뜻하게 겹을 나눠","caption_how":"단추 풀고 티 밑단 보여","is_flagship":false}
+{
+  "file": "soft-008.jpg",
+  "mood_vector": {
+    "soft": 0.65,
+    "amekaji": 0.2,
+    "clean": 0.15
+  },
+  "situations": [
+    "동네",
+    "출근"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "라벤더 니트에 베이지 와이드 슬랙스",
+  "caption_why": "파스텔 니트에 흙톤 슬랙스라 부드러움에 무게감 더해",
+  "caption_how": "안에 셔츠 카라 빼서 레이어링, 로퍼로 정돈",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}

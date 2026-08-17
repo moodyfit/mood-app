@@ -1,1 +1,24 @@
-{"file":"street-007.png","mood_vector":{"street":1.0},"situations":["동네"],"seasons":["fall","spring"],"body_spec":{"height":"180","build":"slim"},"caption_item":"브라운 오버핏 후디에 올리브 카고","caption_why":"흙색 톤으로 크게 붙여 무심하게","caption_how":"소매는 밀어 올려","is_flagship":false}
+{
+  "file": "street-007.jpg",
+  "mood_vector": {
+    "street": 0.8,
+    "amekaji": 0.2
+  },
+  "situations": [
+    "동네",
+    "출근"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "차콜 오버핏 후디에 다크 카고 조거, 아이보리 러너 스니커",
+  "caption_why": "어두운 상하의를 밝은 러너로 끊어서 무겁지 않게 정리한 조합",
+  "caption_how": "조거 밑단이 좁으니 신발은 살짝 두툼한 걸로 비율 잡아",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

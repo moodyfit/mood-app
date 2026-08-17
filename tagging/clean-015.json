@@ -1,1 +1,24 @@
-{"file":"clean-015.png","mood_vector":{"clean":1.0},"situations":["동네"],"seasons":["fall"],"body_spec":{"height":"176","build":"slim"},"caption_item":"크림 스웻셔츠에 딥그린 팬츠","caption_why":"밝은 상의에 짙은 하의로 톤 대비만 줘 차분해","caption_how":"팬츠는 스니커에 살짝 걸치게","is_flagship":false,"review_note":"딥그린=유채 → why '무채색' 미사용."}
+{
+  "file": "clean-015.jpg",
+  "mood_vector": {
+    "clean": 0.8,
+    "cityboy": 0.2
+  },
+  "situations": [
+    "동네",
+    "출근"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "크림 셔츠재킷에 그레이 티, 크림 와이드 팬츠",
+  "caption_why": "위아래 크림 톤온톤에 그레이 티만 안에 받쳐서 차분하고 정제된 가을 무드",
+  "caption_how": "셔츠 오픈하고 와이드 팬츠로 세로 라인 길게, 발목은 스니커즈에 살짝 걸쳐줘",
+  "is_flagship": true,
+  "flagship_reason": "가을 clean 대표컷 - 크림 톤온톤에 전신·얼굴 잘 보이고 기본템 조합으로 재현 쉬움",
+  "confidence": 0.9
+}

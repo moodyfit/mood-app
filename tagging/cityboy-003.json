@@ -1,1 +1,24 @@
-{"file":"cityboy-003.png","mood_vector":{"cityboy":1.0},"situations":["동네","여행"],"seasons":["summer"],"body_spec":{"height":"183","build":"slim"},"caption_item":"블루그레이 하프셔츠에 화이트 티·브라운 와이드","caption_why":"상의만 옅은 블루로 포인트 주고 하의는 차분히","caption_how":"앞을 다 열어 티 라인을 세로로 살려","is_flagship":false,"review_note":"블루=유채 → why '무채색' 미사용."}
+{
+  "file": "cityboy-003.jpg",
+  "mood_vector": {
+    "cityboy": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "머스터드 코치 재킷에 화이트 티, 네이비 와이드 팬츠",
+  "caption_why": "밝은 옐로 겉옷과 딥네이비 팬츠 대비로 산뜻한 포인트가 사는 조합",
+  "caption_how": "재킷 열어 흰 티 보이게 걸치고 팬츠는 발등 살짝 덮게 기장 맞추기",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

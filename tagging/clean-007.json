@@ -1,12 +1,24 @@
 {
-  "file": "clean-007.png",
-  "mood_vector": {"clean": 1.0},
-  "situations": ["출근", "동네"],
-  "seasons": ["winter"],
-  "body_spec": {"height": "183", "build": "slim"},
-  "caption_item": "그레이 울 코트에 크림 니트·차콜 슬랙스",
-  "caption_why": "무채색 톤으로 붙여 겨울에도 군더더기가 없어",
-  "caption_how": "코트는 열고 니트를 살짝 보여야 답답하지 않아",
+  "file": "clean-007.jpg",
+  "mood_vector": {
+    "clean": 0.8,
+    "cityboy": 0.2
+  },
+  "situations": [
+    "출근",
+    "저녁약속"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "베이지 코치재킷에 그레이 맨투맨, 크림 슬랙스",
+  "caption_why": "베이지랑 그레이만 써서 겨울에도 담백하고, 무채+뉴트럴 조합이 깔끔함을 잡아줘",
+  "caption_how": "맨투맨 밑단 살짝 넣어 재킷 안 실루엣 정리하면 깔끔해",
   "is_flagship": false,
-  "review_note": "하의 청색기 없음 → 네이비 아닌 차콜로 정정(why '무채색' 참). 코트+스니커=캐주얼 유지 → classic 아님, clean 단일."
+  "flagship_reason": "",
+  "confidence": 0.85
 }

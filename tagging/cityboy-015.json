@@ -1,1 +1,25 @@
-{"file":"cityboy-015.png","mood_vector":{"cityboy":1.0},"situations":["동네"],"seasons":["fall"],"body_spec":{"height":"177","build":"slim"},"caption_item":"베이지 오버셔츠에 화이트 티·베이지 와이드","caption_why":"톤온톤 베이지로 층만 나눠 무던하게","caption_how":"열고 토트로 포인트","is_flagship":false,"review_note":"탄=유채 → why '무채색' 미사용."}
+{
+  "file": "cityboy-015.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "amekaji": 0.2,
+    "clean": 0.2
+  },
+  "situations": [
+    "저녁약속",
+    "출근"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "베이지 울 재킷에 머스터드 티, 화이트 티, 네이비 플리츠 팬츠",
+  "caption_why": "베이지 워크 재킷에 머스터드 포인트로 흙톤 아메카지를 살짝 낀 시티보이",
+  "caption_how": "머스터드 티 안에 흰 티 밑단 살짝 빼고 재킷은 열어 걸치기",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}

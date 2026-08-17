@@ -1,1 +1,24 @@
-{"file":"street-015.png","mood_vector":{"street":1.0},"situations":["동네"],"seasons":["fall","winter"],"body_spec":{"height":"181","build":"slim"},"caption_item":"올리브 오버핏 후디에 올리브 카고","caption_why":"올리브 톤온톤으로 크게 붙여","caption_how":"후디 밑단 카고 위로","is_flagship":false,"review_note":"올리브=유채 → why '무채색' 미사용."}
+{
+  "file": "street-015.jpg",
+  "mood_vector": {
+    "street": 0.65,
+    "amekaji": 0.35
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "그레이 캡에 차콜 후디, 워시드 브라운그레이 워크 카고, 아이보리 러너",
+  "caption_why": "바랜 워크 카고의 빈티지 톤이 후디랑 흙빛으로 자연스럽게 붙는 조합",
+  "caption_how": "워시드 카고는 밝은 러너로 끊어 무겁지 않게 정리해",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

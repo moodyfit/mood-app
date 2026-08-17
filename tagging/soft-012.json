@@ -1,1 +1,25 @@
-{"file":"soft-012.png","mood_vector":{"soft":1.0},"situations":["데이트","주말카페"],"seasons":["fall"],"body_spec":{"height":"183","build":"regular"},"caption_item":"크림 숄카라 가디건에 오트밀 니트티·라이트그레이 플리츠 팬츠","caption_why":"숄카라 가디건에 쿨톤 플리츠로 무게를 살짝 더해","caption_how":"단추 풀고 플리츠 라인 살려","is_flagship":false,"review_note":"005와 변별 확정(005 카키 치노 테이퍼드 vs 012 라이트그레이 플리츠 와이드). 유지."}
+{
+  "file": "soft-012.jpg",
+  "mood_vector": {
+    "soft": 0.65,
+    "amekaji": 0.2,
+    "clean": 0.15
+  },
+  "situations": [
+    "저녁약속",
+    "데이트"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "183",
+    "build": "slim"
+  },
+  "caption_item": "라일락 니트 가디건에 브라운 슬랙스",
+  "caption_why": "라일락에 흙톤 하의라 부드럽고 따뜻한 무드",
+  "caption_how": "안에 크림 셔츠 받쳐 카라 살리고 로퍼로 정돈",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}

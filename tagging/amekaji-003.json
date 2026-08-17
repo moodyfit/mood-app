@@ -1,1 +1,24 @@
-{"file":"amekaji-003.png","mood_vector":{"amekaji":1.0},"situations":["동네"],"seasons":["fall","winter"],"body_spec":{"height":"176","build":"regular"},"caption_item":"데님 트러커에 오트밀 터틀넥·블루 진","caption_why":"니트로 목을 채워 겨울 청청을 완성","caption_how":"트러커 안에 터틀넥을 받쳐","is_flagship":false}
+{
+  "file": "amekaji-003.jpg",
+  "mood_vector": {
+    "amekaji": 0.85,
+    "cityboy": 0.15
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "올리브 포켓 필드자켓에 데님 셔츠, 올리브 팬츠, 브라운 워크부츠",
+  "caption_why": "올리브 온톤에 인디고 하나 껴서 차분하면서 워크웨어 느낌 확실해",
+  "caption_how": "위아래 올리브로 맞추고 안쪽 데님으로 포인트 주면 톤이 안 지루해",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.88
+}

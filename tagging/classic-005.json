@@ -1,1 +1,25 @@
-{"file":"classic-005.png","mood_vector":{"classic":1.0},"situations":["출근"],"seasons":["winter"],"body_spec":{"height":"184","build":"slim"},"caption_item":"올리브 블레이저에 블랙 터틀넥·차콜 슬랙스","caption_why":"올리브로 정장기에 톤만 얹어","caption_how":"재킷 열고 벨트 보여","is_flagship":false,"review_note":"올리브=유채 → why '무채색' 미사용."}
+{
+  "file": "classic-005.jpg",
+  "mood_vector": {
+    "classic": 0.55,
+    "clean": 0.3,
+    "street": 0.15
+  },
+  "situations": [
+    "저녁약속",
+    "동네"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "182",
+    "build": "slim"
+  },
+  "caption_item": "차콜 블레이저에 블랙 티, 그레이 플리츠 슬랙스, 블랙 로퍼",
+  "caption_why": "셔츠 대신 검정 티를 넣어서 격식은 낮추고 시크함은 올렸어",
+  "caption_how": "셋업 톤을 맞추되 안은 티로 캐주얼하게 힘 빼기",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

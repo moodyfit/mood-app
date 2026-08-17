@@ -1,1 +1,25 @@
-{"file":"classic-014.png","mood_vector":{"classic":1.0},"situations":["출근","데이트"],"seasons":["spring"],"body_spec":{"height":"181","build":"regular"},"caption_item":"그레이 블레이저에 블랙 터틀넥·브라운 슬랙스","caption_why":"그레이 재킷에 브라운 하의로 톤차","caption_how":"재킷 열고 백 들고","is_flagship":true,"flagship_reason":"언스트럭 블레이저+터틀넥+슬랙스 = 슬롯 기본템 재현, 전신·간절기 대표"}
+{
+  "file": "classic-014.jpg",
+  "mood_vector": {
+    "classic": 0.55,
+    "clean": 0.3,
+    "cityboy": 0.15
+  },
+  "situations": [
+    "데이트",
+    "저녁약속"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "네이비 블레이저에 화이트 브이넥, 차콜 슬랙스, 포켓치프",
+  "caption_why": "포켓치프 하나로 캐주얼한데 격식 있는 무드가 완성돼",
+  "caption_how": "안은 흰 티로 가볍게, 치프로 디테일만 살짝 넣어",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.82
+}

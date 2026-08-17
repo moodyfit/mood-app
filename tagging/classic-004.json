@@ -1,1 +1,25 @@
-{"file":"classic-004.png","mood_vector":{"classic":1.0},"situations":["출근","데이트"],"seasons":["winter"],"body_spec":{"height":"181","build":"regular"},"caption_item":"차콜 블레이저에 카멜 니트·네이비 슬랙스","caption_why":"정장 재킷에 니트로 격을 살짝 낮춰","caption_how":"재킷 열고 니트 받쳐","is_flagship":false,"review_note":"네이비=유채 → why '무채색' 미사용."}
+{
+  "file": "classic-004.jpg",
+  "mood_vector": {
+    "classic": 0.55,
+    "clean": 0.3,
+    "soft": 0.15
+  },
+  "situations": [
+    "출근",
+    "저녁약속"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "181",
+    "build": "slim"
+  },
+  "caption_item": "카멜 코트에 그레이 니트, 차콜 슬랙스, 블랙 로퍼",
+  "caption_why": "카멜과 차콜의 대비가 심플한데 존재감 있게 정돈됐어",
+  "caption_how": "코트 안은 미니멀하게, 색은 세 가지 안으로 딱 묶어",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

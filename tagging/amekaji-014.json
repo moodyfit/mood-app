@@ -1,1 +1,24 @@
-{"file":"amekaji-014.png","mood_vector":{"amekaji":1.0},"situations":["동네","주말카페"],"seasons":["summer"],"body_spec":{"height":"178","build":"regular"},"caption_item":"에크루 헨리넥 티에 올리브 워크팬츠","caption_why":"헨리넥에 워크팬츠로 여름에도 낡은 무드","caption_how":"소매 걷고 부츠로 마감","is_flagship":true,"flagship_reason":"헨리넥+워크팬츠+워크부츠 = 슬롯 기본템 재현, 전신·amekaji 여름 대표","review_note":"올리브 워크팬츠=유채(why '무채색' 미사용). 015와 이너·하의 카테고리 분리."}
+{
+  "file": "amekaji-014.jpg",
+  "mood_vector": {
+    "amekaji": 0.8,
+    "cityboy": 0.2
+  },
+  "situations": [
+    "출근",
+    "동네"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "올리브 필드자켓에 샴브레이 셔츠·티, 인디고 진 롤업, 브라운 부츠",
+  "caption_why": "올리브랑 샴브레이 인디고가 도시 골목에서 차분한 워크 무드로 딱 맞아",
+  "caption_how": "자켓 열어 샴브레이 레이어 보이고 진 밑단 접어 부츠에 얹어 마무리해",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.88
+}

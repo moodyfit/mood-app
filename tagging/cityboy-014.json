@@ -1,1 +1,25 @@
-{"file":"cityboy-014.png","mood_vector":{"cityboy":1.0},"situations":["주말카페","동네"],"seasons":["fall"],"body_spec":{"height":"183","build":"regular"},"caption_item":"카키 오버셔츠에 화이트 티·올리브 팬츠","caption_why":"흙색 톤으로 걷는 순간에도 정돈돼","caption_how":"열고 소매 걷어","is_flagship":false}
+{
+  "file": "cityboy-014.jpg",
+  "mood_vector": {
+    "cityboy": 0.5,
+    "soft": 0.3,
+    "amekaji": 0.2
+  },
+  "situations": [
+    "주말카페",
+    "데이트"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "브라운 롱 가디건에 크림 티, 그레이 팬츠",
+  "caption_why": "기장 긴 니트 가디건이 포근함과 흙톤을 동시에 얹어준 가을 무드",
+  "caption_how": "가디건은 풀어 흐름 살리고 티는 안에서 정리해 라인 깔끔하게",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}

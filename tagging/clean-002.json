@@ -1,12 +1,24 @@
 {
-  "file": "clean-002.png",
-  "mood_vector": {"clean": 0.8, "cityboy": 0.2},
-  "situations": ["주말카페", "동네"],
-  "seasons": ["summer"],
-  "body_spec": {"height": "180", "build": "regular"},
-  "caption_item": "오버핏 크림 티에 아이보리 팬츠",
-  "caption_why": "같은 톤으로 헐렁하게 떨어뜨려 힘을 뺐는데도 깔끔해",
-  "caption_how": "티를 넣지 말고 그대로 흘려야 이 여유가 나",
+  "file": "clean-002.jpg",
+  "mood_vector": {
+    "clean": 0.6,
+    "cityboy": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "동네"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "라이트블루 오버셔츠에 화이트 티, 아이보리 롤업 팬츠",
+  "caption_why": "밝은 블루로 포인트 주고 소매 걷어 올려서 재팬 캐주얼 무드가 자연스럽게 나와",
+  "caption_how": "소매는 두어 번 접어 팔뚝 보이게, 밑단은 롤업해서 발목 트여줘",
   "is_flagship": false,
-  "review_note": "릴렉스 톤온톤 카페 무드 → cityboy 0.2 기여(반사적 부여 아님)."
+  "flagship_reason": "",
+  "confidence": 0.85
 }

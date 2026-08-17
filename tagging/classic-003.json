@@ -1,1 +1,25 @@
-{"file":"classic-003.png","mood_vector":{"classic":1.0},"situations":["출근","면접"],"seasons":["fall","winter"],"body_spec":{"height":"178","build":"slim"},"caption_item":"차콜 블레이저에 카멜 터틀넥·차콜 슬랙스","caption_why":"블레이저에 니트로 갖추되 안 답답하게","caption_how":"단추 풀어 터틀넥 보여","is_flagship":false,"review_note":"007과 브라운계 TN 근접 → 카멜 shade로 경계 변별(유지)."}
+{
+  "file": "classic-003.jpg",
+  "mood_vector": {
+    "classic": 0.6,
+    "soft": 0.25,
+    "clean": 0.15
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "카키 코트에 아이보리 니트폴로, 브라운 슬랙스, 블랙 더비",
+  "caption_why": "그린과 브라운 딥톤을 맞춰서 차분하고 고급진 느낌",
+  "caption_how": "니트폴로 단추 살짝 풀고 크롭 기장 슬랙스로 발목 보여줘",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

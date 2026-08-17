@@ -1,1 +1,24 @@
-{"file":"amekaji-013.png","mood_vector":{"amekaji":1.0},"situations":["동네"],"seasons":["fall","winter"],"body_spec":{"height":"182","build":"slim"},"caption_item":"셰르파 데님자켓에 크림 니트·블루 진","caption_why":"보아 카라로 청청을 겨울용으로","caption_how":"카라 세우고 니트 받쳐","is_flagship":true,"flagship_reason":"셰르파 데님자켓+니트+블루 진 = 슬롯 기본템 재현, 전신·FW 대표"}
+{
+  "file": "amekaji-013.jpg",
+  "mood_vector": {
+    "amekaji": 0.65,
+    "street": 0.35
+  },
+  "situations": [
+    "나들이",
+    "여행"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "오버핏 인디고 트러커에 크림 티, 카멜 팬츠 롤업, 브라운 워크부츠",
+  "caption_why": "넉넉한 트러커에 카멜 팬츠라 낙엽길 배경에서 아메카지에 스트릿이 섞여",
+  "caption_how": "트러커 크게 걸치고 카멜 팬츠 밑단 두껍게 접어 부츠 위로 볼륨 줘",
+  "is_flagship": true,
+  "flagship_reason": "클래식 인디고 트러커에 카멜·낙엽길 배경이 가을 아메카지 무드를 제일 그림처럼 보여줘",
+  "confidence": 0.92
+}

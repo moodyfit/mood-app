@@ -1,1 +1,25 @@
-{"file":"soft-009.png","mood_vector":{"soft":1.0},"situations":["데이트","동네"],"seasons":["spring"],"body_spec":{"height":"178","build":"slim"},"caption_item":"크림 크루넥 니트에 브라운 슬랙스","caption_why":"밝은 니트에 브라운 하의로 웜톤 대비","caption_how":"소매 걷어","is_flagship":false,"review_note":"웜톤 하의 → clean(차콜/블랙) 크루넥과 축 횡단 변별."}
+{
+  "file": "soft-009.jpg",
+  "mood_vector": {
+    "soft": 0.55,
+    "amekaji": 0.3,
+    "clean": 0.15
+  },
+  "situations": [
+    "나들이",
+    "캠퍼스"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "크림 케이블 니트에 브라운 슬랙스",
+  "caption_why": "크림 니트에 흙톤 하의라 포근하면서 캐주얼해",
+  "caption_how": "안에 흰 티 살짝 빼주고 브라운 부츠로 톤 이어가",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}

@@ -1,1 +1,25 @@
-{"file":"cityboy-004.png","mood_vector":{"cityboy":1.0},"situations":["동네","여행"],"seasons":["summer"],"body_spec":{"height":"177","build":"regular"},"caption_item":"베이지 셔츠에 화이트 티·카키 카고","caption_why":"밝은 흙색 톤에 크로스백으로 실용 포인트","caption_how":"소매는 팔꿈치까지 걷어","is_flagship":false}
+{
+  "file": "cityboy-004.jpg",
+  "mood_vector": {
+    "cityboy": 0.5,
+    "street": 0.4,
+    "amekaji": 0.1
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "181",
+    "build": "slim"
+  },
+  "caption_item": "러스트 오버핏 후드집업에 화이트 티, 라이트 데님 와이드",
+  "caption_why": "볼륨 큰 후드집업에 워시드 데님이 붙어 스트릿 볼륨이 강해진 캐주얼",
+  "caption_how": "집업 반쯤 열어 흰 티 레이어드, 데님은 넉넉하게 흘려 입기",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.8
+}

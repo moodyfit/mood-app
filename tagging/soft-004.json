@@ -1,1 +1,24 @@
-{"file":"soft-004.png","mood_vector":{"soft":1.0},"situations":["소개팅","데이트"],"seasons":["fall"],"body_spec":{"height":"180","build":"regular"},"caption_item":"크림 크루넥 니트에 웜그레이 슬랙스","caption_why":"밝은 니트로 순한 인상을 앞세워","caption_how":"소매 걷어","is_flagship":false}
+{
+  "file": "soft-004.jpg",
+  "mood_vector": {
+    "soft": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "나들이",
+    "주말카페"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "181",
+    "build": "slim"
+  },
+  "caption_item": "라일락 니트 집업에 카키 베이지 슬랙스",
+  "caption_why": "라일락 파스텔이 포인트라 부드럽고 산뜻해",
+  "caption_how": "오버핏 니트 집업 열어 안에 셔츠 살짝, 로퍼로 정돈",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

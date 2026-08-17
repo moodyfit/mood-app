@@ -1,1 +1,24 @@
-{"file":"soft-003.png","mood_vector":{"soft":1.0},"situations":["데이트","주말카페"],"seasons":["fall"],"body_spec":{"height":"183","build":"slim"},"caption_item":"베이지 맥코트에 아이보리 셔츠·브라운 치노","caption_why":"옅은 코트로 포근한 무드에 기장만 더해","caption_how":"코트 열고 셔츠 보여","is_flagship":false,"review_note":"코트=골격 변주. 캐주얼 스타일링이라 classic 아님, soft 단일."}
+{
+  "file": "soft-003.jpg",
+  "mood_vector": {
+    "soft": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "동네",
+    "출근"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "파우더블루 니트 가디건에 베이지 슬랙스",
+  "caption_why": "차분한 블루에 뉴트럴 하의라 담백하고 클린해",
+  "caption_how": "단추 채운 가디건에 밑단 롤업 슬랙스로 깔끔하게",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

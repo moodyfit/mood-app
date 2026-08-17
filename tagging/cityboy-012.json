@@ -1,1 +1,24 @@
-{"file":"cityboy-012.png","mood_vector":{"cityboy":1.0},"situations":["동네","주말카페"],"seasons":["spring"],"body_spec":{"height":"181","build":"regular"},"caption_item":"브라운 셔츠에 화이트 티·브라운 카고","caption_why":"브라운 톤으로 붙이고 토트로 무심 포인트","caption_how":"소매 걷어","is_flagship":false,"review_note":"브라운=유채 → why '무채색' 미사용."}
+{
+  "file": "cityboy-012.jpg",
+  "mood_vector": {
+    "cityboy": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "183",
+    "build": "slim"
+  },
+  "caption_item": "오렌지 코치 재킷에 크림 티, 라이트 그레이 팬츠",
+  "caption_why": "밝은 오렌지 겉옷에 뉴트럴 팬츠로 균형 준 산뜻한 봄 캐주얼",
+  "caption_how": "재킷 열어 걸치고 스니커즈 레드 포인트로 톤 살짝 이어주기",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

@@ -1,1 +1,24 @@
-{"file":"cityboy-002.png","mood_vector":{"cityboy":1.0},"situations":["주말카페","동네"],"seasons":["summer"],"body_spec":{"height":"178","build":"regular"},"caption_item":"카키 하프셔츠에 화이트 티·올리브 와이드","caption_why":"흙색 톤에 토트만 더해 데일리로 정리","caption_how":"셔츠는 티보다 길게 흘려","is_flagship":false}
+{
+  "file": "cityboy-002.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "soft": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "데이트"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "179",
+    "build": "slim"
+  },
+  "caption_item": "브라운 니트 가디건에 크림 티, 그레이 와이드 팬츠",
+  "caption_why": "도톰한 니트 가디건이 포근한 무드를 더해 시티보이에 소프트가 얹힌 느낌",
+  "caption_how": "가디건은 단추 풀고 소매 살짝 접어 니트 질감 강조하기",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

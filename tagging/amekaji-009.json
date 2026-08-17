@@ -1,1 +1,24 @@
-{"file":"amekaji-009.png","mood_vector":{"amekaji":1.0},"situations":["동네"],"seasons":["spring"],"body_spec":{"height":"177","build":"regular"},"caption_item":"데님 자켓에 그레이 셔츠·블루 진","caption_why":"청청에 셔츠를 안에 받쳐 각을 살짝","caption_how":"자켓 열고 걸어","is_flagship":false}
+{
+  "file": "amekaji-009.jpg",
+  "mood_vector": {
+    "amekaji": 0.8,
+    "cityboy": 0.2
+  },
+  "situations": [
+    "주말카페",
+    "데이트"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "인디고 데님 셔츠자켓에 크림 티, 카멜 팬츠, 브라운 부츠",
+  "caption_why": "인디고랑 크림·카멜이 부드럽게 붙어서 편한데 정돈된 느낌이 같이 나와",
+  "caption_how": "데님 셔츠자켓 단추 풀어 걸치고 카멜 팬츠로 톤 밝혀 무겁지 않게 해",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.87
+}

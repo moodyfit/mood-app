@@ -1,12 +1,24 @@
 {
-  "file": "clean-003.png",
-  "mood_vector": {"clean": 1.0},
-  "situations": ["동네"],
-  "seasons": ["summer"],
-  "body_spec": {"height": "183", "build": "slim"},
-  "caption_item": "크림 티에 블랙 와이드 슬랙스",
-  "caption_why": "밝은 상의에 검정 하의로 딱 두 색만 끊어 대비를 줬어",
-  "caption_how": "밑단은 신발에 살짝 닿는 길이로 둬야 균형이 맞아",
+  "file": "clean-003.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "amekaji": 0.3
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "올리브 코치재킷에 그레이 티, 크림 롤업 팬츠",
+  "caption_why": "올리브 흙톤 재킷 하나로 캐주얼한 무게감, 아래는 크림으로 눌러줘서 안 튀어",
+  "caption_how": "밑단 롤업해서 스니커즈랑 발목 사이 여백 남겨주면 가벼워져",
   "is_flagship": false,
-  "review_note": "블랙 와이드는 clean의 재료(대비), street 아님 → 단일 지배. 출근은 확신 약해 제외."
+  "flagship_reason": "",
+  "confidence": 0.85
 }

@@ -1,1 +1,24 @@
-{"file":"soft-015.png","mood_vector":{"soft":1.0},"situations":["동네","주말카페"],"seasons":["fall"],"body_spec":{"height":"179","build":"slim"},"caption_item":"베이지 가디건에 오트밀 니트티·올리브 팬츠","caption_why":"베이지 가디건에 올리브로 톤차","caption_how":"앞 열고 걸어","is_flagship":false,"review_note":"올리브=유채 → why '무채색' 미사용."}
+{
+  "file": "soft-015.jpg",
+  "mood_vector": {
+    "soft": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "동네",
+    "캠퍼스"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim"
+  },
+  "caption_item": "파우더블루 케이블 니트에 라이트베이지 슬랙스",
+  "caption_why": "연블루에 베이지라 차분하고 깔끔한 느낌",
+  "caption_how": "넉넉한 니트에 밑단 롤업 슬랙스, 브라운 로퍼로 마무리",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}

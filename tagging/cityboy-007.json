@@ -1,1 +1,24 @@
-{"file":"cityboy-007.png","mood_vector":{"cityboy":1.0},"situations":["출근","동네"],"seasons":["fall","winter"],"body_spec":{"height":"176","build":"regular"},"caption_item":"올리브 코치 오버셔츠에 화이트 티·카키 팬츠","caption_why":"가벼운 겉옷 한 겹으로 쌀쌀할 때 층을 더해","caption_how":"오버셔츠는 열어 티를 보여","is_flagship":false}
+{
+  "file": "cityboy-007.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "soft": 0.4
+  },
+  "situations": [
+    "저녁약속",
+    "출근"
+  ],
+  "seasons": [
+    "winter"
+  ],
+  "body_spec": {
+    "height": "178",
+    "build": "slim"
+  },
+  "caption_item": "베이지 코트에 머스터드 스웨트, 화이트 셔츠, 네이비 팬츠",
+  "caption_why": "코트+스웨트+셔츠 삼중 레이어에 머스터드 포근함이 겨울 시티보이를 완성",
+  "caption_how": "셔츠 카라만 살짝 빼서 목선 포인트 주고 코트는 열어 걸치기",
+  "is_flagship": true,
+  "flagship_reason": "겨울 레이어드 대표, 전신·얼굴 또렷하고 아이템 조합이 명확",
+  "confidence": 0.85
+}

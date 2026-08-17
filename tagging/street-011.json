@@ -1,1 +1,24 @@
-{"file":"street-011.png","mood_vector":{"street":1.0},"situations":["동네"],"seasons":["summer"],"body_spec":{"height":"177","build":"regular"},"caption_item":"무지 오버핏 헤비코튼 티에 와이드 라이트 데님","caption_why":"프린트 없이 크게 입고 데님으로 받쳐 여름 스트릿","caption_how":"티 밑단 데님 위로 흘려","is_flagship":true,"flagship_reason":"무지 오버핏 티+와이드 데님+캡+스니커 = 슬롯 기본템 재현, 전신·정면·street 여름 대표","review_note":"무지 확인(로고 0). 후디 골격 탈피."}
+{
+  "file": "street-011.jpg",
+  "mood_vector": {
+    "street": 0.8,
+    "amekaji": 0.2
+  },
+  "situations": [
+    "동네",
+    "출근"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "182",
+    "build": "slim"
+  },
+  "caption_item": "차콜 오버핏 후디에 차콜 카고 팬츠, 아이보리 스니커",
+  "caption_why": "위아래 차콜로 톤 맞추고 밝은 신발로 밑단만 띄운 조합",
+  "caption_how": "톤온톤일수록 소재 다른 카고 넣어야 밋밋하지 않다",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.85
+}
