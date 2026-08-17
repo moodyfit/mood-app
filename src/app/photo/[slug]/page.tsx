@@ -13,5 +13,5 @@ export default async function PhotoPage({ params }: { params: { slug: string } }
   const moodKey = dominantMood(photo.mood_vector) as MoodKey;
   const products = await getProductsForPhoto(photo.image_url, moodKey);
 
-  return <PhotoProductView photo={photo} products={products} moodKey={moodKey} />;
+  return <PhotoProductView photo={photo} products={products} />;
 }

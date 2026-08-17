@@ -3,8 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Photo } from "@/lib/photos";
-import type { MoodKey } from "@/lib/types";
-import { photoUrl, dominantMood, cardRatio } from "@/lib/photos";
+import { photoUrl, cardRatio } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 
 /**
@@ -27,7 +26,6 @@ export default function PhotoCard({
 }) {
   const router = useRouter();
   const { isPhotoSaved, togglePhotoSave, recordView } = useMoodStore();
-  const key = dominantMood(photo.mood_vector);
   const saved = isPhotoSaved(photo.id); // 사진별 저장 — 같은 무드의 다른 사진과 독립
   // (B) 사진 전용 상품 뷰로 — slug = 파일명(moods/clean-001.jpg → clean-001)
   const slug = photo.image_url.split("/").pop()?.replace(/\.\w+$/, "") ?? "";
@@ -54,7 +52,7 @@ export default function PhotoCard({
       return;
     }
     if (slug) {
-      recordView(key as MoodKey); // 클릭(상세 열기)도 취향 신호 → 점점 개인화
+      recordView(photo.mood_vector); // 클릭(상세 열기)도 취향 신호 → 점점 개인화, 다축 그대로 반영(FEAT-001)
       router.push(`/photo/${slug}`);
     }
   }
@@ -87,7 +85,7 @@ export default function PhotoCard({
         onPointerUp={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
-          togglePhotoSave(photo.id, key as MoodKey, query);
+          togglePhotoSave(photo.id, photo.mood_vector, query);
         }}
         aria-label={saved ? "저장 취소" : "저장"}
         className={`absolute right-2.5 top-2.5 flex h-[34px] w-[34px] items-center justify-center rounded-full border text-base backdrop-blur transition ${

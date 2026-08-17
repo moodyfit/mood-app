@@ -12,6 +12,7 @@ import {
 import type { Affinity, MoodKey, OwnedItem, SaveRecord } from "./types";
 import { TASTE_CARD_THRESHOLD } from "./taste";
 import { MOODS, resolveMoods } from "./moods";
+import { dominantMood } from "./photos";
 import { haptic } from "./haptic";
 import { trackEvent, syncTaste, fetchTaste } from "./track";
 import { getSupabase } from "./supabase";
@@ -71,8 +72,8 @@ interface MoodStore {
   isSaved: (key: MoodKey) => boolean;
   toggleSave: (key: MoodKey, query?: string) => void;
   isPhotoSaved: (id: string) => boolean;
-  togglePhotoSave: (id: string, moodKey?: MoodKey, query?: string) => void;
-  recordView: (key: MoodKey) => void;
+  togglePhotoSave: (id: string, moodVector?: MoodKey | Affinity, query?: string) => void;
+  recordView: (input: MoodKey | Affinity) => void;
   recordScanLike: (key: MoodKey) => void;
   recordSearch: (query: string) => void;
   recordProductClick: (moodKey: MoodKey, name: string) => void;
@@ -252,8 +253,28 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   }, [saves, savedPhotoIds, affinity, searchCounts, owned, discovered, worn, hydrated]);
 
   const bump = useCallback((key: MoodKey, w: number) => {
-    setAffinity((prev) => ({ ...prev, [key]: (prev[key] ?? 0) + w }));
+    // 다축 곱셈(baseWeight * axisValue, FEAT-001)이 소수라 부동소수점 오차가 누적됨 — 소수 4자리로 정리.
+    setAffinity((prev) => ({ ...prev, [key]: Math.round(((prev[key] ?? 0) + w) * 10000) / 10000 }));
   }, []);
+
+  /** 다축 mood_vector를 축별 값에 비례해 반영(단일 bump의 다축 버전, FEAT-001). */
+  const bumpVector = useCallback(
+    (vector: Affinity, baseWeight: number) => {
+      for (const [axis, value] of Object.entries(vector)) bump(axis, baseWeight * value);
+    },
+    [bump]
+  );
+
+  /** FEAT-001: 문자열(단일 축, 기존 무드 상세용)과 다축 벡터(사진용)를 모두 받아 적절히 분배.
+   *  photo.mood_vector가 DB에 null로 들어있는 경우 방어(QA 지적 — 이전엔 dominantMood가 조용히 ""로 흡수하던 케이스). */
+  const bumpInput = useCallback(
+    (input: MoodKey | Affinity | null | undefined, baseWeight: number) => {
+      if (input == null) return;
+      if (typeof input === "string") bump(input, baseWeight);
+      else bumpVector(input, baseWeight);
+    },
+    [bump, bumpVector]
+  );
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
@@ -301,19 +322,20 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     [savedPhotoIds]
   );
 
-  // 사진별 저장(전시 하트). 무드 affinity는 그대로 올려 개인화 유지. 취향카드 발급도 사진 저장 수 기준.
+  // 사진별 저장(전시 하트). 다축 mood_vector면 축별 값에 비례해 affinity 반영(FEAT-001). 취향카드 발급도 사진 저장 수 기준.
   const togglePhotoSave = useCallback(
-    (id: string, moodKey?: MoodKey, query?: string) => {
+    (id: string, moodInput?: MoodKey | Affinity, query?: string) => {
+      const domKey = moodInput == null ? undefined : typeof moodInput === "string" ? moodInput : (dominantMood(moodInput) as MoodKey);
       const exists0 = savedPhotoIds.includes(id);
-      trackEvent(userIdRef.current, exists0 ? "unsave" : "save", { photo_id: id, mood_key: moodKey });
+      trackEvent(userIdRef.current, exists0 ? "unsave" : "save", { photo_id: id, mood_key: domKey });
       setSavedPhotoIds((prev) => {
         if (prev.includes(id)) return prev.filter((x) => x !== id);
         const next = [...prev, id];
         showToast("저장했어");
         haptic();
-        if (moodKey) {
-          bump(moodKey, getConfig().wSave);
-          setSaves((s) => (s.some((r) => r.moodKey === moodKey) ? s : [...s, { moodKey, savedAt: Date.now(), query }]));
+        if (moodInput != null && domKey) {
+          bumpInput(moodInput, getConfig().wSave);
+          setSaves((s) => (s.some((r) => r.moodKey === domKey) ? s : [...s, { moodKey: domKey, savedAt: Date.now(), query }]));
         }
         if (next.length >= TASTE_CARD_THRESHOLD && !cardEverIssued) {
           setCardEverIssued(true);
@@ -328,15 +350,17 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         return next;
       });
     },
-    [cardEverIssued, showToast, bump, savedPhotoIds]
+    [cardEverIssued, showToast, bumpInput, savedPhotoIds]
   );
 
+  // 다축 mood_vector(사진) 또는 단일 MoodKey(무드 상세) 둘 다 수용 — 축별 값에 비례해 affinity 반영(FEAT-001).
   const recordView = useCallback(
-    (key: MoodKey) => {
-      trackEvent(userIdRef.current, "view", { mood_key: key });
-      bump(key, getConfig().wView);
+    (input: MoodKey | Affinity) => {
+      const domKey = typeof input === "string" ? input : (dominantMood(input) as MoodKey);
+      trackEvent(userIdRef.current, "view", { mood_key: domKey });
+      bumpInput(input, getConfig().wView);
     },
-    [bump]
+    [bumpInput]
   );
 
   // 7.10 3초 취향 스캔: '좋아'는 저장에 준하는 신호(보드엔 안 담고 프로필만 적재)
