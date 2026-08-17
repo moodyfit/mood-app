@@ -1,16 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import SearchScreen from "@/components/SearchScreen";
 import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
-import { isSupabaseEnabled } from "@/lib/supabase";
-import { fetchPhotos } from "@/lib/photos";
+import { usePhotos } from "@/lib/hooks/usePhotos";
 
 // 홈 = 검색창(위 고정) + 약속 모드 진입 카드(유일) + 종합 취향 상시 메이슨리 전시
-export const revalidate = 60; // ISR — 60초 캐시(개인화는 클라이언트). force-dynamic 대비 이동 속도↑
-
-export default async function HomePage() {
-  // 홈 상시 전시 = 실제 사진 볼륨(90장) 메이슨리. 미설정/빈 DB면 HomeGallery가 6무드로 폴백.
-  const photos = isSupabaseEnabled() ? await fetchPhotos() : [];
+export default function HomePage() {
+  const { photos } = usePhotos();
   return (
     <div className="animate-fade">
       <SearchScreen />
