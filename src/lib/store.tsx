@@ -40,6 +40,8 @@ const AFFINITY_DECAY_HALF_LIFE_DAYS = 14;
 /** lastTouchedAt(ms) 기준 지난 시간만큼 절반씩 감쇠. 클라이언트·서버 양쪽 다 이걸로 통일해야
  *  mergeAffinity(Math.max)가 "감쇠 안 된 값 vs 감쇠된 값"을 비교하는 불공정을 피함. */
 function decayAffinity(vec: Affinity, lastTouchedAt: number, now: number = Date.now()): Affinity {
+  // 손상된 타임스탬프(NaN) 방어(QA 지적) — 감쇠 계산 없이 원본 그대로, 호출부가 새 타임스탬프로 재기록함.
+  if (!Number.isFinite(lastTouchedAt)) return vec;
   const days = Math.max(0, (now - lastTouchedAt) / (1000 * 60 * 60 * 24));
   if (days === 0) return vec;
   const factor = Math.pow(0.5, days / AFFINITY_DECAY_HALF_LIFE_DAYS);
