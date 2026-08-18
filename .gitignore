@@ -44,6 +44,11 @@ moodfit-qr.png
 
 # 전략·기획 문서 — 공개 레포에서 제외(로컬 보존)
 docs/
+!docs/tickets/
 cardnews/
 carousel/
 릴스/
+
+# Capacitor 네이티브 프로젝트 — npx cap add 로 재생성 가능
+/ios/
+/android/

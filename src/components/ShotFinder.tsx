@@ -7,6 +7,8 @@ import type { MoodKey } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
 import { moodAliasType } from "@/lib/taste";
 import { PENDING_SHOT_KEY } from "./SearchScreen";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import { Capacitor } from "@capacitor/core";
 
 /**
  * 7.11 스크린샷 부하 — "멋있다 싶으면 무드핏으로 보내."
@@ -45,6 +47,30 @@ export default function ShotFinder() {
     reader.readAsDataURL(file);
   }
 
+  async function onNativePhoto() {
+    try {
+      const photo = await Camera.getPhoto({
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Prompt,
+        quality: 80,
+      });
+      if (photo.dataUrl) {
+        setSeed(photo.dataUrl.length % ALL_MOOD_KEYS.length);
+        setShot(photo.dataUrl);
+      }
+    } catch {
+      /* 사용자 취소 — 무시 */
+    }
+  }
+
+  function openPicker() {
+    if (Capacitor.isNativePlatform()) {
+      onNativePhoto();
+    } else {
+      inputRef.current?.click();
+    }
+  }
+
   function pick(k: MoodKey) {
     addDiscovered(k);
     showToast("나의 공간에 담았어");
@@ -71,7 +97,7 @@ export default function ShotFinder() {
         </p>
         <button
           type="button"
-          onClick={() => inputRef.current?.click()}
+          onClick={openPicker}
           className="mt-6 rounded-[12px] bg-accent py-4 text-[15px] font-bold text-white"
         >
           스크린샷 올리기

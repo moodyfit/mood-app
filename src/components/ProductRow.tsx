@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Product } from "@/lib/types";
 import { formatPrice, primaryPrice } from "@/lib/products";
 import { useMoodStore } from "@/lib/store";
+import { openExternal } from "@/lib/browser";
 
 export default function ProductRow({
   product,
@@ -34,7 +35,7 @@ export default function ProductRow({
   function goTo(url?: string) {
     if (url) {
       recordProductClick(product.moodKey, product.name); // 구매의도 신호(해자 데이터)
-      window.open(url, "_blank", "noopener");
+      openExternal(url);
       setAwaiting(true); // 복귀 감지 준비
     } else {
       showToast("데모 · 실제 서비스에선 판매처로 연결");

@@ -11,7 +11,7 @@ export default function TopBar() {
   const pathname = usePathname();
   if (pathname === "/") return null;
   return (
-    <div className="sticky top-0 z-30 flex items-center justify-between px-5 pb-3.5 pt-5 bg-gradient-to-b from-paper from-[72%] to-transparent">
+    <div className="sticky top-0 z-30 flex items-center justify-between px-5 pb-3.5 pt-[max(1.25rem,env(safe-area-inset-top))] bg-gradient-to-b from-paper from-[72%] to-transparent">
       <Link href="/" className="text-[21px] font-extrabold tracking-[-0.6px]">
         무드핏
       </Link>
