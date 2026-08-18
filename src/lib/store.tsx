@@ -33,6 +33,21 @@ function mergeAffinity(a: Affinity, b: Affinity): Affinity {
   return out;
 }
 
+// affinity 누적 모델 — 시간 기반 지수감쇠. 반감기(일) 지나면 절반, alpha가 saturate에서
+// 영구 고정되지 않고 시간이 지나면 다시 내려올 수 있게 함. 나중에 튜닝 필요해지면 config.ts로 이동.
+const AFFINITY_DECAY_HALF_LIFE_DAYS = 14;
+
+/** lastTouchedAt(ms) 기준 지난 시간만큼 절반씩 감쇠. 클라이언트·서버 양쪽 다 이걸로 통일해야
+ *  mergeAffinity(Math.max)가 "감쇠 안 된 값 vs 감쇠된 값"을 비교하는 불공정을 피함. */
+function decayAffinity(vec: Affinity, lastTouchedAt: number, now: number = Date.now()): Affinity {
+  const days = Math.max(0, (now - lastTouchedAt) / (1000 * 60 * 60 * 24));
+  if (days === 0) return vec;
+  const factor = Math.pow(0.5, days / AFFINITY_DECAY_HALF_LIFE_DAYS);
+  return Object.fromEntries(
+    Object.entries(vec).map(([k, v]) => [k, Math.round(v * factor * 10000) / 10000])
+  );
+}
+
 const isKnownMood = (k: string): boolean => Boolean(MOODS[k]);
 
 export interface DiscoveredItem {
@@ -45,6 +60,7 @@ const K_SAVES = "mood.saves.v1";
 const K_SAVED_PHOTOS = "mood.savedPhotos.v1"; // 사진별 저장(전시 하트) — 무드 저장과 별개
 const K_CARD = "mood.cardIssued.v1";
 const K_AFFINITY = "mood.affinity.v1"; // 7.6 프로필 무드 벡터
+const K_AFFINITY_TS = "mood.affinityUpdatedAt.v1"; // affinity 마지막 갱신 시각(ms) — 감쇠 계산용
 const K_SEARCH = "mood.searchCounts.v1"; // 7.8 검색 기억
 const K_OWNED = "mood.owned.v1"; // 1.5.2 '내 옷' 소유 결
 const K_SCAN = "mood.scanDone.v1"; // 스캔 1회 완료 — 이후 스캔 탭은 전시 기본, 원할 때만 재스캔
@@ -142,7 +158,10 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       const a = localStorage.getItem(K_AFFINITY);
       if (a) {
         const raw = JSON.parse(a) as Affinity;
-        setAffinity(Object.fromEntries(Object.entries(raw).filter(([k]) => isKnownMood(k))));
+        const known = Object.fromEntries(Object.entries(raw).filter(([k]) => isKnownMood(k)));
+        // 감쇠(affinity 누적 모델): 타임스탬프 없으면(배포 전 기존 유저) 감쇠 없이 그대로 쓰고 지금 시각으로 새로 기록.
+        const tsRaw = localStorage.getItem(K_AFFINITY_TS);
+        setAffinity(tsRaw ? decayAffinity(known, Number(tsRaw)) : known);
       }
       const q = localStorage.getItem(K_SEARCH);
       if (q) setSearchCounts(JSON.parse(q));
@@ -183,7 +202,9 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       if (!t) return;
       if (t.mood_vector && Object.keys(t.mood_vector).length > 0) {
         const clean = Object.fromEntries(Object.entries(t.mood_vector).filter(([k]) => isKnownMood(k)));
-        setAffinity((prev) => (Object.keys(prev).length > 0 ? prev : clean));
+        // 감쇠(affinity 누적 모델): 서버 updated_at 기준으로 얼마나 오래됐는지 반영.
+        const decayed = t.updated_at ? decayAffinity(clean, new Date(t.updated_at).getTime()) : clean;
+        setAffinity((prev) => (Object.keys(prev).length > 0 ? prev : decayed));
       }
       if (Array.isArray(t.saved_photo_ids) && t.saved_photo_ids.length > 0) {
         setSavedPhotoIds((prev) => (prev.length > 0 ? prev : (t.saved_photo_ids as string[])));
@@ -215,7 +236,13 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
           // 병합: 계정 서버 취향 ∪ 현재(익명) 로컬 취향 → 로컬 반영 + 계정으로 저장
           void (async () => {
             const server = await fetchTaste(u.id);
-            const mergedAff = mergeAffinity(server?.mood_vector ?? {}, affinityRef.current);
+            // 감쇠(affinity 누적 모델): 서버 값도 updated_at 기준으로 감쇠해야 max 비교가 공정함
+            // (감쇠 안 된 서버 값이 항상 이겨버리는 문제 방지).
+            const serverAff =
+              server?.mood_vector && server.updated_at
+                ? decayAffinity(server.mood_vector, new Date(server.updated_at).getTime())
+                : (server?.mood_vector ?? {});
+            const mergedAff = mergeAffinity(serverAff, affinityRef.current);
             const mergedSaved = Array.from(new Set([...(server?.saved_photo_ids ?? []), ...savedRef.current]));
             setAffinity(mergedAff);
             setSavedPhotoIds(mergedSaved);
@@ -235,6 +262,16 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     if (!hydrated || !userIdRef.current) return;
     syncTaste(userIdRef.current, affinity, savedPhotoIds);
   }, [affinity, savedPhotoIds, hydrated]);
+
+  // 감쇠(affinity 누적 모델) 타임스탬프 — affinity 자체가 바뀔 때만 갱신(다른 상태 변화에 안 섞이게 별도 effect).
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(K_AFFINITY_TS, String(Date.now()));
+    } catch {
+      /* ignore */
+    }
+  }, [affinity, hydrated]);
 
   // 영속화
   useEffect(() => {

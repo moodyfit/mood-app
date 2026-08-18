@@ -55,6 +55,7 @@ export function syncTaste(userId: string | null, moodVector: Affinity, savedPhot
 export interface ServerTaste {
   mood_vector: Affinity | null;
   saved_photo_ids: string[] | null;
+  updated_at: string | null; // 감쇠 계산용(affinity 누적 모델) — 마지막 서버 갱신 시각
 }
 
 /** 로드 시 서버 취향 복구용(로컬이 비었을 때 하이드레이트). */
@@ -64,7 +65,7 @@ export async function fetchTaste(userId: string | null): Promise<ServerTaste | n
   try {
     const { data, error } = await sb
       .from("user_taste")
-      .select("mood_vector,saved_photo_ids")
+      .select("mood_vector,saved_photo_ids,updated_at")
       .eq("user_id", userId)
       .maybeSingle();
     if (error || !data) return null;
