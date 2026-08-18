@@ -48,3 +48,7 @@ docs/
 cardnews/
 carousel/
 릴스/
+
+# Capacitor 네이티브 프로젝트 — npx cap add 로 재생성 가능
+/ios/
+/android/

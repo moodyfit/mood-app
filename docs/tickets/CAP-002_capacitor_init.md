@@ -13,7 +13,7 @@ CAP-001의 정적 빌드 출력(`out/`)을 Capacitor가 인식하도록 초기�
 | Severity | Critical |
 | Layer | infra |
 | Milestone | MS-00 |
-| Status | Backlog |
+| Status | Done |
 | 예상h | 1 |
 | 우선순위 | P0 |
 | Depends | CAP-001 |
@@ -97,4 +97,15 @@ npx cap sync    # out/ → ios/android 복사
 
 ## Implementation Notes
 
-_(구현 후 기록)_
+### 완료 항목
+
+1. **패키지 설치**: `@capacitor/core@8.5.0`, `@capacitor/cli@8.5.0` (devDep), `@capacitor/ios@8.5.0`, `@capacitor/android@8.5.0`
+2. **`capacitor.config.ts` 생성**: `npx cap init "MOODFIT" "com.moodfit.app" --web-dir out`
+3. **플랫폼 프로젝트 생성**: `npx cap add ios` / `npx cap add android` — 둘 다 에러 없이 완료
+4. **빌드 + sync 테스트**: `npm run build:cap` → `npx cap sync` 정상 완료 (19 페이지 정적 생성)
+5. **`.gitignore`**: `/ios/`, `/android/` 추가 — `npx cap add`로 재생성 가능하므로 git 제외
+6. **`package.json`**: `"cap:sync": "npm run build:cap && npx cap sync"` 편의 스크립트 추가
+
+### iOS 시뮬레이터 확인 완료
+
+Xcode 26.6 + iOS 26.5 시뮬레이터 설치 → iPhone 17 Pro에서 앱 로드 확인.

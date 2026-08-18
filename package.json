@@ -7,15 +7,20 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build:cap": "sh -c 'mkdir -p .cap_bak && mv src/app/api .cap_bak/ 2>/dev/null; mv src/app/closet/\\[id\\] .cap_bak/_closet_id 2>/dev/null; mv src/app/photo/\\[slug\\] .cap_bak/_photo_slug 2>/dev/null; BUILD_TARGET=capacitor next build; EXIT=$?; mv .cap_bak/_closet_id src/app/closet/\\[id\\] 2>/dev/null; mv .cap_bak/_photo_slug src/app/photo/\\[slug\\] 2>/dev/null; mv .cap_bak/api src/app/ 2>/dev/null; rmdir .cap_bak 2>/dev/null; exit $EXIT'"
+    "build:cap": "sh -c 'mkdir -p .cap_bak && mv src/app/api .cap_bak/ 2>/dev/null; mv src/app/closet/\\[id\\] .cap_bak/_closet_id 2>/dev/null; mv src/app/photo/\\[slug\\] .cap_bak/_photo_slug 2>/dev/null; BUILD_TARGET=capacitor next build; EXIT=$?; mv .cap_bak/_closet_id src/app/closet/\\[id\\] 2>/dev/null; mv .cap_bak/_photo_slug src/app/photo/\\[slug\\] 2>/dev/null; mv .cap_bak/api src/app/ 2>/dev/null; rmdir .cap_bak 2>/dev/null; exit $EXIT'",
+    "cap:sync": "npm run build:cap && npx cap sync"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/ios": "^8.5.0",
     "@supabase/supabase-js": "^2.45.4",
     "next": "14.2.35",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.0",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
