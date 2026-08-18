@@ -1,5 +1,8 @@
+"use client";
+
 import type { LookCard } from "@/lib/videos";
 import { lookImage, youtubeWatchUrl } from "@/lib/videos";
+import { openExternal } from "@/lib/browser";
 
 /**
  * 룩 카드 — 유튜브를 룩북으로 재편집한 최소 단위.
@@ -9,7 +12,7 @@ export default function LookCardView({ look }: { look: LookCard }) {
   const url = youtubeWatchUrl(look.videoId, look.timestamp);
   return (
     <div className="overflow-hidden rounded-2xl border border-line bg-white">
-      <a href={url} target="_blank" rel="noopener noreferrer" className="block">
+      <button type="button" onClick={() => openExternal(url)} className="block w-full text-left">
         <div className="relative aspect-video bg-paper-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={lookImage(look)} alt={look.title} loading="lazy" className="h-full w-full object-cover" />
@@ -22,7 +25,7 @@ export default function LookCardView({ look }: { look: LookCard }) {
             </svg>
           </span>
         </div>
-      </a>
+      </button>
 
       <div className="p-3.5">
         <div className="text-[14.5px] font-bold leading-snug tracking-[-0.2px] text-ink">
@@ -51,14 +54,13 @@ export default function LookCardView({ look }: { look: LookCard }) {
           </div>
         )}
 
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={() => openExternal(url)}
           className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-semibold text-accent"
         >
           영상에서 이 룩 보기 <span aria-hidden>↗</span>
-        </a>
+        </button>
       </div>
     </div>
   );

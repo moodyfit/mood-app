@@ -13,7 +13,7 @@
 | Severity | Major |
 | Layer | frontend |
 | Milestone | MS-00 |
-| Status | Backlog |
+| Status | Done |
 | 예상h | 2 |
 | 우선순위 | P0 |
 | Depends | CAP-002 |
@@ -86,4 +86,12 @@ npx cap sync
 
 ## Implementation Notes
 
-_(구현 후 기록)_
+### 완료 항목
+
+1. **@capacitor/haptics@8.0.2**: `src/lib/haptic.ts` — `navigator.vibrate()` → `Haptics.impact(Light)`, 웹 폴백 유지
+2. **@capacitor/browser@8.0.4**: `src/lib/browser.ts` 유틸 생성 — `openExternal(url)` (네이티브: 인앱 브라우저, 웹: `window.open`)
+   - `ProductRow.tsx`: `window.open()` → `openExternal()`
+   - `LookCard.tsx`: `<a target="_blank">` → `<button onClick={openExternal}>`
+3. **@capacitor/camera@8.2.2**: `ShotFinder.tsx` — 네이티브: `Camera.getPhoto(Prompt)`, 웹: 기존 `<input type="file">` 유지
+4. 모든 플러그인에 `Capacitor.isNativePlatform()` 분기로 웹 호환성 보장
+5. 시뮬레이터 빌드 + 실행 확인 (크래시 없음)
