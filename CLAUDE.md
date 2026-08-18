@@ -22,13 +22,37 @@
 
 ## 팀 구성
 
-- 개발자 1명 (사이드 프로젝트) — 인증·AI·인프라 실무 역량 증명 목적
+사이드 프로젝트 — 인증·AI·인프라 실무 역량 증명 목적
+
+| GitHub | 이름 | 역할 |
+|--------|------|------|
+| shionpark | 서영 | 프로젝트 오너, 인프라·Capacitor·BE 설계 |
+| aaiap15 | 케빈 | 태깅 파이프라인, 코드 리뷰 |
+| stacy-yein-kim | 에린 | affinity 모델, 유사도 API, 버그 수정 |
 
 ## 현재 상태
 
-FE(Next.js + Supabase 직접 연동) 프로토타입 완성 · 배포 중.
-Capacitor 전환 진행 중 (MS-00) — 서버 컴포넌트 → 클라이언트 전환 + 네이티브 셸 패키징.
-BE(NestJS) 신규 구축 대기 — WBS 39개 티켓 전부 Backlog.
+- FE(Next.js + Supabase 직접 연동) 프로토타입 완성 · Vercel 배포 중
+- Capacitor 전환 완료 (PR #7) — iOS 시뮬레이터 검증 완료, 앱스토어 제출 준비 가능
+- BE(NestJS) 신규 구축 대기 — 다음 착수 대상 (MS-01)
+
+## Supabase → NestJS 전환 이유
+
+현재 FE에서 Supabase를 직접 호출하는 구조의 한계:
+
+1. **보안**: Supabase API 키가 클라이언트 코드에 노출됨. 서버가 있으면 DB·AI API 키를 서버 안에만 둘 수 있음
+2. **비즈니스 로직**: DB를 프론트에서 직접 읽고 쓰는 구조라, 요청 검증·데이터 가공·캐싱 같은 로직을 넣기 어려움. 예: 자연어→무드 벡터 변환(Claude API) + 동일 검색어 캐시 반환
+3. **AI 비용 관리**: Claude API 호출을 서버에서 캐싱 + Rate Limiting 가능
+
+## Capacitor 빌드 구조
+
+웹과 앱을 하나의 코드베이스에서 빌드한다. 환경변수로 분기:
+
+- `npm run build` → Vercel 웹 배포 (API Route 포함, 서버 기능 정상)
+- `npm run build:cap` → `BUILD_TARGET=capacitor` → `output: 'export'` → 정적 HTML만 출력
+
+> **주의**: `output: 'export'` 빌드에서는 API Route가 제외된다.
+> 새 API Route를 추가할 때 앱에서도 필요한 기능이면 클라이언트에서 직접 호출하거나 BE API로 분리해야 한다.
 
 ## 주요 참고 문서
 
@@ -56,20 +80,15 @@ BE(NestJS) 신규 구축 대기 — WBS 39개 티켓 전부 Backlog.
 
 ## 현재 작업 순서
 
-### MS-00: Capacitor 전환 (P0)
+### MS-00: Capacitor 전환 — 완료 (PR #7)
 
-| # | 티켓 | 제목 | 레이어 | 예상h |
-|---|------|------|--------|-------|
-| 1 | CAP-001 | 서버 컴포넌트 → 클라이언트 전환 + 정적 빌드 | frontend | 5 |
-| 2 | CAP-002 | Capacitor 초기화 + iOS/Android 프로젝트 생성 | infra | 1 |
-| 3 | CAP-003 | 네이티브 브릿지 (haptics, browser, camera) | frontend | 2 |
-| 4 | CAP-004 | 폰트 로컬 번들링 + 오프라인 대응 | frontend | 1 |
-| 5 | CAP-005 | 네이티브 셸 (SafeArea, StatusBar, 스플래시) | infra | 1 |
+CAP-001~005 전체 완료. iOS 시뮬레이터 검증 완료.
 
-> **Capacitor 영향 — 기존 티켓 변경사항**
+> **Capacitor 영향 — 후속 티켓 작업 시 참고**
 > - `FE-FEAT-012`: ISR 서버 컴포넌트 전제 삭제 → CAP-001에서 만든 클라이언트 훅 내부만 교체
 > - `BE-FEAT-003`: Capacitor WebView 인증 방식(cookie vs Authorization 헤더) BE 착수 전 결정 필요
-> - `FE-FEAT-005`: 카카오 OAuth 콜백 URL에 Capacitor 오리진 고려 필요
+> - `FE-FEAT-005`: 카카오 OAuth 콜백 URL에 Capacitor 오리진(`capacitor://localhost`) 고려 필요
+> - **API Route 신규 추가 시**: 앱 빌드에서 제외됨 — 앱에서도 필요하면 클라이언트 직접 호출 or BE API로 분리
 
 ### MS-01: W1-전반 — 인프라 + DB 기반 (P0)
 
@@ -134,6 +153,16 @@ BE(NestJS) 신규 구축 대기 — WBS 39개 티켓 전부 Backlog.
 | 37 | BE-FEAT-025 | 환불 처리 (P1) | backend | 3 |
 | 38 | — | README + 결제 플로우 시퀀스 다이어그램 (P1) | docs | 1 |
 | 39 | — | README + WebSocket 이벤트 명세 (P1) | docs | 1 |
+
+## PR 넘버링 규칙
+
+| 접두사 | 용도 | 예시 |
+|--------|------|------|
+| FEAT-NNN | 새 기능 | `feat(FEAT-002): 유사 사진 추천 API` |
+| BUG-NNN | 버그 수정 | `fix(BUG-001): affinity 대칭 복원` |
+| CHORE-NNN | 인프라/빌드/리팩터링 | `chore(CHORE-001): Capacitor 전환` |
+
+PR 제목 형식: `타입(접두사-번호): 설명`. 번호는 기존 PR 확인 후 이어서 채번.
 
 ## 코드 규칙
 
