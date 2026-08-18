@@ -75,7 +75,7 @@ export default function SearchScreen() {
   }
 
   return (
-    <div className="sticky top-0 z-30 border-b border-line bg-paper px-5 pb-3 pt-5">
+    <div className="sticky top-0 z-30 border-b border-line bg-paper px-5 pb-3 pt-[max(1.25rem,env(safe-area-inset-top))]">
       <div className="mb-2.5">
         <span className="text-[17px] font-extrabold tracking-[-0.4px]">무드핏</span>
       </div>

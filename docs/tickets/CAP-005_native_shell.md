@@ -13,7 +13,7 @@ Capacitor 앱의 네이티브 셸 요소 — 노치/하단바 대응(SafeArea), 
 | Severity | Major |
 | Layer | infra |
 | Milestone | MS-00 |
-| Status | Backlog |
+| Status | Done |
 | 예상h | 1 |
 | 우선순위 | P0 |
 | Depends | CAP-002 |
@@ -97,4 +97,12 @@ padding-top: env(safe-area-inset-top);
 
 ## Implementation Notes
 
-_(구현 후 기록)_
+### 완료 항목
+
+1. **viewport-fit=cover**: `layout.tsx` Viewport 설정에 추가 — `env(safe-area-inset-*)` 활성화
+2. **SafeArea 상단**: TopBar, SearchScreen, VideoSearch의 `pt`를 `pt-[max(1.25rem,env(safe-area-inset-top))]`으로 교체
+3. **SafeArea 하단**: TabBar에 기존 `pb-[env(safe-area-inset-bottom)]` 유지 확인
+4. **StatusBar**: `@capacitor/status-bar@8.0.3` — Light 스타일 (밝은 배경에 다크 텍스트)
+5. **Splash Screen**: `@capacitor/splash-screen@8.0.2` — 배경색 #FAFAF8, `launchAutoHide: false` (CapacitorInit에서 수동 hide)
+6. **CapacitorInit 컴포넌트**: 앱 시작 시 StatusBar 스타일 설정 + 스플래시 숨김, 웹에서는 no-op
+7. 시뮬레이터에서 노치/하단 인디케이터 대응 확인

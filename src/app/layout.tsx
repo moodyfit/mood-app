@@ -5,6 +5,7 @@ import TopBar from "@/components/TopBar";
 import TabBar from "@/components/TabBar";
 import Toast from "@/components/Toast";
 import TasteCardModal from "@/components/TasteCardModal";
+import CapacitorInit from "@/components/CapacitorInit";
 
 export const metadata: Metadata = {
   title: "무드핏 MOODFIT — 취향 번역기",
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
   themeColor: "#ffffff",
 };
 
@@ -34,6 +36,7 @@ export default function RootLayout({
           </div>
           <Toast />
           <TasteCardModal />
+          <CapacitorInit />
         </MoodProvider>
       </body>
     </html>
