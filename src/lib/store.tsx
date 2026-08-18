@@ -329,13 +329,17 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     [saves]
   );
 
+  // Issue #3 7번: togglePhotoSave(BUG-001)와 동일한 비대칭이 무드 레벨 저장에도 있었음 — 취소 시 대칭 복원.
   const toggleSave = useCallback(
     (key: MoodKey, query?: string) => {
       const exists0 = saves.some((s) => s.moodKey === key);
       trackEvent(userIdRef.current, exists0 ? "unsave" : "save", { mood_key: key });
       setSaves((prev) => {
         const exists = prev.some((s) => s.moodKey === key);
-        if (exists) return prev.filter((s) => s.moodKey !== key);
+        if (exists) {
+          bump(key, -getConfig().wSave);
+          return prev.filter((s) => s.moodKey !== key);
+        }
 
         const next = [...prev, { moodKey: key, savedAt: Date.now(), query }];
         showToast("저장했어");
