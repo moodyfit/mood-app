@@ -13,7 +13,7 @@ CDN 폰트를 로컬 번들로 전환하고, Capacitor 앱에서 오프라인 �
 | Severity | Minor |
 | Layer | frontend |
 | Milestone | MS-00 |
-| Status | Backlog |
+| Status | Done |
 | 예상h | 1 |
 | 우선순위 | P0 |
 | Depends | CAP-001 |
@@ -78,4 +78,14 @@ WOFF2 파일을 `public/fonts/`에 저장하고, CSS `@font-face`를 로컬 경�
 
 ## Implementation Notes
 
-_(구현 후 기록)_
+### 완료 항목
+
+1. **Wanted Sans Variable** (1.26MB): jsDelivr CDN split CSS → `public/fonts/WantedSansVariable.woff2` 로컬 번들
+2. **Space Grotesk Variable** (22KB): Google Fonts CDN → `public/fonts/SpaceGrotesk-Variable.woff2` 로컬 번들
+3. **`globals.css`**: `@font-face` 2개 선언 추가 (로컬 경로, `font-display: swap`)
+4. **`layout.tsx`**: CDN `<link>` 4개 제거 (jsDelivr, Google Fonts preconnect 2개, Space Grotesk)
+5. **시뮬레이터 확인**: iPhone 17 Pro에서 한글(Wanted Sans) 폰트 정상 렌더링 확인
+
+### 제외 — 오프라인 빈 상태 UI
+
+데이터 훅 에러 상태 처리는 별도 이슈로 분리. 현재 스코프는 폰트 번들링만.
