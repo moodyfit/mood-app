@@ -40,7 +40,7 @@
 
 현재 FE에서 Supabase를 직접 호출하는 구조의 한계:
 
-1. **보안**: Supabase API 키가 클라이언트 코드에 노출됨. 서버가 있으면 DB·AI API 키를 서버 안에만 둘 수 있음
+1. **보안**: Claude API 키 등 외부 서비스 키는 서버에서만 다뤄야 함. Supabase anon key는 RLS로 보호되지만, AI API 키는 노출 시 과금·악용 위험이 있어 서버가 필요함
 2. **비즈니스 로직**: DB를 프론트에서 직접 읽고 쓰는 구조라, 요청 검증·데이터 가공·캐싱 같은 로직을 넣기 어려움. 예: 자연어→무드 벡터 변환(Claude API) + 동일 검색어 캐시 반환
 3. **AI 비용 관리**: Claude API 호출을 서버에서 캐싱 + Rate Limiting 가능
 
@@ -163,6 +163,14 @@ CAP-001~005 전체 완료. iOS 시뮬레이터 검증 완료.
 | CHORE-NNN | 인프라/빌드/리팩터링 | `chore(CHORE-001): Capacitor 전환` |
 
 PR 제목 형식: `타입(접두사-번호): 설명`. 번호는 기존 PR 확인 후 이어서 채번.
+
+## BE 마이그레이션 전 FE 작업 가이드
+
+NestJS BE가 만들어지기 전까지 FE에서 데이터를 다룰 때:
+
+- 컴포넌트에서 Supabase를 직접 호출하지 않는다
+- `lib/` 아래 함수(`fetchPhotos`, `fetchProducts` 등)를 거쳐서 호출한다
+- 나중에 BE가 생기면 `lib/` 함수 내부만 바꾸면 된다 (Supabase 호출 → API 호출)
 
 ## 코드 규칙
 
