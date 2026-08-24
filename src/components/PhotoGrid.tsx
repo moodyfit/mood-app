@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Photo } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 import { TASTE_CARD_THRESHOLD } from "@/lib/taste";
 import { rankPersonalized, personalizationStrength, HERO_MIN_STRENGTH } from "@/lib/rank";
 import PhotoCard from "./PhotoCard";
-import GridTail from "./GridTail";
 import ResultToggle from "./ResultToggle";
 
 // 성능: 한 번에 90장(≈23MB) 로드 대신 12장씩 끊어서 — 초기 이미지 로드 급감
@@ -18,7 +17,9 @@ const LOAD_STEP = 12;
  * 균등 격자(커머스 문법=비교) 대신 메이슨리(전시 문법=갤러리/무드보드).
  * 크기 = 정보 채널: '너의 결과'에서만 최상위 매치를 전면폭 히어로로 = 개인화 시각화(인기 랭킹 아님).
  * '모두의 결과'는 히어로 없음 = 랭킹 중립(헌법). 토글 차이가 순서+크기로 두 배 선명.
- * 유한 구경(③): 무한 스크롤 아님 — 끝을 명시.
+ * FEAT-004(2026-08-19 회의): 무한 스크롤 — 핀터레스트처럼 스크롤 끝에서 자동 로드.
+ * "유한 구경" 원칙은 폐기됨. 전체 사진은 이미 한 번에 받아온 상태(photos prop)라
+ * 추가 네트워크 요청 없이 클라이언트에서 보여줄 양만 늘림.
  */
 export default function PhotoGrid({
   photos,
@@ -35,6 +36,7 @@ export default function PhotoGrid({
   const [override, setOverride] = useState<boolean | null>(null);
   const [visible, setVisible] = useState(INITIAL_VISIBLE);
   const personal = override ?? (you || formed);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   function onToggle(v: boolean) {
     setOverride(v);
@@ -59,6 +61,21 @@ export default function PhotoGrid({
   const allRest = hero ? ordered.slice(1) : ordered;
   const rest = allRest.slice(0, visible);
   const remaining = allRest.length - rest.length;
+
+  // 무한 스크롤: sentinel이 화면에 들어오면 다음 배치 로드. remaining=0이면 관찰 중단.
+  useEffect(() => {
+    if (remaining <= 0) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) setVisible((v) => v + LOAD_STEP);
+      },
+      { rootMargin: "600px" } // 바닥 도달 전 미리 로드 — 로딩 끊김 체감 방지
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [remaining]);
 
   return (
     <div>
@@ -90,17 +107,11 @@ export default function PhotoGrid({
         ))}
       </div>
 
-      {/* 유한 구경(③): 우선 더보기로 끊고(성능·리듬), 다 보면 재검색 유도 */}
-      {remaining > 0 ? (
-        <button
-          type="button"
-          onClick={() => setVisible((v) => v + LOAD_STEP)}
-          className="mt-1 w-full rounded-2xl border border-line py-3 text-[13.5px] font-semibold text-ink-soft transition active:scale-[0.99]"
-        >
-          더보기 <span className="text-ink-faint">· {remaining}장 더</span>
-        </button>
-      ) : (
-        <GridTail query={query} count={ordered.length} unit="장" />
+      {/* 무한 스크롤: 이 sentinel이 보이면 다음 배치 로드. 다 보여준 뒤엔 관찰 중단(위 useEffect). */}
+      {remaining > 0 && (
+        <div ref={sentinelRef} className="flex justify-center py-6">
+          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-ink-faint" />
+        </div>
       )}
     </div>
   );
