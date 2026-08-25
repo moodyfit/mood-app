@@ -1,6 +1,8 @@
 /**
  * 태깅 계약 게이트 — tagging/*.json 이 mood_vector 계약·어휘·캡션 규약을 지키는지 검사.
- * 위반 있으면 exit 1 (DB 입고 전 필수 통과). 루브릭은 tagging/rubric.ts 단일 소스.
+ * 위반 있으면 exit 1 (DB 입고 전 필수 통과). 루브릭은 src/lib/tagging-rubric.ts 단일 소스
+ * (원래 tagging/rubric.ts였으나, FEAT-005가 앱 런타임에서 재사용하며 src/lib로 이동 — .vercelignore가
+ * tagging/를 빌드 제외해서 앱에서 못 읽던 문제 해결).
  * 사용:
  *   npx tsx scripts/validate-tags.ts               # tagging/{axis}-NNN.json 전부
  *   npx tsx scripts/validate-tags.ts clean-016      # 특정 파일만
@@ -8,7 +10,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { AXES, validateTag } from "../tagging/rubric.ts";
+import { AXES, validateTag } from "../src/lib/tagging-rubric.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TAG = path.join(ROOT, "tagging");
