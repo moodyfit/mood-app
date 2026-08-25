@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMoodStore } from "@/lib/store";
+// FEAT-006: 검색이 더 이상 페이지 이동이 아니라 홈 그리드를 인플레이스로 갱신 — onSearch 콜백으로 전달.
+// 빈 문자열 = 검색 해제(기본 피드 복귀) 신호.
 
 export const PENDING_SHOT_KEY = "moodfit.pendingShot";
 
@@ -31,7 +33,7 @@ const DAILY = [
   "첫 출근 얕보이기 싫을 때",
 ];
 
-export default function SearchScreen() {
+export default function SearchScreen({ onSearch }: { onSearch: (query: string) => void }) {
   const router = useRouter();
   const { recordSearch } = useMoodStore();
   const [q, setQ] = useState("");
@@ -53,9 +55,8 @@ export default function SearchScreen() {
 
   function search(value: string) {
     const query = value.trim();
-    if (!query) return;
-    recordSearch(query); // 7.8 검색 기억
-    router.push(`/results?q=${encodeURIComponent(query)}`);
+    if (query) recordSearch(query); // 7.8 검색 기억
+    onSearch(query); // 빈 문자열이면 상위(HomePage)가 검색 해제로 처리
   }
 
   // 7.11 스크린샷 부하 — 챗창에서 바로 스샷 올리기
