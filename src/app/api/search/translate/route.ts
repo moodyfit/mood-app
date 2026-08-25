@@ -1,8 +1,9 @@
 // FEAT-005 — GET /api/search/translate?q=검색어
-// 자연어 검색어를 Claude로 6축 무드에 매핑. tagging/rubric.ts(케빈의 사진 태깅 SSOT)를
+// 자연어 검색어를 Claude로 6축 무드에 매핑. src/lib/tagging-rubric.ts(케빈의 사진 태깅 SSOT,
+// 원래 tagging/rubric.ts였으나 .vercelignore가 tagging/를 빌드 제외해서 이 파일이 src/lib로 이동시킴)를
 // 그대로 재사용해서 "사진이 채점되는 언어"와 "검색어가 해석되는 언어"를 일치시킨다.
 // 키 없음/실패/타임아웃 → resolveMoods() 폴백(실패 없는 검색 원칙 유지).
-import { AXES, AXIS_RUBRIC, CONTRACT, normalizeMoodVector } from "../../../../../tagging/rubric";
+import { AXES, AXIS_RUBRIC, CONTRACT, normalizeMoodVector } from "@/lib/tagging-rubric";
 import { resolveMoods } from "@/lib/moods";
 
 export const dynamic = "force-dynamic";

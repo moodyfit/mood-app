@@ -1,7 +1,7 @@
 /**
  * 신규(또는 재)사진 자동 채점 — 이미지 → tagging/{base}.json (루브릭·계약 준수).
  * 비전: Claude Messages API(ANTHROPIC_API_KEY). 모델 override: ANTHROPIC_MODEL(기본 claude-sonnet-5).
- * 루브릭·검증은 tagging/rubric.ts 단일 소스에서.
+ * 루브릭·검증은 src/lib/tagging-rubric.ts 단일 소스에서(구 tagging/rubric.ts — FEAT-005에서 이동).
  *
  * 사용:
  *   npx tsx scripts/score-photos.ts images/post/clean-016.jpg [more.jpg ...]
@@ -12,7 +12,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { AXES, scoringPrompt, normalizeMoodVector, validateTag } from "../tagging/rubric.ts";
+import { AXES, scoringPrompt, normalizeMoodVector, validateTag } from "../src/lib/tagging-rubric.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TAG = path.join(ROOT, "tagging");
