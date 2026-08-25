@@ -102,7 +102,7 @@
 - **레드플래그 재검수**: confidence < 0.5 / 부축이 0.4 넘는데 근거 모호 / caption 색·소재 불일치.
 
 ## 6.5 신규 사진 추가 시 태깅/채점 절차 (재현 파이프라인)
-루브릭은 **`tagging/rubric.ts` 단일 소스**(축 정의·어휘·mood_vector 계약). 채점기·검증기가 여기서만 import → 회차/사람 간 드리프트 없음. **이 규약을 바꾸려면 rubric.ts 한 곳만** 고친다.
+루브릭은 **`src/lib/tagging-rubric.ts` 단일 소스**(축 정의·어휘·mood_vector 계약, 구 `tagging/rubric.ts` — FEAT-005가 검색 API에서 재사용하면서 `.vercelignore`(tagging/ 빌드 제외) 문제로 이동). 채점기·검증기·검색 API가 여기서만 import → 회차/사람 간 드리프트 없음. **이 규약을 바꾸려면 이 파일 한 곳만** 고친다.
 
 새 사진을 `images/post/{axis}-NNN.jpg`(또는 임의 이름)로 넣은 뒤:
 ```
