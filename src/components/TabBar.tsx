@@ -10,7 +10,7 @@ const TABS = [
     href: "/",
     label: "홈",
     match: (p: string) =>
-      p === "/" || p.startsWith("/results") || p.startsWith("/mood") || p.startsWith("/promise") || p.startsWith("/photo"),
+      p === "/" || p.startsWith("/results") || p.startsWith("/mood") || p.startsWith("/promise") || p.startsWith("/photo") || p.startsWith("/search"),
     icon: (
       <path d="M4 11.5 12 5l8 6.5M6 10.5V19h12v-8.5" strokeWidth="1.6" />
     ),
