@@ -2,13 +2,12 @@
 
 import { useCallback, useState } from "react";
 import Link from "next/link";
-import SearchScreen from "@/components/SearchScreen";
 import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
 import { usePhotos } from "@/lib/hooks/usePhotos";
 
-// 홈 = 검색창(위 고정) + 약속 모드 진입 카드(유일) + 종합 취향 상시 메이슨리 전시.
-// FEAT-006: 검색해도 페이지 이동 없이 아래 HomeGallery가 검색 결과로 바뀜(인플레이스).
+// 홈 = 약속 모드 진입 카드 + 종합 취향 상시 메이슨리 전시. 검색은 /search 페이지로 분리.
+// HomeGallery는 moodKeys/query를 받아 인플레이스 필터링 지원 (FEAT-006).
 export default function HomePage() {
   const { photos } = usePhotos();
   const [query, setQuery] = useState("");
@@ -32,9 +31,7 @@ export default function HomePage() {
 
   return (
     <div className="animate-fade">
-      <SearchScreen onSearch={handleSearch} />
-
-      {/* 홈의 유일한 카드형 진입점 — 약속 모드 (기능 목록 노출 아님, 길목 배치) */}
+      {/* 홈의 유일한 카드형 진입점 — 약속 모드 */}
       <div className="px-5 pt-4">
         <Link
           href="/promise"
@@ -48,7 +45,6 @@ export default function HomePage() {
         </Link>
       </div>
 
-      {/* '내 옷' 보유 시에만 노출되는 슬림 진입 줄 (소환형) */}
       <HomeCloset />
 
       <div className="pt-5">
