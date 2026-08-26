@@ -32,7 +32,7 @@ export default function WholeLook({ products }: { products: Product[] }) {
           onClick={() => setOpen(true)}
           className="flex w-full items-center justify-between rounded-[12px] bg-ink px-4 py-3.5 text-white shadow-[0_10px_28px_rgba(0,0,0,0.22)]"
         >
-          <span className="text-[14px] font-semibold">이 느낌 통째로 담기</span>
+          <span className="text-[14px] font-semibold">이 느낌 통째로 사기</span>
           <span className="font-latin tnum text-[14px] font-semibold">{formatMan(total)}</span>
         </button>
       </div>
@@ -81,7 +81,7 @@ export default function WholeLook({ products }: { products: Product[] }) {
                       onClick={() => showToast(`데모 · ${src} 장바구니로 연결`)}
                       className="mt-2.5 w-full rounded-[8px] border border-line py-2 text-[12px] font-medium text-ink transition hover:bg-paper-2"
                     >
-                      {src}에서 담기
+                      {src}에서 구매
                     </button>
                   </div>
                 );
@@ -89,7 +89,7 @@ export default function WholeLook({ products }: { products: Product[] }) {
             </div>
 
             <div className="mt-3 px-1 text-[11px] leading-relaxed text-ink-faint">
-              판매처별로 나눠 담아도 결정은 한 번. 고르는 고통은 우리가 가져간다.
+              판매처별로 나눠 사도 결정은 한 번. 고르는 고통은 우리가 가져간다.
             </div>
           </div>
         </div>

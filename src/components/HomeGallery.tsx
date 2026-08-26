@@ -110,7 +110,7 @@ export default function HomeGallery({
         changedCount={0}
         onChange={onToggle}
         labels={["새로운 느낌", "나의 느낌"]}
-        invite="3장만 저장하면 네 느낌이 생겨"
+        invite="3장만 담으면 네 느낌이 생겨"
         rightNote=""
         leftNote="안 가본 느낌들이야"
       />

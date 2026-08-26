@@ -342,7 +342,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         }
 
         const next = [...prev, { moodKey: key, savedAt: Date.now(), query }];
-        showToast("저장했어");
+        showToast("담았어");
         haptic(); // soft impact
         bump(key, getConfig().wSave); // 프로필 가중 (저장은 강한 신호)
 
@@ -381,7 +381,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
           return prev.filter((x) => x !== id);
         }
         const next = [...prev, id];
-        showToast("저장했어");
+        showToast("담았어");
         haptic();
         if (moodInput != null && domKey) {
           bumpInput(moodInput, getConfig().wSave);
