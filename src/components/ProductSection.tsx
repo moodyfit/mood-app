@@ -30,7 +30,7 @@ export default function ProductSection({ mood }: { mood: Mood }) {
   const total = look.reduce((s, p) => s + primaryPrice(p), 0);
 
   const reason = saved
-    ? "저장한 무드와 같은 결의 아이템"
+    ? "담은 무드와 같은 결의 아이템"
     : "지금 보는 무드와 같은 결의 아이템";
 
   return (
