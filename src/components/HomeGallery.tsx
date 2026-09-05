@@ -134,10 +134,19 @@ export default function HomeGallery({
               <PhotoCard photo={heroPhoto} size="hero" />
             </div>
           )}
-          <div style={{ columnCount: 2, columnGap: "12px" }}>
-            {shown.map((p, i) => (
-              <div key={p.id} className="mb-3 break-inside-avoid animate-rise">
-                <PhotoCard photo={p} query={query} hint={!heroPhoto && i === 0} />
+          {/* CSS columnCount는 높이 기준으로 왼쪽부터 꽉 채워서 좌우가 따로 자라 보임(비대칭) —
+              배열을 직접 반으로 나눠 두 칸이 같이 자라게 함(FEAT-009 QA에서 발견). */}
+          <div className="flex gap-3">
+            {[0, 1].map((col) => (
+              <div key={col} className="flex flex-1 flex-col gap-3">
+                {shown
+                  .map((p, i) => ({ p, i }))
+                  .filter(({ i }) => i % 2 === col)
+                  .map(({ p, i }) => (
+                    <div key={p.id} className="animate-rise">
+                      <PhotoCard photo={p} query={query} hint={!heroPhoto && i === 0} />
+                    </div>
+                  ))}
               </div>
             ))}
           </div>
@@ -167,14 +176,21 @@ export default function HomeGallery({
             <MoodCard mood={MOODS[heroKey]} size="hero" />
           </div>
         )}
-        <div style={{ columnCount: 2, columnGap: "12px" }}>
-          {restKeys.map((k, i) =>
-            MOODS[k] ? (
-              <div key={k} className="mb-3 break-inside-avoid animate-rise">
-                <MoodCard mood={MOODS[k]} hint={!heroKey && i === 0} />
-              </div>
-            ) : null,
-          )}
+        <div className="flex gap-3">
+          {[0, 1].map((col) => (
+            <div key={col} className="flex flex-1 flex-col gap-3">
+              {restKeys
+                .map((k, i) => ({ k, i }))
+                .filter(({ i }) => i % 2 === col)
+                .map(({ k, i }) =>
+                  MOODS[k] ? (
+                    <div key={k} className="animate-rise">
+                      <MoodCard mood={MOODS[k]} hint={!heroKey && i === 0} />
+                    </div>
+                  ) : null,
+                )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
