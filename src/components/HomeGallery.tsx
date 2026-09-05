@@ -83,8 +83,9 @@ export default function HomeGallery({
   // 히어로(크기=적합도)는 검색 아니고 개인화가 유의미해진 뒤에만(랭킹 중립 원칙 — 검색 결과엔 히어로 없음)
   const heroPhoto = !searching && strength >= HERO_MIN_STRENGTH && ordered.length > 3 ? ordered[0] : null;
   const rest = heroPhoto ? ordered.slice(1) : ordered;
-  const shown = rest.slice(0, visible);
-  const remaining = rest.length - shown.length;
+  // FEAT-010: 진짜 무한 스크롤 — rest 다 보여주면 처음부터 중복 허용 반복(이미지 늘어날 때까지 임시).
+  const shown = rest.length > 0 ? Array.from({ length: visible }, (_, i) => rest[i % rest.length]) : [];
+  const remaining = rest.length > 0 ? 1 : 0; // rest 있으면 항상 더 로드 가능(무한), 없을 때만 종료
 
   // 무한 스크롤: sentinel이 화면에 들어오면 다음 배치 로드(FEAT-004와 동일 패턴)
   useEffect(() => {
@@ -143,7 +144,8 @@ export default function HomeGallery({
                   .map((p, i) => ({ p, i }))
                   .filter(({ i }) => i % 2 === col)
                   .map(({ p, i }) => (
-                    <div key={p.id} className="animate-rise">
+                    // FEAT-010: 무한반복이라 같은 사진 id가 여러 번 나올 수 있음 — 인덱스 합성 key 필요.
+                    <div key={`${p.id}-${i}`} className="animate-rise">
                       <PhotoCard photo={p} query={query} hint={!heroPhoto && i === 0} />
                     </div>
                   ))}
