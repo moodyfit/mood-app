@@ -21,3 +21,14 @@ export const isSupabaseEnabled = () =>
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
+
+/**
+ * 서버 전용 관리자 클라이언트 (SUPABASE_SERVICE_KEY, RLS 우회).
+ * API route 등 서버 코드에서만 호출할 것 — 절대 클라이언트 번들에 노출 금지.
+ */
+export function getSupabaseAdmin(): SupabaseClient | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
