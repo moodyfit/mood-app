@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ALL_MOOD_KEYS, MOODS } from "@/lib/moods";
 import { personalizeOrder } from "@/lib/taste";
 import { rankPersonalized, personalizationStrength, HERO_MIN_STRENGTH } from "@/lib/rank";
@@ -73,12 +73,18 @@ export default function HomeGallery({
 
   // FEAT-009: 토글 없이 항상 개인화(7):탐색(3) 자동 블렌드. 검색 모드면 관련도 순(rankPhotos, 중립) 그대로.
   const strength = personalizationStrength(affinity);
-  const ordered = searching
-    ? rankPhotos(photos, moodKeys ?? [])
-    : blendFeed(
-        rankPersonalized(photos, affinity, { explore: false }),
-        rankPersonalized(photos, affinity, { explore: true })
-      );
+  // rankPersonalized는 O(n²) greedy MMR을 2회 호출 → visible 바뀔 때마다(스크롤 배치) 재계산되면 안 됨.
+  // visible은 deps에서 제외(잘라내기는 아래 shown에서). photos/affinity/검색어가 바뀔 때만 다시 랭킹.
+  const ordered = useMemo(
+    () =>
+      searching
+        ? rankPhotos(photos, moodKeys ?? [])
+        : blendFeed(
+            rankPersonalized(photos, affinity, { explore: false }),
+            rankPersonalized(photos, affinity, { explore: true })
+          ),
+    [photos, affinity, searching, moodKeys]
+  );
 
   // 히어로(크기=적합도)는 검색 아니고 개인화가 유의미해진 뒤에만(랭킹 중립 원칙 — 검색 결과엔 히어로 없음)
   const heroPhoto = !searching && strength >= HERO_MIN_STRENGTH && ordered.length > 3 ? ordered[0] : null;
@@ -135,7 +141,10 @@ export default function HomeGallery({
             </div>
           )}
           {/* CSS columnCount는 높이 기준으로 왼쪽부터 꽉 채워서 좌우가 따로 자라 보임(비대칭) —
-              배열을 직접 반으로 나눠 두 칸이 같이 자라게 함(FEAT-009 QA에서 발견). */}
+              배열을 직접 반으로 나눠 두 칸이 같이 자라게 함(FEAT-009 QA에서 발견).
+              트레이드오프: i%2 교대는 카드 높이를 안 봄 → 세로 긴 카드가 한쪽에 몰리면 패킹 불균형.
+              현재 cardRatio 범위가 0.78~0.9로 좁아 실측상 무시할 수준. 이미지 볼륨/비율 다양성이
+              커지면 cardRatio로 예상 높이 누적해 짧은 컬럼에 넣는 방식으로 전환. */}
           <div className="flex gap-3">
             {[0, 1].map((col) => (
               <div key={col} className="flex flex-1 flex-col gap-3">
