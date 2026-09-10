@@ -25,6 +25,8 @@ function ResultsContent() {
     setMoodKeys(resolveMoods(q)); // q 바뀌는 즉시 폴백 순서부터 먼저 보여줌(빈 화면 없음)
     let cancelled = false;
     fetch(`/api/search/translate?q=${encodeURIComponent(q)}`)
+      // res.ok를 따로 안 본다: 4xx/5xx면 본문이 HTML이라 res.json()이 throw → 아래 catch로 흡수.
+      // 성공/실패/비-JSON 응답 전부 "폴백 순서 유지"로 수렴시키는 게 의도(검색은 실패해도 결과가 나와야 함).
       .then((res) => res.json())
       .then((data: { moodKeys?: string[] }) => {
         if (!cancelled && data.moodKeys?.length) setMoodKeys(data.moodKeys);
