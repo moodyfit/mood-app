@@ -12,6 +12,8 @@ export interface Photo {
   caption_item: string | null;
   caption_why: string | null;
   caption_how?: string | null;
+  // 작성자가 직접 쓴 한마디(FEAT-013). caption_* 는 AI 채점값이라 별개. 시드엔 없음.
+  user_description?: string | null;
   is_flagship: boolean | null;
   // 메이슨리(전시 문법)용 세로 비율 = width/height. null이면 기본값.
   // 실값은 생성 단계(GENERATION)에서 부여(4:5 기본 + 3:4/9:16 일부) — 크롭으로 위조 금지.
