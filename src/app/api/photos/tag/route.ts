@@ -1,4 +1,4 @@
-// FEAT-011 — POST /api/photos/tag { storage_path, aspect_ratio?, gender? }
+// FEAT-011 — POST /api/photos/tag { storage_path, aspect_ratio?, gender?, photo_type?, user_description? }
 // 유저가 Storage(uploads/ 버킷 경로)에 올린 사진을 케빈의 scripts/score-photos.ts와 동일한 방식
 // (Claude Vision + src/lib/tagging-rubric.ts SSOT)으로 자동 채점 → 계약 검증 → photos INSERT.
 //
@@ -9,7 +9,8 @@
 // - is_flagship은 업로드 경로에서 강제 false(콜드스타트 가중치 오염 방지).
 // - confidence 저장(자동 태깅 품질의 사후 필터 신호).
 //
-// ⚠️ 머지 전 photos 테이블 마이그레이션 필요(PR 본문 참고): confidence, gender, source, uploaded_by 컬럼.
+// ⚠️ 머지 전 photos 테이블 마이그레이션 필요(PR 본문 참고): confidence, gender, source, uploaded_by,
+//    user_description, photo_type 컬럼 + photos_uploaded_by_created_idx 인덱스.
 import { createClient } from "@supabase/supabase-js";
 import { scoringPrompt, normalizeMoodVector, validateTag } from "@/lib/tagging-rubric";
 import { photoUrl } from "@/lib/photos";
@@ -88,7 +89,13 @@ export async function POST(req: Request) {
   const user = await authUser(req);
   if (!user) return Response.json({ error: "로그인이 필요해" }, { status: 401 });
 
-  let body: { storage_path?: string; aspect_ratio?: number; gender?: string };
+  let body: {
+    storage_path?: string;
+    aspect_ratio?: number;
+    gender?: string;
+    photo_type?: string;
+    user_description?: string;
+  };
   try {
     body = await req.json();
   } catch {
@@ -99,7 +106,10 @@ export async function POST(req: Request) {
     return Response.json({ error: `storage_path는 ${UPLOAD_PREFIX} 하위 경로여야 함` }, { status: 400 });
   }
   const gender = body.gender === "male" || body.gender === "female" ? body.gender : null;
+  const photoType = body.photo_type === "real" || body.photo_type === "ai" ? body.photo_type : null;
   const aspectRatio = typeof body.aspect_ratio === "number" && body.aspect_ratio > 0 ? body.aspect_ratio : null;
+  // 작성자 코멘트 — 채점 프롬프트엔 절대 넣지 않는다(자기신고를 AI 채점처럼 오인시키면 안 됨).
+  const userDescription = typeof body.user_description === "string" ? body.user_description.trim().slice(0, 500) : null;
 
   const sb = createClient(svcUrl, svcKey);
 
@@ -145,6 +155,8 @@ export async function POST(req: Request) {
     confidence: typeof scored.confidence === "number" ? scored.confidence : null,
     aspect_ratio: aspectRatio,
     gender,
+    photo_type: photoType,
+    user_description: userDescription,
     source: "upload",
     uploaded_by: user.id,
   };
