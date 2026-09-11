@@ -22,6 +22,9 @@ const INITIAL_VISIBLE = 12;
 const LOAD_STEP = 12;
 const PERSONAL_BATCH = 7;
 const EXPLORE_BATCH = 3;
+// FEAT-010: 순환 재생이라 종료 조건이 없어 DOM이 무한히 쌓일 수 있음(Capacitor WebView 메모리 취약).
+// 실사용 상한을 둔다 — rest 90장 기준 약 2.5바퀴. 이미지 볼륨이 늘면 이 상수를 올리거나 윈도잉으로 전환.
+const MAX_VISIBLE = 216;
 
 /** personalOrder·exploreOrder를 7:3 블록 단위로 번갈아 뽑아 하나로 합침(중복 스킵). */
 function blendFeed(personalOrder: Photo[], exploreOrder: Photo[]): Photo[] {
@@ -89,12 +92,16 @@ export default function HomeGallery({
   // 히어로(크기=적합도)는 검색 아니고 개인화가 유의미해진 뒤에만(랭킹 중립 원칙 — 검색 결과엔 히어로 없음)
   const heroPhoto = !searching && strength >= HERO_MIN_STRENGTH && ordered.length > 3 ? ordered[0] : null;
   const rest = heroPhoto ? ordered.slice(1) : ordered;
-  const shown = rest.slice(0, visible);
-  const remaining = rest.length - shown.length;
+  // FEAT-010: 무한 스크롤 — rest 다 보여주면 처음부터 순환 재생(이미지 볼륨 늘어날 때까지 임시).
+  // MAX_VISIBLE에서 잘라 DOM 누적 상한을 건다.
+  const cappedVisible = Math.min(visible, MAX_VISIBLE);
+  const shown =
+    rest.length > 0 ? Array.from({ length: cappedVisible }, (_, i) => rest[i % rest.length]) : [];
+  const hasMore = rest.length > 0 && cappedVisible < MAX_VISIBLE;
 
   // 무한 스크롤: sentinel이 화면에 들어오면 다음 배치 로드(FEAT-004와 동일 패턴)
   useEffect(() => {
-    if (remaining <= 0) return;
+    if (!hasMore) return;
     const el = sentinelRef.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -105,10 +112,10 @@ export default function HomeGallery({
     );
     io.observe(el);
     return () => io.disconnect();
-    // searching/query 전부 deps 필요 — 이 값들이 바뀌면 아래 key={...}로 sentinel DOM이
-    // 통째로 리마운트되는데, remaining값이 우연히 같으면 effect가 재실행 안 돼서 끊어진
-    // 옛 DOM 노드를 계속 관찰하는 버그가 있었음(실측·Playwright로 재현·수정 확인, FEAT-006).
-  }, [remaining, searching, query]);
+    // visible을 deps에 포함 — 배치마다 observer를 재연결해 다음 교차를 다시 잡는다(스크롤을 멈춰도
+    // 이어서 로드). searching/query도 필요: key 변경 시 sentinel DOM이 통째로 리마운트되므로
+    // (remaining 상수화 이전, 이 deps 누락으로 검색 후 무한스크롤이 먹통이던 버그 — FEAT-006 Playwright 재현·수정).
+  }, [visible, hasMore, searching, query]);
 
   const header = searching ? (
     <div className="mb-3">
@@ -152,7 +159,8 @@ export default function HomeGallery({
                   .map((p, i) => ({ p, i }))
                   .filter(({ i }) => i % 2 === col)
                   .map(({ p, i }) => (
-                    <div key={p.id} className="animate-rise">
+                    // FEAT-010: 무한반복이라 같은 사진 id가 여러 번 나올 수 있음 — 인덱스 합성 key 필요.
+                    <div key={`${p.id}-${i}`} className="animate-rise">
                       <PhotoCard photo={p} query={query} hint={!heroPhoto && i === 0} />
                     </div>
                   ))}
@@ -161,7 +169,7 @@ export default function HomeGallery({
           </div>
 
           {/* 무한 스크롤: sentinel이 보이면 다음 배치 로드(FEAT-004와 동일 패턴) */}
-          {remaining > 0 && (
+          {hasMore && (
             <div ref={sentinelRef} className="flex justify-center py-6">
               <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-ink-faint" />
             </div>
