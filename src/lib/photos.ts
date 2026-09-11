@@ -157,14 +157,17 @@ export async function getProductsForPhoto(imageUrl: string, moodKey: MoodKey): P
   return p.length > 0 ? p : getProductsForMood(moodKey);
 }
 
-/** 사진 1건 조회(사진 전용 상품 뷰용) — slug(clean-001) 로, 확장자 무관(.jpg/.png 모두) */
+/**
+ * 사진 1건 조회(사진 전용 상품 뷰용) — slug(clean-001) 로, 확장자 무관(.jpg/.png 모두).
+ * 버킷을 고정하지 않는다 — 시드는 moods/, 업로드는 uploads/ 라 접두사가 다르다(FEAT-013).
+ */
 export async function fetchPhotoBySlug(slug: string): Promise<Photo | null> {
   const sb = getSupabase();
   if (!sb) return null;
   const { data, error } = await sb
     .from("photos")
     .select("*")
-    .ilike("image_url", `moods/${slug}.%`)
+    .ilike("image_url", `%/${slug}.%`)
     .limit(1);
   if (error || !data || data.length === 0) return null;
   return data[0] as Photo;
