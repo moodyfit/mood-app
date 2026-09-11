@@ -47,14 +47,17 @@ supabase Storage                    moods/ 에 시드 90장. uploads/ 는 신규
 photos 테이블                        owner/visibility 컬럼 없음 (전체 공개로 확정)
 ```
 
-### 리뷰에서 확정된 입력 계약 (#18 코멘트)
+### 입력 계약 (FEAT-011 `ead87fc` 기준)
 
 ```
 POST /api/photos/tag
 Authorization: Bearer <세션 토큰>
-{ "storage_path": "uploads/<uuid>.jpg", "aspect_ratio": 0.5625,
-  "gender": "male" | "female", "source": "real" | "ai", "description": "..." }
+{ "storage_path": "uploads/<uuid>.jpg", "aspect_ratio": 0.5625, "gender": "male" | "female",
+  "user_description": "...", "photo_type": "real" | "ai" }   ← 뒤 두 개는 아직 미수용
 ```
+
+라우트가 현재 받는 건 앞의 세 개뿐이다. `source`는 라우트가 `"upload"`로 서버 고정(= 출처)이라
+회의록의 `실제|AI`와 축이 달라 `photo_type`으로 분리해 요청해둔 상태.
 
 - `storage_path`는 **상대 경로**. 절대 URL이 아니다 (`photoUrl()`이 앞에 base를 덧붙이는 계약)
 - 파일명은 **UUID** — slug가 폴더를 무시하고 파일명만 쓰기 때문에 `IMG_1234.jpg` 같은 이름은 유저 간 충돌한다
@@ -171,6 +174,37 @@ Authorization: Bearer <세션 토큰>
 
 ## Implementation Notes
 
-### 2026-09-10: 티켓 작성
+### 2026-09-11: 구현 완료 (검증은 선행 조건 대기)
 
-_(구현 완료 후 작성)_
+**구조** — `components/`가 30개 평면이라 이번 건은 `ui/`(도메인 무관 원자)와 `upload/`(기능)로 나눴다.
+Supabase 접근은 전부 `lib/upload.ts`에 모아 컴포넌트가 직접 부르지 않게 했다(CLAUDE.md lib 경유 규칙).
+
+**설계 판단**
+
+- 화면 레이아웃은 3안(한 화면 / 사진 먼저 시트 / 2단계) 중 **한 화면**을 택했다. 항목이 5개라
+  단계를 나눌 만큼 무겁지 않고, 사진 고르기 전 상태에서도 뭘 입력해야 하는지 보이는 게 낫다고 봤다.
+- `user_description`은 `caption_*`과 **별도 컬럼·별도 블록**으로 갔다. 업로드 사진도 `validateTag`가
+  3행을 필수로 막아 AI 해설을 반드시 갖게 되므로, 같은 자리를 쓰면 둘 중 하나를 버려야 한다.
+  라벨(`작성자가 추천하는 이유`)을 붙인 건 통제 없는 유저 문장이 AI 보증 해설로 읽히면 안 되기 때문.
+- 여성 옵션은 `UploadForm`의 `FEMALE_OPEN = false`로 닫아뒀다(FEAT-011 결정 = 출시엔 남성만).
+  필드 자체는 보내므로 루브릭 티켓 후 상수만 뒤집으면 열린다.
+- 파일명을 UUID로 새로 짓는다. slug가 폴더를 무시하고 파일명만 쓰기 때문에 `IMG_1234.jpg` 같은
+  이름은 유저 간 충돌한다.
+
+**선행 조건 (아직 미완)**
+
+1. `photos` 컬럼 6개 + 인덱스 — 없으면 rate limit 쿼리(`uploaded_by`)에서 먼저 500
+2. `storage.objects`에 `uploads` 버킷 INSERT 정책 — 없으면 `new row violates row-level security policy`
+3. FEAT-011(#18) 머지 — 라우트가 main에 없음
+
+버킷(`uploads`, public, 5MB, jpeg/png/webp)은 생성 완료. 1·2는 DDL이라 service key로는 불가하고
+DB 비밀번호 또는 관리 토큰이 필요하다.
+
+**검증 상태**
+
+| 구간 | 상태 |
+|---|---|
+| 로그인 게이트 · 탭 · 폼 · 미리보기 · 비율 측정 · 5MB 차단 | 확인 |
+| Storage 업로드 | **미검증** — 정책 없어 403 |
+| 태깅 API 왕복 · `photos` INSERT · 상세 페이지 | **미검증** |
+| `user_description` / `photo_type` 저장 | **미검증** — 라우트 미수용 |
