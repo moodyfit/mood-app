@@ -1,0 +1,25 @@
+{
+  "file": "m-clean-007.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "soft": 0.3
+  },
+  "situations": [
+    "데이트",
+    "주말카페"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "male"
+  },
+  "caption_item": "하늘색 반팔 셔츠에 아이보리 와이드 팬츠 입었어",
+  "caption_why": "컬러 두 개로만 깔끔하게 맞추니까 정갈하고 편안한 느낌이 나",
+  "caption_how": "셔츠 단추 하나 정도 풀고 슬림한 크로스백으로 포인트 주면 좋아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 색 조합이 clean 무드를 대표하기 쉬운 기본템 구성",
+  "confidence": 0.85
+}

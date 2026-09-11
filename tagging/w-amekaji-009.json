@@ -1,0 +1,25 @@
+{
+  "file": "w-amekaji-009.jpg",
+  "mood_vector": {
+    "amekaji": 0.7,
+    "street": 0.3
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "워시드 데님 자켓에 카멜 와이드 팬츠, 브라운 로퍼로 마무리했어",
+  "caption_why": "데님 자켓이랑 흙톤 팬츠 조합이 편안하면서도 빈티지한 느낌을 살려줘",
+  "caption_how": "팬츠는 살짝 접어서 로퍼 라인 보이게 입어봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 데님+워크웨어 조합이 재현하기 쉬운 기본템 구성이야",
+  "confidence": 0.85
+}

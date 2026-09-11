@@ -1,0 +1,25 @@
+{
+  "file": "w-cityboy-009.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "세이지 그린 셋업 셔츠자켓에 크림 티셔츠 매치했어",
+  "caption_why": "뉴트럴 그린 톤끼리 레이어드해서 도시적이고 편안한 분위기가 나",
+  "caption_how": "소매 살짝 접고 크로스백으로 포인트 주면 자연스러워",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 색 조합이 명확해서 재현하기 쉬움",
+  "confidence": 0.85
+}

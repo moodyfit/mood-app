@@ -1,0 +1,25 @@
+{
+  "file": "w-street-006.jpg",
+  "mood_vector": {
+    "street": 0.8,
+    "clean": 0.2
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "블랙 버킷햇에 오버사이즈 후디랑 와이드 팬츠로 올블랙 세팅했어",
+  "caption_why": "과감한 오버핏이랑 무채색 조합이라 힘 안 준 듯 시크한 무드 나와",
+  "caption_how": "상하의 넉넉하게 입고 스니커즈로 캐주얼하게 마무리해봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴, 기본 아이템 구성이 명확해서 재현하기 쉬움",
+  "confidence": 0.85
+}

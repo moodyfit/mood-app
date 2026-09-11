@@ -1,0 +1,26 @@
+{
+  "file": "w-cityboy-005.jpg",
+  "mood_vector": {
+    "cityboy": 0.5,
+    "clean": 0.3,
+    "street": 0.2
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "165",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "아이보리 롱 재킷에 스트라이프 티, 와이드 데님 매치했어",
+  "caption_why": "뉴트럴 톤 재킷을 걸쳐서 캐주얼한데 도시적으로 정돈된 느낌이 나",
+  "caption_how": "재킷은 단추 하나만 잠그고 여유있게 걸쳐 입어야 시티보이 무드 살아나",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 컬러 조합이 뚜렷하게 보여서 재현하기 쉬움",
+  "confidence": 0.85
+}

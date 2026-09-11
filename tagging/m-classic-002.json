@@ -1,0 +1,25 @@
+{
+  "file": "m-classic-002.jpg",
+  "mood_vector": {
+    "classic": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "소개팅",
+    "저녁약속"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "male"
+  },
+  "caption_item": "네이비 블레이저에 화이트 티, 차콜 슬랙스, 브라운 레더 슈즈 매치했어",
+  "caption_why": "어두운 네이비랑 차콜이 차분하게 톤을 맞추고 화이트 티 하나로 깔끔하게 정리돼서 캐주얼해도 정돈된 느낌 나",
+  "caption_how": "블레이저 안에 니트나 셔츠 대신 편한 티 넣으면 힘 안 준 듯 자연스러운 클래식 룩 완성돼",
+  "is_flagship": true,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 블레이저+슬랙스+레더슈즈 조합이 재현하기 쉬운 클래식 대표템으로 구성됨",
+  "confidence": 0.85
+}

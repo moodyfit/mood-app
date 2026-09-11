@@ -1,0 +1,25 @@
+{
+  "file": "w-soft-006.jpg",
+  "mood_vector": {
+    "soft": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "크림색 니트 가디건에 아이보리 니트, 베이지 와이드 팬츠 매치했어",
+  "caption_why": "포근한 니트 텍스처랑 뉴트럴 톤이 자연스럽게 어우러져서 편안하면서도 부드러운 무드가 나와",
+  "caption_how": "가디건은 여유있게 걸치고 버킷햇으로 포인트 주면 편안하면서 정돈된 느낌 살아나",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 니트 조합이 명확히 보여 재현이 쉬움",
+  "confidence": 0.85
+}

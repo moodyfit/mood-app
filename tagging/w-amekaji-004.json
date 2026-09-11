@@ -1,0 +1,25 @@
+{
+  "file": "w-amekaji-004.jpg",
+  "mood_vector": {
+    "amekaji": 0.6,
+    "soft": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "데이트"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "165",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "블루 데님 자켓에 브라운 터틀넥, 카멜 코듀로이 팬츠 매치했어",
+  "caption_why": "데님 자켓의 워크웨어 감성이랑 브라운 톤 니트가 만나서 편안하면서 따뜻한 무드가 나와",
+  "caption_how": "팬츠는 넉넉하게 입고 자켓은 살짝 오버핏으로 걸쳐야 편안한 느낌 살아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 데님자켓+니트+코듀로이팬츠 조합이 재현하기 쉬운 기본템 구성이야",
+  "confidence": 0.85
+}

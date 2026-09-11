@@ -1,0 +1,25 @@
+{
+  "file": "w-classic-002.jpg",
+  "mood_vector": {
+    "classic": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "출근",
+    "소개팅"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "화이트 셔츠에 네이비 롱코트, 그레이 랩스커트 매치했어",
+  "caption_why": "단정한 셔츠에 롱코트 걸치니까 무게감 있고 세련된 느낌이 확 살아나",
+  "caption_how": "코트는 어깨에 살짝 걸치듯 입어야 캐주얼하면서도 클래식한 밸런스가 나와",
+  "is_flagship": true,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 클래식 무드의 기본 아이템 조합이 뚜렷해서 재현하기 쉬움",
+  "confidence": 0.85
+}

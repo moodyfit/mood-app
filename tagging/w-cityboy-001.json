@@ -1,0 +1,25 @@
+{
+  "file": "w-cityboy-001.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "그레이 오버핏 가디건에 화이트 브이넥 티, 네이비 와이드 데님 팬츠 입었어",
+  "caption_why": "헐렁한 가디건을 어깨에 걸치듯 레이어드해서 힘 뺀 도시적인 느낌이 나고, 뉴트럴 톤끼리 맞춰서 깔끔하게 정돈됐어",
+  "caption_how": "가디건은 단추 없이 열어서 걸치듯 입고 팬츠 밑단은 스니커 위로 살짝 접어주면 비율 좋아 보여",
+  "is_flagship": true,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 가디건+와이드팬츠 조합이 재현하기 쉬운 시티보이 대표 착장이야",
+  "confidence": 0.85
+}

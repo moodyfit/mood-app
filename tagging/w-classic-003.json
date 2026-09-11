@@ -1,0 +1,25 @@
+{
+  "file": "w-classic-003.jpg",
+  "mood_vector": {
+    "classic": 0.8,
+    "clean": 0.2
+  },
+  "situations": [
+    "출근",
+    "데이트"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "짙은 그린 톤 셋업 슈트에 아이보리 터틀넥 니트 매치했어",
+  "caption_why": "딥그린 컬러랑 깔끔한 테일러링이 만나서 세련된 오피스룩 완성되는 느낌이야",
+  "caption_how": "이너는 심플한 니트로 정리하고 브라운 백이랑 슈즈로 톤 맞추면 더 조화로워",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 클래식 무드 대표템인 컬러 셋업이 뚜렷하게 드러남",
+  "confidence": 0.85
+}

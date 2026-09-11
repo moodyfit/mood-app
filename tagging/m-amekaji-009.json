@@ -1,0 +1,25 @@
+{
+  "file": "m-amekaji-009.jpg",
+  "mood_vector": {
+    "amekaji": 0.6,
+    "street": 0.4
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "regular",
+    "gender": "male"
+  },
+  "caption_item": "블루 데님 트러커 재킷에 베이지 니트, 카키 팬츠 매치하고 브라운 워크부츠 신었어",
+  "caption_why": "데님 재킷이랑 워크부츠가 흙톤 컬러로 통일돼서 편안하면서도 손맛 나는 무드가 살아나",
+  "caption_how": "팬츠 밑단 살짝 접어서 부츠 라인 드러내면 밸런스 좋아져",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 데님재킷+워크부츠 조합이 아메카지 대표 아이템으로 재현하기 쉬움",
+  "confidence": 0.85
+}

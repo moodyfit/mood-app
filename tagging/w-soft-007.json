@@ -1,0 +1,25 @@
+{
+  "file": "w-soft-007.jpg",
+  "mood_vector": {
+    "soft": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "세이지그린 니트에 크림 와이드 팬츠 입고 브라운 크로스백 멨어",
+  "caption_why": "포근한 니트 질감이랑 뉴트럴 톤 조합이라 편안하면서 깔끔한 분위기 나",
+  "caption_how": "니트는 넉넉하게, 하의는 와이드하게 입어서 실루엣 부담 없이 매치해봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 니트+와이드팬츠 조합이 기본템이라 재현하기 쉬움",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "m-classic-008.jpg",
+  "mood_vector": {
+    "classic": 0.7,
+    "cityboy": 0.3
+  },
+  "situations": [
+    "소개팅",
+    "저녁약속"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "male"
+  },
+  "caption_item": "그린 블레이저에 크림색 니트, 브라운 와이드 슬랙스 매치했어",
+  "caption_why": "딥그린 컬러감이랑 각진 테일러드 핏이 클래식한 분위기 제대로 살려줘",
+  "caption_how": "골드 목걸이로 포인트 주고 브라운 로퍼로 톤 맞추면 자연스러워",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 그린 블레이저+브라운 슬랙스 조합이 클래식 무드를 명확히 대표함",
+  "confidence": 0.85
+}

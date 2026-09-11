@@ -1,0 +1,25 @@
+{
+  "file": "w-cityboy-004.jpg",
+  "mood_vector": {
+    "classic": 0.6,
+    "soft": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "데이트"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "카키그린 롱재킷에 아이보리 니트, 와이드 청바지 입었어",
+  "caption_why": "차분한 그린 톤 재킷이랑 부드러운 니트가 만나서 편안하면서도 정돈된 느낌 나",
+  "caption_how": "재킷은 살짝 걸치듯 입고 팔 걷어서 편한 분위기 더해봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴, 기본 아이템 구성이 잘 드러나서 재현하기 쉬움",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "w-clean-005.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "classic": 0.3
+  },
+  "situations": [
+    "데이트",
+    "출근"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "블랙 이너에 크림색 와이드 슬랙스 입고 화이트 스니커즈 신었어",
+  "caption_why": "블랙이랑 크림 두 컬러만 써서 깔끔하고 라인이 정돈돼 보여",
+  "caption_how": "상의는 딱 붙게, 하의는 여유있게 입어야 밸런스 살아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 기본 아이템 조합으로 재현이 쉬움",
+  "confidence": 0.85
+}

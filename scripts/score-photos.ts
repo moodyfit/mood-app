@@ -52,7 +52,10 @@ async function scoreOne(imgPath: string): Promise<{ base: string; violations: st
   if (!FORCE) { try { await fs.access(outJson); console.log(`skip(이미 있음): ${base}`); return null; } catch { /* score */ } }
 
   const b64 = (await fs.readFile(imgPath)).toString("base64");
-  const axisHint = AXES.find((a) => base.startsWith(a));
+  // v3 네이밍 {g}-{axis}-NNN 파싱(구 {axis}-NNN도 호환).
+  const parts = base.split("-");
+  const gender = (parts[0] === "m" || parts[0] === "w") ? (parts[0] as "m" | "w") : undefined;
+  const axisHint = gender ? parts[1] : AXES.find((a) => base.startsWith(a));
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": process.env.ANTHROPIC_API_KEY!, "anthropic-version": "2023-06-01", "content-type": "application/json" },
@@ -60,7 +63,7 @@ async function scoreOne(imgPath: string): Promise<{ base: string; violations: st
       model: MODEL, max_tokens: 1024,
       messages: [{ role: "user", content: [
         { type: "image", source: { type: "base64", media_type: "image/jpeg", data: b64 } },
-        { type: "text", text: scoringPrompt(axisHint) },
+        { type: "text", text: scoringPrompt(axisHint, gender) },
       ] }],
     }),
   });
@@ -71,7 +74,9 @@ async function scoreOne(imgPath: string): Promise<{ base: string; violations: st
   if (!m) throw new Error(`JSON 파싱 실패: ${text.slice(0, 120)}`);
   const o = JSON.parse(m[0]);
   o.mood_vector = normalizeMoodVector(o.mood_vector);
-  if (!o.body_spec) o.body_spec = { height: "180", build: "slim" };
+  if (!o.body_spec) o.body_spec = { height: "175", build: "slim" };
+  // 성별을 body_spec에 기록(필터·개인화용). 파일명 기준(결정적).
+  if (gender) o.body_spec.gender = gender === "m" ? "male" : "female";
   const rec = {
     file: `${base}.jpg`,
     mood_vector: o.mood_vector,

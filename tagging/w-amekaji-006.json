@@ -1,0 +1,25 @@
+{
+  "file": "w-amekaji-006.jpg",
+  "mood_vector": {
+    "amekaji": 0.6,
+    "street": 0.4
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "블루 데님 워크자켓에 카키 조거팬츠, 블랙 첼시부츠로 마무리했어",
+  "caption_why": "워크웨어 느낌 나는 데님자켓이랑 흙톤 팬츠 조합이라 편안하면서 손맛 있는 분위기가 나",
+  "caption_how": "자켓은 오버핏으로 여유 있게 걸치고 팬츠 밑단은 살짝 접어주면 밸런스 좋아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 데님자켓+워크부츠 조합이 아메카지 대표 아이템이라 재현하기 쉬움",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "w-classic-008.jpg",
+  "mood_vector": {
+    "classic": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "출근",
+    "저녁약속"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "그린 롱코트에 화이트 니트, 카멜 와이드팬츠 매치했어",
+  "caption_why": "딥그린이랑 카멜 조합이 차분하면서 고급스러운 느낌 딱 나와",
+  "caption_how": "코트 안에 니트만 심플하게 받쳐 입어야 컬러가 더 살아나",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 컬러 배합이 클래식 무드를 대표하기 좋음",
+  "confidence": 0.85
+}

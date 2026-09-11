@@ -1,0 +1,25 @@
+{
+  "file": "w-clean-003.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "soft": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "165",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "연블루 반팔 티에 아이보리 와이드 슬랙스 입었어",
+  "caption_why": "색을 두 가지로만 정리하고 핏도 과하지 않아서 깔끔한 느낌이 나",
+  "caption_how": "화이트 스니커랑 베이지 백으로 톤 맞추면 더 정돈돼 보여",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 기본 아이템 구성이 명확해 재현하기 쉬움",
+  "confidence": 0.85
+}

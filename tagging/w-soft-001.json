@@ -1,0 +1,25 @@
+{
+  "file": "w-soft-001.jpg",
+  "mood_vector": {
+    "soft": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "크림색 케이블 니트에 베이지 와이드 슬랙스 입었어",
+  "caption_why": "포근한 니트 질감이랑 뉴트럴 톤 조합이라 편안하면서도 정돈된 느낌 나",
+  "caption_how": "화이트 로퍼로 깔끔하게 마무리하면 카페 나들이룩 완성",
+  "is_flagship": true,
+  "flagship_reason": "전신 실루엣과 니트+슬랙스 조합이 명확해서 soft 무드 재현하기 쉬움",
+  "confidence": 0.85
+}

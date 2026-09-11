@@ -1,0 +1,25 @@
+{
+  "file": "w-street-009.jpg",
+  "mood_vector": {
+    "street": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "regular",
+    "gender": "female"
+  },
+  "caption_item": "아이보리 후드에 그레이 카고팬츠, 화이트 볼캡 매치했어",
+  "caption_why": "오버핏 후드랑 통 넓은 카고가 만나서 힘 뺀 스트릿 무드 완성됐어",
+  "caption_how": "상하의 넉넉하게 입고 캡 눌러쓰면 편안하면서 스타일 살아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 아이템 조합이 명확해서 재현하기 쉬움",
+  "confidence": 0.85
+}

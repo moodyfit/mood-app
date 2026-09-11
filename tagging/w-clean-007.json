@@ -1,0 +1,25 @@
+{
+  "file": "w-clean-007.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "soft": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "아이보리 반팔 니트에 베이지 와이드 슬랙스 입었어",
+  "caption_why": "뉴트럴 톤 두 가지로만 맞추니까 깔끔하면서 편안한 무드가 나와",
+  "caption_how": "화이트 스니커랑 블랙 크로스백으로 포인트만 살짝 주면 딱 좋아",
+  "is_flagship": false,
+  "flagship_reason": "전신·얼굴이 잘 보이고 뉴트럴톤 조합이 clean 무드를 대표하기 쉬움",
+  "confidence": 0.85
+}

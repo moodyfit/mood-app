@@ -1,0 +1,25 @@
+{
+  "file": "w-classic-006.jpg",
+  "mood_vector": {
+    "classic": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "출근",
+    "소개팅"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "카키 블레이저에 크림 니트, 그레이 와이드 슬랙스 매치했어",
+  "caption_why": "블레이저랑 슬랙스 톤 맞춰서 깔끔하게 떨어지는 느낌이 좋아",
+  "caption_how": "블랙 로퍼로 마무리하면 격식 있으면서도 안 딱딱해 보여",
+  "is_flagship": false,
+  "flagship_reason": "전신·얼굴 노출되고 블레이저+니트+슬랙스 조합이 클래식 대표템으로 재현하기 쉬움",
+  "confidence": 0.85
+}

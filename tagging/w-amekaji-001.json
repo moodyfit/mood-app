@@ -1,0 +1,25 @@
+{
+  "file": "w-amekaji-001.jpg",
+  "mood_vector": {
+    "amekaji": 0.6,
+    "street": 0.4
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "regular",
+    "gender": "female"
+  },
+  "caption_item": "워시드 블루 데님 트러커 자켓에 브라운 니트, 카멜 와이드 팬츠 매치했어",
+  "caption_why": "인디고랑 브라운 흙톤이 자연스럽게 섞여서 워크웨어 특유의 손맛 나는 분위기가 나와",
+  "caption_how": "자켓은 살짝 오버핏으로 걸치고 팬츠 핏은 넉넉하게 가져가야 편안하면서 밸런스 맞아",
+  "is_flagship": true,
+  "flagship_reason": "전신 실루엣과 데님 자켓+워크웨어 톤 조합이 amekaji 무드를 명확히 대표함",
+  "confidence": 0.85
+}

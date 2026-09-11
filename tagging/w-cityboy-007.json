@@ -1,0 +1,26 @@
+{
+  "file": "w-cityboy-007.jpg",
+  "mood_vector": {
+    "soft": 0.55,
+    "amekaji": 0.25,
+    "street": 0.2
+  },
+  "situations": [
+    "주말카페",
+    "동네"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "165",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "베이지 카디건에 화이트 티, 와이드 청바지랑 화이트 스니커즈 신었어",
+  "caption_why": "포근한 니트 카디건 질감이랑 헐렁한 데님 핏이 만나서 편안하고 따뜻한 무드가 나와",
+  "caption_how": "카디건은 단추 다 채우지 말고 살짝 풀어 입어야 자연스러워",
+  "is_flagship": false,
+  "flagship_reason": "",
+  "confidence": 0.75
+}

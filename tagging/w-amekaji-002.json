@@ -1,0 +1,25 @@
+{
+  "file": "w-amekaji-002.jpg",
+  "mood_vector": {
+    "amekaji": 0.6,
+    "street": 0.4
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "regular",
+    "gender": "female"
+  },
+  "caption_item": "청데님자켓에 브라운 와이드팬츠, 워커부츠 신었어",
+  "caption_why": "데님이랑 워커부츠 조합이 워크웨어 느낌 딱 살려줘서 손맛 나는 무드야",
+  "caption_how": "팬츠는 살짝 오버핏으로 입고 벨트로 허리라인 잡아주면 밸런스 좋아져",
+  "is_flagship": true,
+  "flagship_reason": "전신 실루엣과 데님자켓+워커부츠 조합이 amekaji 대표 아이템으로 재현하기 쉬움",
+  "confidence": 0.85
+}

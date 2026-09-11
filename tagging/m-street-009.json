@@ -1,0 +1,25 @@
+{
+  "file": "m-street-009.jpg",
+  "mood_vector": {
+    "street": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "male"
+  },
+  "caption_item": "블루 오버핏 후드에 블랙 와이드 조거팬츠 입고 블랙 캡 쓰고 크로스백 멨어",
+  "caption_why": "오버사이즈 후드랑 와이드 팬츠 조합이 힘 안 준 느낌인데도 볼륨감 있어서 시크해 보여",
+  "caption_how": "후드는 넉넉하게, 팬츠는 발목에서 살짝 떨어지게 입으면 밸런스 좋아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 아이템 구성이 명확해서 스트릿 무드 재현하기 쉬움",
+  "confidence": 0.85
+}

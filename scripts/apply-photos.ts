@@ -36,11 +36,15 @@ async function run() {
       const b = String(e.file).replace(/.*\//, "").replace(/\.(jpg|png)$/i, "");
       if (typeof e.aspect_ratio === "number") ratio[b] = e.aspect_ratio;
     }
+    for (const e of JSON.parse(await fs.readFile(path.join(ROOT, "images", "gen_log_v3.json"), "utf8"))) {
+      const b = String(e.file).replace(/.*\//, "").replace(/\.(jpg|png)$/i, "");
+      if (typeof e.aspect_ratio === "number") ratio[b] = e.aspect_ratio;
+    }
   } catch { /* 기본 0.8 */ }
 
   // tagging/ 동적 순회: {axis}-{숫자}.json 전부(신규 추가분 자동 포함). --only 로 특정 파일만.
   const only = process.argv.slice(2).filter((a) => !a.startsWith("--")).map((s) => s.replace(/\.json$/, ""));
-  const axRe = new RegExp(`^(${AXES.join("|")})-\\d+$`);
+  const axRe = new RegExp(`^((m|w)-)?(${AXES.join("|")})-\\d+$`);
   const files = only.length
     ? only
     : (await fs.readdir(TAG)).filter((n) => n.endsWith(".json")).map((n) => n.replace(/\.json$/, "")).filter((b) => axRe.test(b)).sort();
@@ -71,5 +75,16 @@ async function run() {
     }
   }
   console.log(`upsert 완료: ${ok}/${files.length} (실패 ${fail})`);
+
+  // 전면 교체: image_url이 신 세트(moods/{f}.jpg)에 없는 구 행 삭제(--only 시 생략).
+  if (!only.length && !process.argv.includes("--no-prune")) {
+    const keep = new Set(files.map((f) => `moods/${f}.jpg`));
+    const { data: all } = await sb.from("photos").select("id,image_url");
+    const stale = (all ?? []).filter((r: any) => !keep.has(r.image_url));
+    if (stale.length) {
+      const { error } = await sb.from("photos").delete().in("id", stale.map((r: any) => r.id));
+      console.log(error ? `구 행 삭제 실패: ${error.message}` : `구 행 삭제: ${stale.length}개`);
+    } else console.log("구 행 없음(삭제 0)");
+  }
 }
 run().catch((e) => { console.error(e); process.exit(1); });

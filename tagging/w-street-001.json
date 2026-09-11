@@ -1,0 +1,25 @@
+{
+  "file": "w-street-001.jpg",
+  "mood_vector": {
+    "street": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "블랙 후드에 와이드 팬츠 매치하고 볼캡 눌러썼어",
+  "caption_why": "올블랙으로 통일해서 심플한데 오버핏 실루엣이라 캐주얼한 힘 있어",
+  "caption_how": "화이트 스니커로 포인트 주면 밸런스 딱 맞아",
+  "is_flagship": true,
+  "flagship_reason": "전신샷에 기본 아이템 조합이라 재현하기 쉬움",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "w-street-008.jpg",
+  "mood_vector": {
+    "street": 0.8,
+    "clean": 0.2
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "블랙 오버사이즈 후드에 카고 조거팬츠, 블랙 캡 매치했어",
+  "caption_why": "루즈한 후드랑 볼륨감 있는 카고팬츠 조합이라 힘 안준 스트릿 무드가 딱 살아",
+  "caption_how": "상하 다 넉넉하게 입고 캡 눌러쓰면 스타일 완성도 확 올라가",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 오버핏 후드+카고팬츠+캡이라는 스트릿 기본템 조합이 재현하기 쉬움",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "w-amekaji-010.jpg",
+  "mood_vector": {
+    "amekaji": 0.6,
+    "classic": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "데이트"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "데님 트러커 자켓에 베이지 코듀로이 팬츠, 브라운 롱부츠 신었어",
+  "caption_why": "청과 브라운톤이 자연스럽게 섞여서 편안하면서도 흙톤 무드가 확 살아",
+  "caption_how": "부츠를 팬츠 안에 넣어서 다리 라인을 길어 보이게 연출해봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 데님 자켓+워크부츠 조합이 대표 아이템으로 재현하기 쉬움",
+  "confidence": 0.85
+}

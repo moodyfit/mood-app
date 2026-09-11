@@ -1,0 +1,25 @@
+{
+  "file": "m-clean-010.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "soft": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "동네"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "male"
+  },
+  "caption_item": "네이비 맨투맨에 아이보리 와이드팬츠, 화이트 로퍼로 마무리했어",
+  "caption_why": "무채+뉴트럴 두 톤만 써서 깔끔하고 편안한 무드가 딱 살아",
+  "caption_how": "팬츠는 살짝 여유 있게 입고 로퍼로 캐주얼함 더해봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 착장과 얼굴이 잘 보이고 기본템 조합이라 재현하기 쉬움",
+  "confidence": 0.85
+}
