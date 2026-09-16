@@ -7,6 +7,9 @@ import { getSupabase } from "./supabase";
 
 export const UPLOAD_BUCKET = "uploads";
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 라우트와 동일 상한 — 먼저 걸러 왕복을 줄인다
+// 너무 작은 이미지는 Claude가 "옷을 알아볼 수 없다"며 JSON 대신 거절문을 반환한다(502 + 고아 파일).
+// 업로드 전에 걸러 채점 비용과 쓰레기 파일을 둘 다 막는다.
+export const MIN_IMAGE_PX = 200;
 export const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 
 export type Gender = "male" | "female";
@@ -30,8 +33,13 @@ export function readImage(file: File): Promise<Result<{ previewUrl: string; rati
     }
     const previewUrl = URL.createObjectURL(file);
     const img = new Image();
-    img.onload = () =>
+    img.onload = () => {
+      if (Math.min(img.naturalWidth, img.naturalHeight) < MIN_IMAGE_PX) {
+        URL.revokeObjectURL(previewUrl);
+        return resolve({ ok: false, error: `너무 작은 사진이야. 짧은 쪽이 ${MIN_IMAGE_PX}px 이상이어야 해.` });
+      }
       resolve({ ok: true, data: { previewUrl, ratio: img.naturalWidth / img.naturalHeight } });
+    };
     img.onerror = () => {
       URL.revokeObjectURL(previewUrl);
       resolve({ ok: false, error: "이미지를 읽지 못했어. 다른 사진으로 해볼래?" });
