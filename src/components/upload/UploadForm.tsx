@@ -68,12 +68,19 @@ export default function UploadForm() {
       return;
     }
 
-    router.push(`/photo/${tagged.data.slug}`);
+    // 토스트는 도착한 상세에서 띄운다 — 여기서 띄우면 화면 전환에 묻힌다
+    router.push(`/photo/${tagged.data.slug}?uploaded=1`);
   }
 
   return (
     <div className="flex flex-col gap-5">
-      <ImagePickField previewUrl={previewUrl} ratio={ratio} onPick={pick} disabled={busy} />
+      <ImagePickField
+        previewUrl={previewUrl}
+        ratio={ratio}
+        onPick={pick}
+        disabled={busy}
+        busyLabel={phase === "uploading" ? "올리는 중…" : phase === "scoring" ? "무드 붙이는 중…" : undefined}
+      />
 
       <TextareaField
         label="추천하는 이유"
@@ -122,11 +129,6 @@ export default function UploadForm() {
         {phase === "uploading" ? "올리는 중…" : phase === "scoring" ? "무드 붙이는 중…" : "올리기"}
       </button>
 
-      {phase === "scoring" && (
-        <p className="-mt-2 text-center text-[12px] text-ink-faint">
-          사진을 읽고 있어. 조금만 기다려줘.
-        </p>
-      )}
     </div>
   );
 }
