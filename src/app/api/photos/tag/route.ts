@@ -11,6 +11,11 @@
 //
 // ⚠️ 머지 전 photos 테이블 마이그레이션 필요(PR 본문 참고): confidence, gender, source, uploaded_by,
 //    user_description, photo_type 컬럼 + photos_uploaded_by_created_idx 인덱스.
+//
+// gender를 scoringPrompt에 반영(2026-09-17): 케빈이 PR #20(v3 이미지)에서 tagging/rubric.ts에
+// gender 파라미터를 추가해 여성 루브릭 힌트를 넣었음 — 회의록 "여성 루브릭 <케빈> → AI 계산
+// 로직에 반영 <에린>" 항목으로 SSOT(src/lib/tagging-rubric.ts)에 동일 반영. 여자 옵션은 아직
+// UploadForm에서 닫혀있지만(FEMALE_OPEN=false), 루브릭 티켓 열리면 라우트는 바로 준비됨.
 import { createClient } from "@supabase/supabase-js";
 import { scoringPrompt, normalizeMoodVector, validateTag } from "@/lib/tagging-rubric";
 import { photoUrl } from "@/lib/photos";
@@ -46,9 +51,15 @@ async function fetchImage(storagePath: string): Promise<{ b64: string; mediaType
   return { b64: Buffer.from(buf).toString("base64"), mediaType };
 }
 
-async function scoreWithClaude(b64: string, mediaType: string): Promise<Record<string, unknown>> {
+async function scoreWithClaude(
+  b64: string,
+  mediaType: string,
+  gender: "male" | "female" | null
+): Promise<Record<string, unknown>> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) throw new Error("서버에 ANTHROPIC_API_KEY 미설정");
+  // gender: "male"|"female"(업로드 화면 값) → "m"|"w"(rubric.ts 힌트 계약) 매핑.
+  const genderHint = gender === "male" ? "m" : gender === "female" ? "w" : undefined;
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
@@ -60,7 +71,7 @@ async function scoreWithClaude(b64: string, mediaType: string): Promise<Record<s
           role: "user",
           content: [
             { type: "image", source: { type: "base64", media_type: mediaType, data: b64 } },
-            { type: "text", text: scoringPrompt() },
+            { type: "text", text: scoringPrompt(undefined, genderHint) },
           ],
         },
       ],
@@ -129,7 +140,7 @@ export async function POST(req: Request) {
   let scored: Record<string, unknown>;
   try {
     const { b64, mediaType } = await fetchImage(storagePath);
-    scored = await scoreWithClaude(b64, mediaType);
+    scored = await scoreWithClaude(b64, mediaType, gender);
   } catch (e) {
     return Response.json({ error: (e as Error).message }, { status: 502 });
   }
