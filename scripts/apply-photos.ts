@@ -59,6 +59,7 @@ async function run() {
         situations: o.situations,
         seasons: o.seasons,
         body_spec: o.body_spec,
+        gender: o.body_spec?.gender ?? null, // top-level 컬럼(FEAT-011, 소피 rank 필터가 사용) — SSOT는 여기
         caption_item: o.caption_item,
         caption_why: o.caption_why,
         caption_how: o.caption_how ?? "",
