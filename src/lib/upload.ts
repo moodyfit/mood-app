@@ -79,7 +79,6 @@ export async function requestTagging(payload: TagPayload): Promise<Result<{ slug
         storage_path: payload.storagePath,
         aspect_ratio: payload.aspectRatio,
         gender: payload.gender,
-        // 아래 둘은 라우트가 아직 안 받는다(FEAT-011에 요청함) — 받기 시작하면 그대로 저장된다
         photo_type: payload.photoType,
         user_description: payload.userDescription,
       }),
