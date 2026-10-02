@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 로컬 폰트 — CDN 의존 제거, Capacitor 오프라인 대응 */
+@font-face {
+  font-family: "Wanted Sans Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 1000;
+  src: url("/fonts/WantedSansVariable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 700;
+  src: url("/fonts/SpaceGrotesk-Variable.woff2") format("woff2");
+}
+
 :root {
   color-scheme: light;
   /* 활기 = 스프링(바운스). 공간은 통통 튀되 컨페티·팡파레·게이지는 금지 */

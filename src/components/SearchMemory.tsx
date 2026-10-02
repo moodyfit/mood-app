@@ -20,7 +20,7 @@ export default function SearchMemory({ query }: { query: string }) {
   return (
     <div className="mb-4 rounded-xl border border-line bg-paper-2 p-3">
       <div className="text-[13px] text-ink-soft">
-        지난번 <span className="font-semibold text-ink">&lsquo;{query}&rsquo;</span> 때 저장한 룩 {prior.length}개
+        지난번 <span className="font-semibold text-ink">&lsquo;{query}&rsquo;</span> 때 담은 룩 {prior.length}개
       </div>
       <div className="mt-2.5 flex gap-2 overflow-x-auto">
         {prior.map((s) => {

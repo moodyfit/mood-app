@@ -1,19 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 /**
- * 상단바 — 로고만 (가이드라인 v2 §4.1). 나의 공간 진입은 하단 탭바로 이관.
- * 홈('/')은 SearchScreen의 sticky 헤더(워드마크+검색)가 대신하므로 숨긴다(중복 방지).
+ * 상단바 — 로고(좌) + 검색 아이콘(우). 모든 페이지에서 표시.
  */
 export default function TopBar() {
-  const pathname = usePathname();
-  if (pathname === "/") return null;
   return (
-    <div className="sticky top-0 z-30 flex items-center justify-between px-5 pb-3.5 pt-5 bg-gradient-to-b from-paper from-[72%] to-transparent">
-      <Link href="/" className="text-[21px] font-extrabold tracking-[-0.6px]">
+    <div className="sticky top-0 z-30 flex items-center justify-between px-5 pb-3.5 pt-[max(1.25rem,env(safe-area-inset-top))] bg-gradient-to-b from-paper from-[72%] to-transparent">
+      <Link href="/" className="text-[17px] font-extrabold tracking-[-0.4px]">
         무드핏
+      </Link>
+      <Link href="/search" className="p-1" aria-label="검색">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-ink">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m16 16 4.5 4.5" />
+        </svg>
       </Link>
     </div>
   );

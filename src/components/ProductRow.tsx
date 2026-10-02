@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Product } from "@/lib/types";
 import { formatPrice, primaryPrice } from "@/lib/products";
 import { useMoodStore } from "@/lib/store";
+import { openExternal } from "@/lib/browser";
 
 export default function ProductRow({
   product,
@@ -34,7 +35,7 @@ export default function ProductRow({
   function goTo(url?: string) {
     if (url) {
       recordProductClick(product.moodKey, product.name); // 구매의도 신호(해자 데이터)
-      window.open(url, "_blank", "noopener");
+      openExternal(url);
       setAwaiting(true); // 복귀 감지 준비
     } else {
       showToast("데모 · 실제 서비스에선 판매처로 연결");
@@ -108,7 +109,7 @@ export default function ProductRow({
               : "border-line text-ink-soft hover:border-accent"
           }`}
         >
-          {owned ? "✓ 내 옷" : "샀어"}
+          {owned ? "✓ 내 옷" : "담기"}
         </button>
       </div>
 
@@ -122,7 +123,7 @@ export default function ProductRow({
           }}
           className="mt-2 w-full rounded-[8px] border border-accent bg-accent/10 py-2 text-[12.5px] font-semibold text-accent"
         >
-          샀어? 탭하면 ‘내 옷’으로 →
+          담을래? 탭하면 ‘내 옷’으로 →
         </button>
       )}
     </div>

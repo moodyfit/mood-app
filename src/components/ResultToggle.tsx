@@ -41,7 +41,7 @@ export default function ResultToggle({
     haptic();
     if (!formed) {
       const left = Math.max(1, TASTE_CARD_THRESHOLD - savedCount);
-      setNote(invite ?? `${left}장만 저장하면 너만의 결과가 열려`);
+      setNote(invite ?? `${left}장만 담으면 너만의 결과가 열려`);
       return;
     }
     onChange(true);

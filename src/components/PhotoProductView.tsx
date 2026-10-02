@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import type { Product, MoodKey } from "@/lib/types";
+import type { Product } from "@/lib/types";
 import type { Photo } from "@/lib/photos";
 import { photoUrl } from "@/lib/photos";
 import { primaryPrice, formatMan } from "@/lib/products";
@@ -18,16 +18,14 @@ import WholeLook from "./WholeLook";
 export default function PhotoProductView({
   photo,
   products,
-  moodKey,
 }: {
   photo: Photo;
   products: Product[];
-  moodKey: MoodKey;
 }) {
   const { recordView } = useMoodStore();
   useEffect(() => {
-    if (moodKey) recordView(moodKey);
-  }, [moodKey, recordView]);
+    if (photo.mood_vector) recordView(photo.mood_vector); // 다축 그대로 반영(FEAT-001)
+  }, [photo.mood_vector, recordView]);
 
   const url = photoUrl(photo.image_url);
   const total = products.reduce((s, p) => s + primaryPrice(p), 0);
