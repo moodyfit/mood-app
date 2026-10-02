@@ -66,11 +66,18 @@ export function validateTag(o: any): string[] {
   return e;
 }
 
-/** 이미지 1장 채점 지시문(비전 모델용). axisHint = 파일명 접두사(있으면 소프트 힌트). */
-export function scoringPrompt(axisHint?: string): string {
+/**
+ * 이미지 1장 채점 지시문(비전 모델용).
+ * axisHint = 파일명 접두사(있으면 소프트 힌트). gender = "m"|"w"(캡션도 이 기준으로 맞춤).
+ * gender 파라미터는 케빈의 여성 루브릭 작업(v3, 남녀 각 60장)을 SSOT에 통합한 것 — 회의록
+ * "여성 루브릭 <케빈> → AI 계산 로직 반영 <에린>" 항목. AXIS_RUBRIC 자체는 성별 무관 어휘라 안 바꿈.
+ */
+export function scoringPrompt(axisHint?: string, gender?: "m" | "w"): string {
   const rub = (AXES as readonly Axis[]).map((a) => `- ${a}: ${AXIS_RUBRIC[a]}`).join("\n");
+  const who = gender === "m" ? "남성" : gender === "w" ? "여성" : "";
   return [
-    "너는 무드핏(한국 남성복 취향 앱)의 태깅 담당이다. 첨부한 사진 1장을 보고 아래 6축 루브릭으로 채점한다.",
+    "너는 무드핏(한국 남녀 취향 앱)의 태깅 담당이다. 첨부한 사진 1장을 보고 아래 6축 루브릭으로 채점한다.",
+    who ? `이 사진은 ${who} 착장이다(캡션도 ${who} 기준).` : "",
     "",
     "[6축 루브릭] (사진에 실제로 보이는 것으로 채점 — 폴더/파일명 아님)",
     rub,
