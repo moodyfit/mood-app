@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMoodStore } from "@/lib/store";
 
-/** 하단 탭바 — 2탭: [홈] [나의 공간]. 아이콘+라벨 표준. */
+/** 하단 탭바 — 3탭: [홈] [업로드] [나의 공간]. 아이콘+라벨 표준. */
 const TABS = [
   {
     href: "/",
@@ -13,6 +13,17 @@ const TABS = [
       p === "/" || p.startsWith("/results") || p.startsWith("/mood") || p.startsWith("/promise") || p.startsWith("/photo") || p.startsWith("/search"),
     icon: (
       <path d="M4 11.5 12 5l8 6.5M6 10.5V19h12v-8.5" strokeWidth="1.6" />
+    ),
+  },
+  {
+    href: "/upload",
+    label: "업로드",
+    match: (p: string) => p.startsWith("/upload"),
+    icon: (
+      <>
+        <rect x="4" y="4" width="16" height="16" rx="4" strokeWidth="1.6" />
+        <path d="M12 8.5v7M8.5 12h7" strokeWidth="1.6" />
+      </>
     ),
   },
   {
@@ -32,7 +43,7 @@ export default function TabBar() {
   const pathname = usePathname() || "/";
   const { spaceDot } = useMoodStore();
   return (
-    <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-frame -translate-x-1/2 grid grid-cols-2 border-t border-line bg-paper pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed bottom-0 left-1/2 z-40 w-full max-w-frame -translate-x-1/2 grid grid-cols-3 border-t border-line bg-paper pb-[env(safe-area-inset-bottom)]">
       {TABS.map((t) => {
         const active = t.match(pathname);
         return (

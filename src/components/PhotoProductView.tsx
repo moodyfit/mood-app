@@ -50,6 +50,14 @@ export default function PhotoProductView({
         )}
       </div>
 
+      {/* 작성자의 한마디(FEAT-013) — AI 해설과 섞으면 AI가 보증한 문장으로 읽힌다 */}
+      {photo.user_description && (
+        <div className="mt-4 rounded-xl border border-line bg-paper p-4">
+          <div className="mb-1 text-[11px] text-ink-faint">작성자가 추천하는 이유</div>
+          <p className="text-[13.5px] leading-relaxed text-ink">{photo.user_description}</p>
+        </div>
+      )}
+
       {/* 해설 3행 — 왜 멋있는지(우리 최강 무기) 전면 */}
       <div className="mt-4 rounded-xl bg-paper-2 p-4">
         <div className="mb-1 text-[11px] text-ink-faint">왜 멋있냐면</div>
