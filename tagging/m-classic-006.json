@@ -1,0 +1,25 @@
+{
+  "file": "m-classic-006.jpg",
+  "mood_vector": {
+    "classic": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "소개팅",
+    "저녁약속"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "male"
+  },
+  "caption_item": "블랙 오버사이즈 블레이저에 아이보리 니트, 그레이 슬랙스 매치했어",
+  "caption_why": "블랙이랑 그레이, 아이보리로만 정리해서 차분하고 정돈된 느낌 살렸어",
+  "caption_how": "블레이저는 살짝 오버핏으로 걸치고 팬츠 밑단은 롤업해서 여유 있게 입어봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 블레이저+슬랙스 조합이 클래식 무드를 대표하기 좋음",
+  "confidence": 0.85
+}

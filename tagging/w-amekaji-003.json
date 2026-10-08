@@ -1,0 +1,25 @@
+{
+  "file": "w-amekaji-003.jpg",
+  "mood_vector": {
+    "amekaji": 0.7,
+    "classic": 0.3
+  },
+  "situations": [
+    "나들이",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "브라운 쵸어자켓에 화이트 티, 와이드 카고 팬츠, 다크 브라운 첼시부츠로 마무리했어",
+  "caption_why": "흙톤 브라운 컬러 톤온톤에 워크웨어 실루엣이 더해져서 편안하면서도 손맛나는 아메카지 무드가 살아나",
+  "caption_how": "자켓 단추를 여유롭게 잠그고 와이드 팬츠로 볼륨감 있게 입어야 자연스러운 실루엣이 나와",
+  "is_flagship": false,
+  "flagship_reason": "전신 노출과 얼굴이 잘 보이고 워크재킷+와이드팬츠+첼시부츠 조합이 아메카지 대표 아이템으로 재현 용이함",
+  "confidence": 0.85
+}

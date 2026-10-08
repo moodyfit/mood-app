@@ -1,0 +1,25 @@
+{
+  "file": "w-cityboy-002.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "soft": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "크림 티셔츠에 카멜 니트 롱조끼 걸치고 데님 미니스커트 매치했어",
+  "caption_why": "레이어드한 니트 조끼가 걸침 느낌을 살려주면서 뉴트럴 톤끼리 자연스럽게 섞여서 도시적이면서 포근한 무드가 나와",
+  "caption_how": "조끼 길이가 스커트를 살짝 덮게 입으면 비율이 예뻐 보여",
+  "is_flagship": true,
+  "flagship_reason": "전신 실루엣과 레이어드 조합이 뚜렷해서 재현하기 쉬운 대표 착장이야",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "w-street-007.jpg",
+  "mood_vector": {
+    "street": 0.8,
+    "clean": 0.2
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "그레이 오버핏 후디에 워시드 블루 카고 조거팬츠, 화이트 청키 스니커 매치했어",
+  "caption_why": "루즈한 후디랑 볼륨감 있는 카고팬츠 조합이라 힘 안 준 듯하면서도 스트리트 무드 확실하게 살아나",
+  "caption_how": "캡모자로 포인트 주고 신발은 화이트로 깔끔하게 마무리하면 밸런스 좋아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 명확히 보이고 오버핏 후디+카고팬츠라는 스트릿 대표 아이템 조합이라 재현하기 쉬움",
+  "confidence": 0.85
+}

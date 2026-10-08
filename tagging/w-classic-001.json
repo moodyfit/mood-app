@@ -1,0 +1,25 @@
+{
+  "file": "w-classic-001.jpg",
+  "mood_vector": {
+    "classic": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "출근",
+    "데이트"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "차콜 롱코트에 아이보리 니트, 와이드 슬랙스 매치했어",
+  "caption_why": "뉴트럴 톤으로 통일하고 코트를 걸쳐서 정돈된 분위기가 확 살아나",
+  "caption_how": "코트는 안 여미고 살짝 걸쳐야 캐주얼하면서도 단정한 느낌 나와",
+  "is_flagship": true,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 클래식 무드의 핵심 아이템(코트+슬랙스+니트) 조합이 명확해서 재현하기 쉬움",
+  "confidence": 0.85
+}

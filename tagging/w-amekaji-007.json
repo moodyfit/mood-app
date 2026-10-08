@@ -1,0 +1,25 @@
+{
+  "file": "w-amekaji-007.jpg",
+  "mood_vector": {
+    "amekaji": 0.6,
+    "street": 0.4
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "165",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "워시드 청자켓에 브라운 와이드팬츠 입었어",
+  "caption_why": "데님이랑 워크웨어 톤 팬츠 매치로 손맛 나는 아메카지 무드 완성했어",
+  "caption_how": "팬츠는 발목까지 오는 와이드핏으로 골라야 실루엣이 살아",
+  "is_flagship": false,
+  "flagship_reason": "전신 샷에 데님자켓+워크팬츠 조합이 명확해서 재현하기 쉬움",
+  "confidence": 0.85
+}

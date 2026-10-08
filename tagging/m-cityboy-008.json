@@ -1,0 +1,25 @@
+{
+  "file": "m-cityboy-008.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "soft": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "동네"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "male"
+  },
+  "caption_item": "머스터드 오픈카디건에 화이트 티, 네이비 와이드 팬츠 입었어",
+  "caption_why": "따뜻한 톤 카디건을 레이어드해서 시티보이 느낌 나면서도 니트 소재감이 포근해 보여",
+  "caption_how": "카디건은 안 여미고 걸치듯 입어야 레이어드 느낌 살아",
+  "is_flagship": false,
+  "flagship_reason": "전신샷에 얼굴 보이고 오픈카디건+티+팬츠 조합이 재현하기 쉬운 대표 스타일임",
+  "confidence": 0.85
+}

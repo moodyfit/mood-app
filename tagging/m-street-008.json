@@ -1,0 +1,25 @@
+{
+  "file": "m-street-008.jpg",
+  "mood_vector": {
+    "street": 0.7,
+    "amekaji": 0.3
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "regular",
+    "gender": "male"
+  },
+  "caption_item": "차콜 오버핏 후디에 워시드 카고 데님 팬츠 입고 그레이 캡 눌러썼어",
+  "caption_why": "헐렁한 후디랑 볼륨감 있는 카고 팬츠 조합이 힘 안 준 스트릿 무드를 딱 살려줘",
+  "caption_how": "상하의 다 넉넉하게 입고 스니커즈로 캐주얼하게 마무리하면 밸런스 좋아",
+  "is_flagship": false,
+  "flagship_reason": "오버사이즈 후디+카고 팬츠+캡 조합이 스트릿 무드의 전형적 아이템 구성이라 재현이 쉬움",
+  "confidence": 0.85
+}

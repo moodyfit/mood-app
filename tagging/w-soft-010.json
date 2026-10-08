@@ -1,0 +1,25 @@
+{
+  "file": "w-soft-010.jpg",
+  "mood_vector": {
+    "soft": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "데이트"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "연노랑 니트에 크림색 와이드 팬츠, 화이트 로퍼 신었어",
+  "caption_why": "부드러운 니트 질감이랑 뉴트럴 톤 조합이라 편안하면서 포근한 느낌이야",
+  "caption_how": "니트는 넉넉하게, 팬츠는 크롭 기장으로 발목 살짝 보여주면 화사해",
+  "is_flagship": false,
+  "flagship_reason": "전신·얼굴 노출, 니트+팬츠 기본템으로 재현하기 쉬움",
+  "confidence": 0.85
+}

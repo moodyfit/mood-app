@@ -1,0 +1,25 @@
+{
+  "file": "w-cityboy-006.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "화이트 티에 네이비 가디건 걸치고 와이드 청바지 입었어",
+  "caption_why": "기본템끼리 레이어드해서 도시적이고 정돈된 느낌이 나",
+  "caption_how": "가디건은 여유있게 걸치듯 입고 청바지는 밑단 정리 안 해도 괜찮아",
+  "is_flagship": false,
+  "flagship_reason": "기본 아이템 조합이라 재현하기 쉽고 얼굴과 전신이 잘 보여",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "w-cityboy-003.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "street": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "머스타드 카디건에 화이트 티, 와이드 데님 팬츠 입었어",
+  "caption_why": "카디건 레이어드랑 와이드 데님이 자연스럽게 힘 빼면서도 도시적인 느낌 줘서 좋아",
+  "caption_how": "카디건은 안 여미고 걸치듯 입어야 시티보이 느낌 살아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 카디건+데님 조합이 무드를 명확히 대표함",
+  "confidence": 0.85
+}

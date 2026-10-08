@@ -1,0 +1,25 @@
+{
+  "file": "m-street-010.jpg",
+  "mood_vector": {
+    "street": 0.6,
+    "soft": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "동네"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "regular",
+    "gender": "male"
+  },
+  "caption_item": "크림색 오버핏 후디에 카키 와이드 팬츠, 블랙 캡 쓰고 화이트 청키 스니커 신었어",
+  "caption_why": "오버사이즈 후디랑 와이드 팬츠 볼륨감이 편안하면서도 도시적인 분위기를 만들어줘",
+  "caption_how": "후디는 넉넉하게, 팬츠는 발목 살짝 접어서 스니커 라인 살려봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴, 기본 아이템 조합이 명확해 재현하기 쉬움",
+  "confidence": 0.85
+}

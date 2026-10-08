@@ -1,0 +1,25 @@
+{
+  "file": "w-classic-009.jpg",
+  "mood_vector": {
+    "classic": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "출근",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "카멜 롱코트에 블랙 니트, 그레이 슬랙스 매치했어",
+  "caption_why": "카멜이랑 그레이 딥톤 조합이라 차분하고 정돈된 느낌 나",
+  "caption_how": "로퍼 신어서 캐주얼하게 힘 빼주면 딱 좋아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 색조합이 클래식 무드 대표하기 좋음",
+  "confidence": 0.85
+}

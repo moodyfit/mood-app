@@ -1,0 +1,25 @@
+{
+  "file": "w-street-002.jpg",
+  "mood_vector": {
+    "street": 0.75,
+    "clean": 0.25
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "차콜 그레이 오버핏 후디에 카고 팬츠, 캡모자랑 화이트 스니커 매치했어",
+  "caption_why": "후디랑 카고 팬츠 톤을 맞춰서 과하지 않은데 볼륨감은 확실하게 살렸어",
+  "caption_how": "상하의 같은 톤으로 맞추면 오버핏이어도 안 촌스러워 보여",
+  "is_flagship": true,
+  "flagship_reason": "전신 실루엣과 아이템 구성이 명확해서 재현하기 쉬움",
+  "confidence": 0.85
+}

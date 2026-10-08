@@ -1,0 +1,25 @@
+{
+  "file": "w-clean-010.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "classic": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "소개팅"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "블랙 터틀넥에 크림 와이드 슬랙스, 화이트 로퍼로 깔끔하게 매치했어",
+  "caption_why": "블랙&크림 두 톤 조합에 벨트로 라인 잡아서 정돈된 느낌이 딱 살아나",
+  "caption_how": "슬랙스는 힙 부분에 벨트로 포인트 주면 허전하지 않아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 뚜렷하게 보이고 기본템 조합이라 재현 쉬움",
+  "confidence": 0.85
+}

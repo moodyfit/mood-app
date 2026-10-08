@@ -1,0 +1,25 @@
+{
+  "file": "w-street-010.jpg",
+  "mood_vector": {
+    "street": 0.7,
+    "soft": 0.3
+  },
+  "situations": [
+    "동네",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "핑크 오버사이즈 후디에 블랙 와이드 팬츠, 블랙 캡 매치했어",
+  "caption_why": "루즈한 후디랑 볼륨감 있는 팬츠 조합이 편안하면서도 힘 뺀 스트릿 무드를 만들어줘",
+  "caption_how": "후디 소매 살짝 접어서 손등 덮이게 입으면 캐주얼함이 더 살아나",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 오버핏 후디+와이드팬츠 조합이 스트릿 무드를 대표적으로 재현하기 쉬움",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "w-amekaji-005.jpg",
+  "mood_vector": {
+    "amekaji": 0.6,
+    "street": 0.4
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "블루 워시 데님 트러커 자켓에 브라운 와이드 팬츠, 다크 브라운 워크부츠 매치했어",
+  "caption_why": "워시 데님이랑 흙톤 브라운이 만나니까 자연스러운 아메카지 무드가 딱 나와",
+  "caption_how": "팬츠 밑단 살짝 접어서 부츠 라인 보여주면 정리된 느낌 살아나",
+  "is_flagship": false,
+  "flagship_reason": "전신 착장에 데님 자켓과 워크부츠 등 아메카지 대표 아이템이 명확히 보임",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "w-street-003.jpg",
+  "mood_vector": {
+    "street": 0.7,
+    "amekaji": 0.3
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "카키 그레이 후디에 인디고 와이드 카고 데님, 블랙 볼캡이랑 스니커즈로 마무리했어",
+  "caption_why": "오버사이즈 후디랑 통 넓은 카고 데님이 만나니까 힘 안 준 느낌인데 볼륨감 있게 완성돼",
+  "caption_how": "후디는 넉넉하게 입고 데님 밑단은 한번 접어서 스니커즈 보이게 하면 밸런스 좋아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴, 오버핏 후디+카고 데님이라는 street 대표 아이템 조합이 명확하게 보임",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "w-soft-005.jpg",
+  "mood_vector": {
+    "soft": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "보들보들한 옐로우 팝콘니트에 화이트 와이드팬츠 매치했어",
+  "caption_why": "포근한 니트 질감이랑 부드러운 컬러감이 편안하면서도 화사한 무드 만들어줘",
+  "caption_how": "니트는 넉넉하게, 하의는 화이트로 깔끔하게 밸런스 맞춰봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 니트 텍스처가 잘 보여서 soft 무드 대표 이미지로 적합함",
+  "confidence": 0.85
+}

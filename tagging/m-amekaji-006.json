@@ -1,0 +1,25 @@
+{
+  "file": "m-amekaji-006.jpg",
+  "mood_vector": {
+    "amekaji": 0.7,
+    "street": 0.3
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "regular",
+    "gender": "male"
+  },
+  "caption_item": "청자켓에 화이트 티, 카멜 팬츠랑 버킷햇 매치했어",
+  "caption_why": "데님이랑 워크부츠, 흙톤 팬츠 조합이 아메카지 감성 제대로 살려줘",
+  "caption_how": "팬츠는 여유있게 입고 밑단은 살짝 접어서 부츠 보이게 하면 좋아",
+  "is_flagship": false,
+  "flagship_reason": "전신샷에 아이템 구성이 명확하고 재현하기 쉬운 기본 아메카지 착장이야",
+  "confidence": 0.85
+}

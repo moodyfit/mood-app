@@ -1,0 +1,25 @@
+{
+  "file": "w-classic-005.jpg",
+  "mood_vector": {
+    "classic": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "출근",
+    "데이트"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "베이지 롱 블레이저에 화이트 셔츠, 블랙 와이드 슬랙스 매치했어",
+  "caption_why": "뉴트럴 톤 조합이라 차분하면서도 세련된 느낌이 딱 살아",
+  "caption_how": "블레이저는 살짝 크게 걸치고 로퍼로 마무리하면 편안하면서도 정돈된 무드 완성돼",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 클래식 무드 기본템 조합이라 재현하기 쉬움",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "w-classic-004.jpg",
+  "mood_vector": {
+    "classic": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "출근",
+    "데이트"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "카멜 롱코트에 검정 니트, 그레이 슬랙스 매치하고 버건디 로퍼 신었어",
+  "caption_why": "카멜이랑 차콜톤이 딱 떨어져서 단정하면서도 세련된 느낌이 나",
+  "caption_how": "코트 안에 이너를 블랙으로 통일하면 깔끔하게 떨어져",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 뚜렷하고 클래식 무드의 기본템 조합이라 재현하기 쉬움",
+  "confidence": 0.85
+}

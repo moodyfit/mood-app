@@ -1,0 +1,25 @@
+{
+  "file": "w-amekaji-008.jpg",
+  "mood_vector": {
+    "amekaji": 0.6,
+    "street": 0.4
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "블루 데님 자켓에 카멜 와이드 팬츠, 블랙 워커 부츠로 마무리했어",
+  "caption_why": "청 자켓이랑 워커의 워크웨어 감성에 와이드 팬츠가 만나서 편안하면서도 빈티지한 느낌이 살아나",
+  "caption_how": "자켓은 살짝 오버핏으로 걸치고 팬츠 밑단은 부츠 위로 자연스럽게 떨어지게 입어봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 아이템 조합이 명확해서 재현하기 쉬운 대표 착장이야",
+  "confidence": 0.85
+}

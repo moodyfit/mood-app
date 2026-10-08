@@ -1,0 +1,25 @@
+{
+  "file": "w-clean-009.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "soft": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "동네"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "그레이 오버사이즈 티셔츠에 크림색 와이드 팬츠 입고 화이트 스니커즈 신었어",
+  "caption_why": "무채색과 뉴트럴 톤만 써서 깔끔하고 편안한 느낌 살렸어",
+  "caption_how": "루즈한 상의엔 하단 밑단 살짝 접어주면 다리라인 정리돼",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 기본템 조합이 클린 무드 대표하기 좋음",
+  "confidence": 0.85
+}

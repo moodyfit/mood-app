@@ -1,0 +1,25 @@
+{
+  "file": "w-clean-006.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "soft": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "화이트 반팔 티에 라이트 그레이 와이드 슬랙스 매치하고 버킷햇 썼어",
+  "caption_why": "화이트랑 그레이만 써서 색 정리되니까 깔끔하고 차분한 무드 나와",
+  "caption_how": "슬랙스 핏 살리려면 상의는 딱 붙지 않는 기본 티로 심플하게 입어봐",
+  "is_flagship": false,
+  "flagship_reason": "화이트 티+슬랙스 조합은 클린 무드의 대표 공식이라 재현하기 쉬움",
+  "confidence": 0.85
+}

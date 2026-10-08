@@ -1,0 +1,25 @@
+{
+  "file": "m-cityboy-004.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "amekaji": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "데이트"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "male"
+  },
+  "caption_item": "러스트 브라운 셔츠자켓에 크림 니트, 와이드 청바지 입었어",
+  "caption_why": "따뜻한 톤끼리 레이어드해서 도시적이면서도 편안한 분위기 나와",
+  "caption_how": "셔츠자켓 단추 하나 풀어서 여유 있게 걸치면 자연스러워",
+  "is_flagship": false,
+  "flagship_reason": "전신 포즈에 얼굴 노출, 레이어드 조합이 명확해서 재현하기 쉬움",
+  "confidence": 0.85
+}

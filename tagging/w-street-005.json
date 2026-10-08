@@ -1,0 +1,25 @@
+{
+  "file": "w-street-005.jpg",
+  "mood_vector": {
+    "street": 0.7,
+    "soft": 0.3
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "spring"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "regular",
+    "gender": "female"
+  },
+  "caption_item": "연핑크 오버핏 후드티에 카고 조거팬츠 세트업 입고 아이보리 볼캡 썼어",
+  "caption_why": "핑크 톤온톤에 오버사이즈 실루엣이라 편안하면서도 러블리한 스트릿 무드가 나와",
+  "caption_how": "통일된 컬러로 맞추고 청키 스니커로 캐주얼하게 마무리해봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴, 톤온톤 세트업 아이템이 명확히 보여 재현하기 쉬움",
+  "confidence": 0.85
+}

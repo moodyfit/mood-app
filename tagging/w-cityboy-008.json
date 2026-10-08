@@ -1,0 +1,25 @@
+{
+  "file": "w-cityboy-008.jpg",
+  "mood_vector": {
+    "cityboy": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "주말카페",
+    "동네"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "머스타드 카디건에 화이트 티, 네이비 와이드 팬츠 입었어",
+  "caption_why": "오버핏 가디건을 걸쳐서 편안하면서도 컬러감 있는 시티보이 무드가 살아나",
+  "caption_how": "카디건은 단추 다 채우지 말고 살짝 풀어서 레이어드 느낌 살려봐",
+  "is_flagship": false,
+  "flagship_reason": "전신·얼굴 노출되고 기본템 조합이라 재현하기 쉬움",
+  "confidence": 0.85
+}

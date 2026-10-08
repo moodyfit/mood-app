@@ -1,0 +1,25 @@
+{
+  "file": "m-soft-006.jpg",
+  "mood_vector": {
+    "soft": 0.6,
+    "clean": 0.4
+  },
+  "situations": [
+    "나들이",
+    "주말카페"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "male"
+  },
+  "caption_item": "아이보리 케이블니트에 베이지 와이드슬랙스, 버킷햇까지 맞췄어",
+  "caption_why": "뉴트럴 톤으로 맞춘 니트랑 슬랙스가 포근하면서 깔끔한 느낌을 줘",
+  "caption_how": "니트는 넉넉하게, 슬랙스는 핏 살려서 균형 잡아봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 니트+슬랙스 조합이 재현하기 쉬운 기본템이라 대표컷으로 적합함",
+  "confidence": 0.85
+}

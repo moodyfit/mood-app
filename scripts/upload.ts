@@ -41,9 +41,9 @@ async function run() {
     console.log("moods 버킷 생성됨(public).");
   }
 
-  // 업로드 대상 = 승인 90장(축×15)만 명시 화이트리스트
-  const files: string[] = [];
-  for (const ax of AXES) for (let i = 1; i <= 15; i++) files.push(`${ax}-${String(i).padStart(3, "0")}.jpg`);
+  // 업로드 대상 = images/post 의 v3 파일({g}-{axis}-NNN.jpg) 전량. (구 90은 _post_v2_male로 백업 이동됨)
+  const re = new RegExp(`^(m|w)-(${AXES.join("|")})-\\d+\\.jpg$`);
+  const files: string[] = (await fs.readdir(POST)).filter((n) => re.test(n)).sort();
 
   let ok = 0, fail = 0;
   for (const f of files) {

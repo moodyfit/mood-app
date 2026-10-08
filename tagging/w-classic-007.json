@@ -1,0 +1,25 @@
+{
+  "file": "w-classic-007.jpg",
+  "mood_vector": {
+    "classic": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "출근",
+    "저녁약속"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "네이비 블레이저에 화이트 셔츠, 와이드 크롭 슬랙스 매치했어",
+  "caption_why": "딱 떨어지는 테일러링에 뉴트럴 톤 조합이라 단정하면서도 세련된 느낌 나",
+  "caption_how": "블레이저는 살짝 오버핏으로, 팬츠는 크롭 기장으로 여유있게 입어봐",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 클래식 정수템 조합이라 재현하기 쉬움",
+  "confidence": 0.85
+}

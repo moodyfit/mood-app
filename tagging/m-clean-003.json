@@ -1,0 +1,25 @@
+{
+  "file": "m-clean-003.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "soft": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "동네"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "male"
+  },
+  "caption_item": "그레이 오버핏 티셔츠에 아이보리 와이드 슬랙스 입었어",
+  "caption_why": "무채색+뉴트럴 톤 두 가지로만 맞추니까 깔끔하고 정돈된 느낌 나",
+  "caption_how": "화이트 스니커로 발끝까지 톤 맞추면 더 미니멀해 보여",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 기본템 조합이 clean 무드를 재현하기 쉬움",
+  "confidence": 0.85
+}

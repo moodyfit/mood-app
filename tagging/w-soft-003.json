@@ -1,0 +1,25 @@
+{
+  "file": "w-soft-003.jpg",
+  "mood_vector": {
+    "soft": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "파우더블루 케이블니트에 그레이 와이드팬츠 매치했어",
+  "caption_why": "포근한 니트 질감이랑 은은한 파스텔톤이 편안하면서도 세련된 무드 만들어줘",
+  "caption_how": "니트는 살짝 여유있게 입고 팬츠는 와이드로 매치해야 밸런스 좋아",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 니트+와이드팬츠 조합이 재현하기 쉬운 기본템이라 대표 이미지로 적합함",
+  "confidence": 0.85
+}

@@ -1,0 +1,25 @@
+{
+  "file": "w-clean-001.jpg",
+  "mood_vector": {
+    "clean": 0.7,
+    "soft": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "나들이"
+  ],
+  "seasons": [
+    "summer"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "화이트 오버사이즈 티에 그레이 와이드 슬랙스, 화이트 스니커로 마무리했어",
+  "caption_why": "무채색 두 톤만 써서 깔끔하고, 넉넉한 핏끼리 매치해서 힘 안 준 정돈된 느낌이 나",
+  "caption_how": "바지 밑단 살짝 접어서 발목 보여주면 답답해 보이지 않아",
+  "is_flagship": true,
+  "flagship_reason": "화이트 티+슬랙스+스니커 조합은 클린 무드의 기본템으로 재현하기 쉬움",
+  "confidence": 0.85
+}

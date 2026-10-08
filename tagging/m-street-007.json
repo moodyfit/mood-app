@@ -1,0 +1,25 @@
+{
+  "file": "m-street-007.jpg",
+  "mood_vector": {
+    "street": 0.8,
+    "clean": 0.2
+  },
+  "situations": [
+    "동네",
+    "나들이"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "regular",
+    "gender": "male"
+  },
+  "caption_item": "블랙 오버핏 후디에 블랙 카고팬츠, 볼캡까지 올블랙으로 맞췄어",
+  "caption_why": "오버사이즈 실루엣이랑 볼륨감 있는 카고 핏이 도시적인 스트릿 무드를 제대로 살려줘",
+  "caption_how": "상하의 다 블랙으로 통일하고 캡 눌러쓰면 힘 안 줘도 스타일 완성돼",
+  "is_flagship": false,
+  "flagship_reason": "전신 실루엣과 얼굴이 잘 보이고 오버핏 후디+카고팬츠 조합이 스트릿 무드를 대표적으로 보여줌",
+  "confidence": 0.85
+}

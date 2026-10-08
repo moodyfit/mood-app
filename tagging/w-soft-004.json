@@ -1,0 +1,25 @@
+{
+  "file": "w-soft-004.jpg",
+  "mood_vector": {
+    "soft": 0.7,
+    "clean": 0.3
+  },
+  "situations": [
+    "주말카페",
+    "동네"
+  ],
+  "seasons": [
+    "fall"
+  ],
+  "body_spec": {
+    "height": "180",
+    "build": "slim",
+    "gender": "female"
+  },
+  "caption_item": "라일락 케이블니트에 베이지 와이드 슬랙스 매치했어",
+  "caption_why": "포근한 니트 질감이랑 은은한 파스텔 컬러 조합이 카페 분위기랑 잘 어울려",
+  "caption_how": "니트는 넉넉하게 입고 하의는 여유있게 떨어지는 핏으로 밸런스 맞춰봐",
+  "is_flagship": false,
+  "flagship_reason": "상반신 니트 텍스처와 컬러가 뚜렷하게 잘 보이고 얼굴·전신 구도도 자연스러워 재현하기 쉬움",
+  "confidence": 0.85
+}
