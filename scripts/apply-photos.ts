@@ -1,5 +1,5 @@
 /**
- * 재태깅 결과를 photos 테이블에 in-place UPDATE (image_url 기준). delete 없음 → id·FK 보존.
+ * 재태깅 결과를 photos 테이블에 upsert (image_url 기준). 전면 교체 시 구 시드 행을 prune (--no-prune 으로 생략).
  * 소스: tagging/{axis}-NNN.json (재태깅) + images/gen_log_v2.json(aspect_ratio).
  * 인증: NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_KEY. 실행: npx tsx scripts/apply-photos.ts
  */
@@ -81,7 +81,10 @@ async function run() {
   if (!only.length && !process.argv.includes("--no-prune")) {
     const keep = new Set(files.map((f) => `moods/${f}.jpg`));
     const { data: all } = await sb.from("photos").select("id,image_url");
-    const stale = (all ?? []).filter((r: any) => !keep.has(r.image_url));
+    // 시드(moods/)만 교체 대상 — uploads/ 는 유저가 올린 사진이라 신 세트에 없는 게 정상(FEAT-013).
+    const stale = (all ?? []).filter(
+      (r: any) => r.image_url.startsWith("moods/") && !keep.has(r.image_url)
+    );
     if (stale.length) {
       const { error } = await sb.from("photos").delete().in("id", stale.map((r: any) => r.id));
       console.log(error ? `구 행 삭제 실패: ${error.message}` : `구 행 삭제: ${stale.length}개`);
