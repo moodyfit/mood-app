@@ -22,9 +22,10 @@ export function PhotoDetail({ slug }: { slug: string }) {
   }, [uploaded, showToast]);
 
   const moodKey = photo ? (dominantMood(photo.mood_vector) as MoodKey) : ("clean" as MoodKey);
-  const { products, loading: productsLoading } = useProductsForPhoto(
+  const { products, source, loading: productsLoading } = useProductsForPhoto(
     photo?.image_url ?? "",
     moodKey,
+    photo?.caption_item ?? "",
   );
 
   if (photoLoading || productsLoading) {
@@ -43,5 +44,5 @@ export function PhotoDetail({ slug }: { slug: string }) {
     );
   }
 
-  return <PhotoProductView photo={photo} products={products} />;
+  return <PhotoProductView photo={photo} products={products} source={source} />;
 }

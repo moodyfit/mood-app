@@ -153,10 +153,54 @@ export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]>
   return list;
 }
 
-/** 사진 연결 상품 있으면 그것, 없으면 무드 폴백 → 로컬 더미 (부분 교체·무중단) */
-export async function getProductsForPhoto(imageUrl: string, moodKey: MoodKey): Promise<Product[]> {
-  const p = await fetchProductsByPhoto(imageUrl);
-  return p.length > 0 ? p : getProductsForMood(moodKey);
+// 상품명 토큰 → 캡션에 나오는 다른 표현
+const CAPTION_ALIASES: Record<string, string[]> = {
+  자켓: ["재킷"],
+  워크부츠: ["워커"],
+  오버코트: ["롱코트"],
+  옥스퍼드: ["셔츠"],
+  진: ["청바지"],
+  데님: ["청자켓", "청바지", "청데님"],
+  후디: ["후드"],
+  가디건: ["카디건"],
+  카디건: ["가디건"],
+  스웻셔츠: ["스웨트", "맨투맨"],
+  볼캡: ["캡"],
+  수트: ["슈트"],
+};
+
+/**
+ * caption_item 을 옷 하나씩의 절로 나누고, 상품명 토큰이 한 절 안에 몇 개 들어 있는지로 점수 매겨
+ * 카테고리별 1위만 남긴다. 마지막 토큰(옷 종류)이 그 절에 없으면 0점. 0점 카테고리는 비운다. 동점은 이름순.
+ */
+// ponytail: 부분 문자열 겹침 + 고정 동의어 표, v3 외 어휘가 들어오면 표 확장
+export function matchLook(caption: string, products: Product[]): Product[] {
+  const clauses = caption.split(/,|에 |랑 |하고 |입고 |쓰고 /);
+  const best = new Map<string, { p: Product; s: number }>();
+  for (const p of [...products].sort((a, b) => a.name.localeCompare(b.name))) {
+    const tokens = p.name.split(/\s+/);
+    let s = 0;
+    for (const c of clauses) {
+      const has = (t: string) => [t, ...(CAPTION_ALIASES[t] ?? [])].some((a) => c.includes(a));
+      if (has(tokens[tokens.length - 1])) s = Math.max(s, tokens.filter(has).length);
+    }
+    if (s > (best.get(p.category)?.s ?? 0)) best.set(p.category, { p, s });
+  }
+  return [...best.values()].map((x) => x.p);
+}
+
+/** linked = 사진에 연결된 상품, matched = 캡션으로 무드 상품에서 고른 한 벌 */
+export type PhotoProductsSource = "linked" | "matched";
+
+/** 사진 연결 상품 있으면 그것, 없으면 무드 상품(→ 로컬 더미)에서 캡션 매칭 */
+export async function getProductsForPhoto(
+  imageUrl: string,
+  moodKey: MoodKey,
+  caption: string,
+): Promise<{ products: Product[]; source: PhotoProductsSource }> {
+  const linked = await fetchProductsByPhoto(imageUrl);
+  if (linked.length > 0) return { products: linked, source: "linked" };
+  return { products: matchLook(caption, await getProductsForMood(moodKey)), source: "matched" };
 }
 
 /**

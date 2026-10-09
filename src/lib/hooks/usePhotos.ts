@@ -7,7 +7,7 @@ import {
   getProductsForMood,
   getProductsForPhoto,
 } from "@/lib/photos";
-import type { Photo } from "@/lib/photos";
+import type { Photo, PhotoProductsSource } from "@/lib/photos";
 import type { MoodKey, Product } from "@/lib/types";
 import { isSupabaseEnabled } from "@/lib/supabase";
 
@@ -54,8 +54,9 @@ export function useProductsForMood(moodKey: MoodKey) {
   return { products, loading };
 }
 
-export function useProductsForPhoto(imageUrl: string, moodKey: MoodKey) {
+export function useProductsForPhoto(imageUrl: string, moodKey: MoodKey, caption: string) {
   const [products, setProducts] = useState<Product[]>([]);
+  const [source, setSource] = useState<PhotoProductsSource>("matched");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -64,10 +65,13 @@ export function useProductsForPhoto(imageUrl: string, moodKey: MoodKey) {
       return;
     }
     setLoading(true);
-    getProductsForPhoto(imageUrl, moodKey)
-      .then(setProducts)
+    getProductsForPhoto(imageUrl, moodKey, caption)
+      .then((r) => {
+        setProducts(r.products);
+        setSource(r.source);
+      })
       .finally(() => setLoading(false));
-  }, [imageUrl, moodKey]);
+  }, [imageUrl, moodKey, caption]);
 
-  return { products, loading };
+  return { products, source, loading };
 }
