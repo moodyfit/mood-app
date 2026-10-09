@@ -177,14 +177,33 @@ const CAPTION_COMPOUNDS: [string, string, string?][] = [
   ["셔츠자켓", "자켓", "아우터"],
 ];
 
-// [겹친 토큰 수, 일치한 옷 종류 표현 길이, -캡션에 없는 토큰 수] — 앞에서부터 비교
-type MatchScore = [number, number, number];
-const cmpScore = (a: MatchScore, b: MatchScore) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
+// 색 계열 — 캡션 색이 상품에 없을 때 가까운 색을 고르는 용도. 부분 문자열이라 "그린"은 딥그린·세이지그린도 포함
+const COLOR_FAMILIES: string[][] = [
+  ["화이트", "아이보리", "크림", "에크루", "오트밀"],
+  ["베이지", "오트밀", "탄", "카멜"],
+  ["브라운", "카멜", "러스트"],
+  ["올리브", "카키", "그린"],
+  ["그레이", "차콜"],
+  ["블랙", "검정", "차콜"],
+  ["블루", "네이비", "인디고", "진청", "워시", "하늘색"],
+];
+const colorFamilies = (text: string) =>
+  COLOR_FAMILIES.flatMap((f, i) => (f.some((c) => text.includes(c)) ? [i] : []));
+
+// 한쪽이 다른 쪽을 품을 때만 긴 쪽이 이긴다(필드자켓 > 자켓). 셔츠 vs 티처럼 다른 옷이면 0
+const cmpKind = (a: string, b: string) =>
+  a === b ? 0 : a.includes(b) ? 1 : b.includes(a) ? -1 : 0;
+
+// [겹친 토큰 수, 일치한 옷 종류 표현, 같은 색 계열(1/0), -캡션에 없는 토큰 수] — 앞에서부터 비교
+type MatchScore = [number, string, number, number];
+const cmpScore = (a: MatchScore, b: MatchScore) =>
+  a[0] - b[0] || cmpKind(a[1], b[1]) || a[2] - b[2] || a[3] - b[3];
 
 /**
  * caption_item 을 옷 하나씩의 절로 나누고, 상품명 토큰이 한 절 안에 몇 개 들어 있는지로 점수 매겨
  * 카테고리별 1위만 남긴다. 마지막 토큰(옷 종류)이 그 절에 없으면 0점. 0점 카테고리는 비운다.
- * 동점이면 옷 종류가 더 길게 일치한 쪽(필드자켓 > 자켓), 그다음 이름에 군더더기가 적은 쪽, 마지막은 이름순.
+ * 동점이면 옷 종류가 더 길게 일치한 쪽(필드자켓 > 자켓), 같은 색 계열인 쪽, 이름에 군더더기가 적은 쪽,
+ * 마지막은 이름순.
  */
 // ponytail: 부분 문자열 겹침 + 고정 동의어·합성어 표, v3 외 어휘가 들어오면 표 확장
 export function matchLook(caption: string, products: Product[]): Product[] {
@@ -196,13 +215,15 @@ export function matchLook(caption: string, products: Product[]): Product[] {
   const best = new Map<string, { p: Product; s: MatchScore }>();
   for (const p of [...products].sort((a, b) => a.name.localeCompare(b.name))) {
     const tokens = p.name.split(/\s+/);
-    let s: MatchScore = [0, 0, 0];
+    const pColors = colorFamilies(p.name);
+    let s: MatchScore = [0, "", 0, 0];
     for (const c of clausesFor(p.category)) {
       const hit = (t: string) => [t, ...(CAPTION_ALIASES[t] ?? [])].find((a) => c.includes(a));
       const kind = hit(tokens[tokens.length - 1]);
       if (!kind) continue;
       const n = tokens.filter(hit).length;
-      const cand: MatchScore = [n, kind.length, n - tokens.length];
+      const sameColor = colorFamilies(c).some((f) => pColors.includes(f)) ? 1 : 0;
+      const cand: MatchScore = [n, kind, sameColor, n - tokens.length];
       if (cmpScore(cand, s) > 0) s = cand;
     }
     const cur = best.get(p.category);
