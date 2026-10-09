@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import type { Product } from "@/lib/types";
-import type { Photo } from "@/lib/photos";
+import type { Photo, PhotoProductsSource } from "@/lib/photos";
 import { photoUrl } from "@/lib/photos";
 import { primaryPrice, formatMan } from "@/lib/products";
 import { useMoodStore } from "@/lib/store";
@@ -13,14 +13,16 @@ import WholeLook from "./WholeLook";
 /**
  * (B) 사진 전용 상품 뷰 — "그 사진 그대로 산다".
  * 반했던 사진 원본 → 해설 3행 → 완성가 → 그 사진 속 아이템(사진 연결 상품) → 통째로 담기.
- * 상품 미연결 사진은 무드 폴백(getProductsForPhoto)로 완결.
+ * 상품 미연결 사진은 캡션으로 무드 상품에서 고른 한 벌(getProductsForPhoto)로 완결.
  */
 export default function PhotoProductView({
   photo,
   products,
+  source,
 }: {
   photo: Photo;
   products: Product[];
+  source: PhotoProductsSource;
 }) {
   const { recordView } = useMoodStore();
   useEffect(() => {
@@ -68,16 +70,26 @@ export default function PhotoProductView({
 
       {/* 그 사진 속 아이템 */}
       <div className="mt-6 mb-2 flex items-baseline justify-between">
-        <div className="text-[13px] font-semibold">이 사진 그대로</div>
-        <div className="text-[11px] text-ink-faint">가격·링크 확인 중(공개 링크)</div>
+        <div className="text-[13px] font-semibold">
+          {source === "linked" ? "이 사진 그대로" : "이 느낌으로 고른 옷"}
+        </div>
+        {products.length > 0 && <div className="text-[11px] text-ink-faint">가격·링크 확인 중(공개 링크)</div>}
       </div>
-      <div className="flex flex-col gap-2.5">
-        {products.map((p) => (
-          <ProductRow key={p.id} product={p} />
-        ))}
-      </div>
-
-      <WholeLook products={products} />
+      {products.length > 0 ? (
+        <>
+          <div className="flex flex-col gap-2.5">
+            {products.map((p) => (
+              <ProductRow key={p.id} product={p} />
+            ))}
+          </div>
+          <WholeLook products={products} />
+        </>
+      ) : (
+        <div className="rounded-xl border border-dashed border-line bg-white px-4 py-7 text-center">
+          <p className="text-[13.5px] font-medium text-ink">이 사진에 맞는 상품을 아직 못 찾았어</p>
+          <p className="mt-1 text-[12px] text-ink-faint">상품이 들어오면 여기에 보여줄게</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -153,10 +153,97 @@ export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]>
   return list;
 }
 
-/** 사진 연결 상품 있으면 그것, 없으면 무드 폴백 → 로컬 더미 (부분 교체·무중단) */
-export async function getProductsForPhoto(imageUrl: string, moodKey: MoodKey): Promise<Product[]> {
-  const p = await fetchProductsByPhoto(imageUrl);
-  return p.length > 0 ? p : getProductsForMood(moodKey);
+// 상품명 토큰 → 캡션에 나오는 다른 표현
+const CAPTION_ALIASES: Record<string, string[]> = {
+  자켓: ["재킷"],
+  워크부츠: ["워커"],
+  오버코트: ["롱코트"],
+  옥스퍼드: ["셔츠"],
+  진: ["청바지"],
+  데님: ["청자켓", "청바지", "청데님"],
+  후디: ["후드"],
+  가디건: ["카디건"],
+  카디건: ["가디건"],
+  스웻셔츠: ["스웨트", "맨투맨"],
+  볼캡: ["캡"],
+  수트: ["슈트"],
+};
+
+// 다른 옷 이름을 품은 합성어 → 실제 옷 종류 ("티셔츠"의 "셔츠"가 셔츠 상품에 걸리지 않게).
+// 세 번째 값 카테고리의 상품에는 치환하지 않는다(셔츠자켓은 아우터 셔츠와도 맞아야 함).
+const CAPTION_COMPOUNDS: [string, string, string?][] = [
+  ["티셔츠", "티"],
+  ["후드티", "후드"],
+  ["셔츠자켓", "자켓", "아우터"],
+];
+
+// 색 계열 — 캡션 색이 상품에 없을 때 가까운 색을 고르는 용도. 부분 문자열이라 "그린"은 딥그린·세이지그린도 포함
+const COLOR_FAMILIES: string[][] = [
+  ["화이트", "아이보리", "크림", "에크루", "오트밀"],
+  ["베이지", "오트밀", "탄", "카멜"],
+  ["브라운", "카멜", "러스트"],
+  ["올리브", "카키", "그린"],
+  ["그레이", "차콜"],
+  ["블랙", "검정", "차콜"],
+  ["블루", "네이비", "인디고", "진청", "워시", "하늘색"],
+];
+const colorFamilies = (text: string) =>
+  COLOR_FAMILIES.flatMap((f, i) => (f.some((c) => text.includes(c)) ? [i] : []));
+
+// 한쪽이 다른 쪽을 품을 때만 긴 쪽이 이긴다(필드자켓 > 자켓). 셔츠 vs 티처럼 다른 옷이면 0
+const cmpKind = (a: string, b: string) =>
+  a === b ? 0 : a.includes(b) ? 1 : b.includes(a) ? -1 : 0;
+
+// [겹친 토큰 수, 일치한 옷 종류 표현, 같은 색 계열(1/0), -캡션에 없는 토큰 수] — 앞에서부터 비교
+type MatchScore = [number, string, number, number];
+const cmpScore = (a: MatchScore, b: MatchScore) =>
+  a[0] - b[0] || cmpKind(a[1], b[1]) || a[2] - b[2] || a[3] - b[3];
+
+/**
+ * caption_item 을 옷 하나씩의 절로 나누고, 상품명 토큰이 한 절 안에 몇 개 들어 있는지로 점수 매겨
+ * 카테고리별 1위만 남긴다. 마지막 토큰(옷 종류)이 그 절에 없으면 0점. 0점 카테고리는 비운다.
+ * 동점이면 옷 종류가 더 길게 일치한 쪽(필드자켓 > 자켓), 같은 색 계열인 쪽, 이름에 군더더기가 적은 쪽,
+ * 마지막은 이름순.
+ */
+// ponytail: 부분 문자열 겹침 + 고정 동의어·합성어 표, v3 외 어휘가 들어오면 표 확장
+export function matchLook(caption: string, products: Product[]): Product[] {
+  const raw = caption.split(/,|에 |랑 |하고 |입고 |쓰고 /);
+  const clausesFor = (category: string) =>
+    raw.map((c) =>
+      CAPTION_COMPOUNDS.reduce((s, [from, to, keepIn]) => (keepIn === category ? s : s.split(from).join(to)), c),
+    );
+  const best = new Map<string, { p: Product; s: MatchScore }>();
+  for (const p of [...products].sort((a, b) => a.name.localeCompare(b.name))) {
+    const tokens = p.name.split(/\s+/);
+    const pColors = colorFamilies(p.name);
+    let s: MatchScore = [0, "", 0, 0];
+    for (const c of clausesFor(p.category)) {
+      const hit = (t: string) => [t, ...(CAPTION_ALIASES[t] ?? [])].find((a) => c.includes(a));
+      const kind = hit(tokens[tokens.length - 1]);
+      if (!kind) continue;
+      const n = tokens.filter(hit).length;
+      const sameColor = colorFamilies(c).some((f) => pColors.includes(f)) ? 1 : 0;
+      const cand: MatchScore = [n, kind, sameColor, n - tokens.length];
+      if (cmpScore(cand, s) > 0) s = cand;
+    }
+    const cur = best.get(p.category);
+    if (s[0] > 0 && (!cur || cmpScore(s, cur.s) > 0)) best.set(p.category, { p, s });
+  }
+  return [...best.values()].map((x) => x.p);
+}
+
+/** linked = 사진에 연결된 상품, matched = 캡션으로 무드 상품에서 고른 한 벌 */
+export type PhotoProductsSource = "linked" | "matched";
+
+/** 사진 연결 상품 있으면 그것, 없으면 무드 상품(→ 로컬 더미)에서 캡션 매칭 */
+export async function getProductsForPhoto(
+  imageUrl: string,
+  moodKey: MoodKey,
+  caption: string,
+): Promise<{ products: Product[]; source: PhotoProductsSource }> {
+  const linked = await fetchProductsByPhoto(imageUrl);
+  if (linked.length > 0) return { products: linked, source: "linked" };
+  return { products: matchLook(caption, await getProductsForMood(moodKey)), source: "matched" };
 }
 
 /**
