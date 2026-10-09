@@ -73,15 +73,23 @@ export default function PhotoProductView({
         <div className="text-[13px] font-semibold">
           {source === "linked" ? "이 사진 그대로" : "이 느낌으로 고른 옷"}
         </div>
-        <div className="text-[11px] text-ink-faint">가격·링크 확인 중(공개 링크)</div>
+        {products.length > 0 && <div className="text-[11px] text-ink-faint">가격·링크 확인 중(공개 링크)</div>}
       </div>
-      <div className="flex flex-col gap-2.5">
-        {products.map((p) => (
-          <ProductRow key={p.id} product={p} />
-        ))}
-      </div>
-
-      <WholeLook products={products} />
+      {products.length > 0 ? (
+        <>
+          <div className="flex flex-col gap-2.5">
+            {products.map((p) => (
+              <ProductRow key={p.id} product={p} />
+            ))}
+          </div>
+          <WholeLook products={products} />
+        </>
+      ) : (
+        <div className="rounded-xl border border-dashed border-line bg-white px-4 py-7 text-center">
+          <p className="text-[13.5px] font-medium text-ink">이 사진에 맞는 상품을 아직 못 찾았어</p>
+          <p className="mt-1 text-[12px] text-ink-faint">상품이 들어오면 여기에 보여줄게</p>
+        </div>
+      )}
     </div>
   );
 }
