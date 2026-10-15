@@ -5,6 +5,7 @@ import type { Photo } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 import { TASTE_CARD_THRESHOLD } from "@/lib/taste";
 import { rankPersonalized, personalizationStrength, HERO_MIN_STRENGTH } from "@/lib/rank";
+import { useScrollRestore } from "@/lib/hooks/useScrollRestore";
 import PhotoCard from "./PhotoCard";
 import ResultToggle from "./ResultToggle";
 
@@ -34,8 +35,17 @@ export default function PhotoGrid({
   // 프로필 형성 = 저장 3장 이상. 형성되면 기본값이 '너의 결과'.
   const formed = savedCount >= TASTE_CARD_THRESHOLD;
   const [override, setOverride] = useState<boolean | null>(null);
-  const [visible, setVisible] = useState(INITIAL_VISIBLE);
   const personal = override ?? (you || formed);
+  // BUG-008: 뒤로가기 시 로드량/스크롤 복원(HomeGallery와 동일한 BUG-004 패턴).
+  // storageKey에 query·you를 섞어 검색어·모드별로 복원 슬롯을 분리 — 다른 검색 결과의 스크롤
+  // 위치가 섞여 들어오지 않게 한다. resetKey에 personal까지 포함해, [모두의 결과 ↔ 너의 결과]
+  // 토글로 순서가 바뀔 때도 처음부터 다시 보여준다(기존 onToggle 동작과 동일).
+  const [visible, setVisible] = useScrollRestore(
+    `moodfit:results-scroll:${query}:${you}`,
+    `${query}|${you}|${personal}`,
+    INITIAL_VISIBLE,
+    false
+  );
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   function onToggle(v: boolean) {
