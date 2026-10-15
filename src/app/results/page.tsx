@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import BackButton from "@/components/BackButton";
 import ResultsGrid from "@/components/ResultsGrid";
@@ -8,6 +8,7 @@ import PhotoGrid from "@/components/PhotoGrid";
 import { usePhotos } from "@/lib/hooks/usePhotos";
 import { rankPhotos } from "@/lib/photos";
 import { resolveMoods } from "@/lib/moods";
+import { useMoodStore } from "@/lib/store";
 
 // ?q= 검색어로 무드 기반 사진 랭킹 → 그리드 표시.
 // FEAT-008: resolveMoods(고정 20문구)는 즉시 폴백으로만 쓰고, AI 번역(/api/search/translate)
@@ -19,6 +20,12 @@ function ResultsContent() {
 
   const { photos, loading } = usePhotos();
   const [moodKeys, setMoodKeys] = useState<string[]>(() => resolveMoods(q));
+  // 홈에서 고른 남/녀 필터를 검색 결과에도 그대로 적용(전역 설정, 회의록 2026-10-08).
+  const { genderFilter } = useMoodStore();
+  const filteredPhotos = useMemo(
+    () => (genderFilter === "all" ? photos : photos.filter((p) => p.gender === genderFilter)),
+    [photos, genderFilter]
+  );
 
   useEffect(() => {
     if (you || !q) return;
@@ -47,8 +54,8 @@ function ResultsContent() {
     );
   }
 
-  if (photos.length > 0) {
-    const ranked = you ? photos : rankPhotos(photos, moodKeys);
+  if (filteredPhotos.length > 0) {
+    const ranked = you ? filteredPhotos : rankPhotos(filteredPhotos, moodKeys);
     return (
       <div className="animate-fade px-5 pb-12">
         <BackButton href="/" />

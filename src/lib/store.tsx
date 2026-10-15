@@ -71,6 +71,10 @@ const K_DISC = "mood.discovered.v1"; // C7 '발견' 결 (스크린샷 입주)
 const K_WORN = "mood.worn.v1"; // #9 [입었어] 착용 횟수 (아이템 id별)
 const K_BODY = "mood.bodyProfile.v1"; // 영상(룩북) 탭 — 신체 프로필(고정 검색축·락인)
 const K_UID = "mood.uid.v1"; // 익명 기기 신원(개인화 서버 적재 키. 로그인 도입 시 병합)
+const K_GENDER_FILTER = "mood.genderFilter.v1"; // 회의록(2026-10-08) 남/녀 토글 — v3(#20) 이후 남녀 코디가 섞여 나오는 문제
+
+/** 피드 성별 필터. "all"이면 photos.gender 무관 전부 노출(기존 동작). */
+export type GenderFilter = "all" | "male" | "female";
 
 // 신체 프로필: 한 번 넣으면 이후 모든 룩 검색이 이걸로 걸러짐(쌓일수록 나가기 어려움).
 export interface BodyProfile {
@@ -114,6 +118,8 @@ interface MoodStore {
   wornOf: (id: string) => number;
   bodyProfile: BodyProfile;
   setBodyProfile: (p: BodyProfile) => void;
+  genderFilter: GenderFilter;
+  setGenderFilter: (g: GenderFilter) => void;
   user: AuthUser | null;
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signIn: (email: string, password: string) => Promise<AuthResult>;
@@ -137,6 +143,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [discovered, setDiscovered] = useState<DiscoveredItem[]>([]);
   const [worn, setWorn] = useState<Record<string, number>>({});
   const [bodyProfile, setBodyProfileState] = useState<BodyProfile>({});
+  const [genderFilter, setGenderFilterState] = useState<GenderFilter>("all");
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -178,6 +185,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       if (w) setWorn(JSON.parse(w));
       const bp = localStorage.getItem(K_BODY);
       if (bp) setBodyProfileState(JSON.parse(bp));
+      const gf = localStorage.getItem(K_GENDER_FILTER);
+      if (gf === "male" || gf === "female") setGenderFilterState(gf);
     } catch {
       /* ignore */
     }
@@ -457,6 +466,15 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const setGenderFilter = useCallback((g: GenderFilter) => {
+    setGenderFilterState(g);
+    try {
+      localStorage.setItem(K_GENDER_FILTER, g);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   const addDiscovered = useCallback((moodKey: MoodKey) => {
     setDiscovered((prev) => {
       const id = `${moodKey}-${prev.length}`;
@@ -563,6 +581,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       wornOf,
       bodyProfile,
       setBodyProfile,
+      genderFilter,
+      setGenderFilter,
       user,
       signUp,
       signIn,
@@ -599,6 +619,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       wornOf,
       bodyProfile,
       setBodyProfile,
+      genderFilter,
+      setGenderFilter,
       user,
       signUp,
       signIn,
