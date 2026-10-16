@@ -11,9 +11,12 @@ import { useEffect, useRef, useState } from "react";
  *   호출부에서 키에 섞어 넣는다(예: `moodfit:results-scroll:${query}`). 바뀌면 그 시점 저장값으로
  *   복원을 다시 시도한다.
  * @param resetKey storageKey는 그대로인데 "진짜 값이 바뀌어서" 처음부터 다시 보여줘야 하는 신호
- *   (예: 같은 컴포넌트 인스턴스 안에서 검색 모드 on/off). 단순 mounted 플래그로 만들면 React
- *   StrictMode(dev)의 effect 이중 실행에서 두 번째 실행 때 플래그가 이미 true라 오탐 리셋이
- *   발생한다 — "값 자체"를 비교하는 이 방식은 effect가 몇 번 실행되든 진짜 변경에서만 반응한다.
+ *   (예: 같은 컴포넌트 인스턴스 안에서 검색어 변경). skip=true로 가는 전환(검색 진입)에서만
+ *   리셋이 실행된다 — skip=false로 돌아오는 전환(검색 해제)은 "처음부터"가 아니라 저장된 값으로
+ *   복귀하는 게 맞는 동작이라 resetKey가 바뀌어도 여기선 손대지 않는다(복원 effect가 담당).
+ *   단순 mounted 플래그로 만들면 React StrictMode(dev)의 effect 이중 실행에서 두 번째 실행 때
+ *   플래그가 이미 true라 오탐 리셋이 발생한다 — "값 자체"를 비교하는 이 방식은 effect가 몇 번
+ *   실행되든 진짜 변경에서만 반응한다.
  * @param initialVisible 복원할 값이 없을 때의 시작 카드 수.
  * @param skip true면 복원·저장을 둘 다 하지 않는다(검색 모드처럼 세션 간 유지가 불필요한 경우).
  */

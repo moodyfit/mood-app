@@ -51,10 +51,11 @@ export default function PhotoGrid({
   const personal = override ?? (you || formed);
   // BUG-008: 뒤로가기 시 로드량/스크롤 복원(HomeGallery와 동일한 BUG-004 패턴).
   // storageKey에 query·you를 섞어 검색어·모드별로 복원 슬롯을 분리 — 다른 검색 결과의 스크롤
-  // 위치가 섞여 들어오지 않게 한다. resetKey에 personal까지 포함해, [모두의 결과 ↔ 너의 결과]
-  // 토글로 순서가 바뀔 때도 처음부터 다시 보여준다(기존 onToggle 동작과 동일). override가 위에서
-  // 이미 복원된 값으로 시작하므로, 뒤로가기 마운트 시점엔 resetKey가 저장 당시와 같게 나와
-  // visible/scrollY가 "저장 당시와 같은 정렬" 위에서 복원된다.
+  // 위치가 섞여 들어오지 않게 한다. skip은 항상 false라 resetKey(에 포함된 personal)는 여기선
+  // 리셋을 트리거하지 않는다(useScrollRestore는 skip=true로 가는 전환에서만 리셋) — [모두의
+  // 결과 ↔ 너의 결과] 토글 시 처음부터 다시 보여주는 건 아래 onToggle의 setVisible이 직접 담당.
+  // override가 위에서 이미 복원된 값으로 시작하므로, 뒤로가기 마운트 시점엔 visible/scrollY가
+  // "저장 당시와 같은 정렬" 위에서 복원된다.
   const [visible, setVisible] = useScrollRestore(
     `moodfit:results-scroll:${query}:${you}`,
     `${query}|${you}|${personal}`,
