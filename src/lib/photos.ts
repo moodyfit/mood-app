@@ -93,7 +93,6 @@ interface ProductRow {
   category: string;
   price: number;
   source: string;
-  gradient: string;
   affiliate_url: string | null;
 }
 
@@ -103,7 +102,7 @@ export async function fetchProductsByMood(moodKey: MoodKey): Promise<Product[]> 
   if (!sb) return [];
   const { data, error } = await sb
     .from("products")
-    .select("name,category,price,source,gradient,affiliate_url")
+    .select("name,category,price,source,affiliate_url")
     .eq("mood_key", moodKey);
   if (error || !data) return [];
 
@@ -117,7 +116,6 @@ export async function fetchProductsByMood(moodKey: MoodKey): Promise<Product[]> 
         name: r.name,
         category: r.category as Product["category"],
         tier: tierOf(r.price),
-        gradient: r.gradient,
         sources: [],
       };
       byName.set(r.name, p);
@@ -141,7 +139,7 @@ export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]>
   if (!sb) return [];
   const { data, error } = await sb
     .from("products")
-    .select("name,category,price,source,gradient,affiliate_url,mood_key")
+    .select("name,category,price,source,affiliate_url,mood_key")
     .eq("photo_image_url", imageUrl);
   if (error || !data) return []; // 컬럼 미존재/미연결 → 빈 배열, 호출부가 무드 폴백
   const byName = new Map<string, Product>();
@@ -155,7 +153,6 @@ export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]>
         name: r.name,
         category: r.category as Product["category"],
         tier: tierOf(r.price),
-        gradient: r.gradient,
         sources: [],
       };
       byName.set(r.name, p);

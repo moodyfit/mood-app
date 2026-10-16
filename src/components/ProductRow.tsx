@@ -53,14 +53,6 @@ export default function ProductRow({
         onClick={() => goTo(cheapest?.affiliateUrl)}
         className="flex w-full items-center gap-3.5 text-left"
       >
-        <div
-          className="h-[78px] w-[66px] flex-shrink-0 rounded-[10px]"
-          style={
-            product.imageUrl
-              ? { backgroundImage: `url(${product.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
-              : { background: product.gradient }
-          }
-        />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 text-sm font-medium">
             {product.name}
