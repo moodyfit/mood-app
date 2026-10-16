@@ -13,10 +13,8 @@ import { MOODS } from "./moods";
  * (겹3② 횡단 가격 비교 = PCPartPicker 신뢰 / 7.10 자연 번역기의 카테고리 전제)
  */
 /**
- * #8 예산 다이얼 — 슬롯(아우터/상의/하의/신발)마다 티어별 변형.
- * 기본템 = 미드(is_default). 예산 다이얼이 같은 무드의 해당 티어로 슬롯을 교체.
- * 티어 변형이 없는 슬롯은 미드 유지("이 슬롯은 그대로가 최선"). 로고 비전면 기본템.
- * (로컬 6무드 = 간판 룩으로 취급, 티어 완비. 실데이터는 간판 10개만 완비 → hasDial)
+ * 슬롯(아우터/상의/하의/신발)마다 티어별 변형. 기본템 = 미드(is_default), 무드 상세는 미드만 쓴다.
+ * 로우 가격은 slotPieces(내 옷 '더하면 완성' 가격 범위)가 쓴다.
  */
 type Variant = { name: string; sources: ProductSource[] };
 // 모든 슬롯에 로우/미드/하이 완비 — 예산을 내려도 아이템을 '빼지' 않고 같은 결의 저렴한 대체품으로 '교체'.
@@ -56,22 +54,6 @@ const SLOTS: { category: ProductCategory; variants: Partial<Record<PriceTier, Va
   },
 ];
 
-export const DIAL_SLOT_COUNT = SLOTS.length;
-/** 슬롯 i에 해당 티어 대안이 있나 (없으면 기본템 유지) */
-export function slotHasTier(i: number, tier: PriceTier): boolean {
-  return Boolean(SLOTS[i]?.variants[tier]);
-}
-/** 예산 프리셋 → 목표 티어. 5만=로우 / 10만=미드 / 20만·상관없음=하이. 양방향 다이얼(상향 포함) */
-export function tierForBudget(won: number | null): PriceTier {
-  if (won == null) return "하이";
-  if (won <= 50000) return "로우";
-  if (won <= 100000) return "미드";
-  return "하이";
-}
-/** 티어별 대안 완비된 간판 룩만 다이얼 노출 (로컬 전체 true) */
-export function hasDial(moodKey: MoodKey): boolean {
-  return Boolean(MOODS[moodKey]);
-}
 /** 무드 룩을 특정 티어로 구성. 슬롯에 티어 없으면 미드(기본템) 폴백 */
 export function buildLook(moodKey: MoodKey, tier: PriceTier = "미드"): Product[] {
   const mood = MOODS[moodKey];

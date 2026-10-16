@@ -5,29 +5,27 @@ import MoodHero from "@/components/MoodHero";
 import ProductSection from "@/components/ProductSection";
 import WholeLook from "@/components/WholeLook";
 import { MOODS } from "@/lib/moods";
-import { primaryPrice } from "@/lib/products";
-import { useProductsForMood } from "@/lib/hooks/usePhotos";
+import { primaryPrice, productsFor } from "@/lib/products";
 import type { MoodKey } from "@/lib/types";
 
 export function MoodDetail({ moodKey }: { moodKey: string }) {
   const mood = MOODS[moodKey as MoodKey];
 
-  // 훅은 조건부 호출 불가 — mood 없어도 항상 실행(결과는 무시)
-  const { products } = useProductsForMood((mood?.key ?? "clean") as MoodKey);
-
   if (!mood) {
     return (
-      <div className="animate-fade px-5 pb-32">
+      <div className="animate-fade px-5 pb-8">
         <BackButton />
         <p className="mt-10 text-center text-[14px] text-ink-soft">존재하지 않는 무드야.</p>
       </div>
     );
   }
 
+  // 완성가·통째로 사기·상품 목록이 같은 기본템 4칸을 쓴다
+  const products = productsFor(mood.key);
   const total = products.reduce((sum, product) => sum + primaryPrice(product), 0);
 
   return (
-    <div className="animate-fade px-5 pb-32">
+    <div className="animate-fade px-5 pb-8">
       <BackButton />
       <MoodHero mood={mood} total={total} />
 
@@ -38,7 +36,7 @@ export function MoodDetail({ moodKey }: { moodKey: string }) {
       </div>
 
       <WholeLook products={products} />
-      <ProductSection mood={mood} />
+      <ProductSection mood={mood} look={products} />
     </div>
   );
 }
