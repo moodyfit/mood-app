@@ -22,6 +22,18 @@ export interface Photo {
   aspect_ratio?: number | null;
 }
 
+/**
+ * 성별 필터(FEAT-014) — "null은 전체에서만 보임" 규칙의 단일 소스. 홈·검색결과 두 곳에서
+ * 복붙되던 같은 식을 여기로 모았다(코드리뷰 P2-1). GenderFilter 타입은 store.tsx에 있지만
+ * 여기서 import하면 store↔photos 순환 참조가 생겨 리터럴 타입으로 직접 받는다.
+ */
+export function filterByGender<T extends { gender?: "male" | "female" | null }>(
+  items: T[],
+  gender: "all" | "male" | "female"
+): T[] {
+  return gender === "all" ? items : items.filter((p) => p.gender === gender);
+}
+
 /** 카드 기본 비율(width/height). 스트릿샷 세로 구도 기준 4:5. */
 export const DEFAULT_CARD_RATIO = 0.8;
 

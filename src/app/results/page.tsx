@@ -6,7 +6,7 @@ import BackButton from "@/components/BackButton";
 import ResultsGrid from "@/components/ResultsGrid";
 import PhotoGrid from "@/components/PhotoGrid";
 import { usePhotos } from "@/lib/hooks/usePhotos";
-import { rankPhotos } from "@/lib/photos";
+import { rankPhotos, filterByGender } from "@/lib/photos";
 import { resolveMoods } from "@/lib/moods";
 import { useMoodStore } from "@/lib/store";
 
@@ -23,7 +23,7 @@ function ResultsContent() {
   // 홈에서 고른 남/녀 필터를 검색 결과에도 그대로 적용(전역 설정, 회의록 2026-10-08).
   const { genderFilter } = useMoodStore();
   const filteredPhotos = useMemo(
-    () => (genderFilter === "all" ? photos : photos.filter((p) => p.gender === genderFilter)),
+    () => filterByGender(photos, genderFilter),
     [photos, genderFilter]
   );
 

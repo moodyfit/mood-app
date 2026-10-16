@@ -6,6 +6,7 @@ import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
 import OptionPicker from "@/components/ui/OptionPicker";
 import { usePhotos } from "@/lib/hooks/usePhotos";
+import { filterByGender } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 
 // 홈 = 약속 모드 진입 카드 + 종합 취향 상시 메이슨리 전시. 검색은 /search 페이지로 분리.
@@ -15,10 +16,9 @@ export default function HomePage() {
   const [query, setQuery] = useState("");
   const [moodKeys, setMoodKeys] = useState<string[]>([]);
   // 회의록(2026-10-08) 남/녀 토글 — v3(#20) 이후 남녀 코디가 피드에 섞여 나오던 문제.
-  // gender는 top-level 컬럼(#20/#21 합의)만 본다. null(과거 90장 등 미태깅)은 "전체"에서만 보임.
   const { genderFilter, setGenderFilter } = useMoodStore();
   const filteredPhotos = useMemo(
-    () => (genderFilter === "all" ? photos : photos.filter((p) => p.gender === genderFilter)),
+    () => filterByGender(photos, genderFilter),
     [photos, genderFilter]
   );
 
@@ -58,6 +58,7 @@ export default function HomePage() {
 
       <div className="px-5 pt-5">
         <OptionPicker
+          label="성별"
           value={genderFilter}
           onChange={setGenderFilter}
           options={[
