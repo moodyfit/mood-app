@@ -32,22 +32,35 @@ export function useScrollRestore(
   // scroll 리스너가 곧바로 sessionStorage에 재저장해서 복원이 무효화되는 경합이 있었다 — 복원
   // 완료 전에는 쓰기를 전부 보류한다.
   const restoredRef = useRef(false);
+  // 저장·복원 effect용 "최신 skip" ref — 이 두 effect의 deps에는 일부러 skip을 안 넣는다(코드리뷰
+  // P1-2). storageKey가 그대로인데 skip만 바뀌는 경우(같은 컴포넌트 인스턴스 안에서 검색 모드
+  // on/off, 예: 홈 인라인 검색)는 "슬롯이 바뀐 것도 처음 마운트된 것도" 아니라서, 복원(scrollTo)을
+  // 다시 트리거하면 안 되고 검색 중이던 visible을 슬롯에 흘려 써도 안 된다 — deps에 skip이 있으면
+  // 검색 해제 순간 두 effect가 재실행되며 정확히 이 문제를 일으켰다(재현: 검색 해제 시 예전 스크롤
+  // 위치로 튐). ref로 "지금 skip인지"만 읽고, "skip이 바뀌었다는 사실" 자체엔 반응하지 않는다.
+  const skipRef = useRef(skip);
+  skipRef.current = skip;
 
-  // resetKey가 실제로 바뀌면 처음부터 다시 — 최초 마운트(복원된 visible)는 ref가 이미 같은
-  // 값으로 시작하므로 자연히 스킵된다.
+  // resetKey가 실제로 바뀌면 처음부터 다시 — 단, skip 쪽(예: 검색 모드 진입)으로 바뀔 때만이다.
+  // skip=false로 돌아오는 전환(예: 검색 해제 → 홈 복귀)은 "처음부터"가 아니라 "저장된 값으로
+  // 돌아가기"가 맞는 동작이라 여기서 손대지 않는다 — 아래 복원 effect가 담당한다. 둘 다 여기서
+  // 리셋해버리면 홈 슬롯에 저장돼 있던 값(예: 48장/4285px)이 복원 없이 날아간다(코드리뷰 P1-2).
   useEffect(() => {
     if (resetKeyRef.current === resetKey) return;
     resetKeyRef.current = resetKey;
-    setVisible(initialVisible);
+    if (skip) setVisible(initialVisible);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetKey]);
+  }, [resetKey, skip]);
 
   // 로드량 변경 시 sessionStorage에 저장(skip·복원 진행 중 제외) — 뒤로가기 시 이 값으로 복원.
+  // deps에 skip을 넣지 않는다 — skip만 바뀌는 순간(예: 검색 해제)에 이 effect가 재실행되면,
+  // restoredRef가 이미 true로 남아있어 가드를 통과하고 "검색 중이던 visible"을 그대로 슬롯에
+  // 흘려 써버린다(P1-2). visible이 실제로 바뀔 때만 저장하고, 그 시점의 skip은 ref로 읽는다.
   useEffect(() => {
-    if (skip || !restoredRef.current) return;
+    if (skipRef.current || !restoredRef.current) return;
     writeScrollState(storageKey, { visible, scrollY: readScrollState(storageKey)?.scrollY ?? 0 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, skip, storageKey]);
+  }, [visible, storageKey]);
 
   // 스크롤 위치도 저장(skip·복원 진행 중 제외), 200ms 디바운스로 쓰기 빈도를 줄인다.
   // scrollY===0인 이벤트는 저장하지 않는다 — 카드 클릭→router.push로 페이지를 떠날 때 Next가
@@ -75,15 +88,27 @@ export function useScrollRestore(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [skip, storageKey]);
 
-  // storageKey가 바뀌거나 마운트될 때, 저장된 스크롤 위치로 복원.
+  // storageKey가 바뀌거나, skip이 false가 될 때(최초 마운트 또는 검색 해제 등 "복귀") 저장된
+  // 스크롤 위치로 복원. skip이 true가 되는 전환(검색 진입)은 여기서 바로 return — 복원은
+  // "세션 유지 대상으로 돌아올 때"만 의미가 있고, 검색 중엔 scrollTo를 아예 시도하지 않는다.
   // 목표 높이만큼 카드가 그려지기 전에 scrollTo하면 브라우저가 값을 잘라버리므로, 문서가 충분히
-  // 자랄 때까지 50ms 간격으로 재시도한다. visible이 이미 복원된 값으로 시작하므로 보통 1~2회
-  // 안에 도달한다(카드 박스는 aspect-ratio로 이미지 로드 전에도 크기가 고정됨).
+  // 자랄 때까지 50ms 간격으로 재시도한다.
   useEffect(() => {
+    if (skip) {
+      restoredRef.current = true; // 검색 중엔 복원할 것도 저장할 것도 없음 — 바로 완료 처리
+      return;
+    }
     restoredRef.current = false;
-    const saved = skip ? null : readScrollState(storageKey);
-    if (!saved || saved.scrollY <= 0) {
-      restoredRef.current = true; // 복원할 게 없으면 바로 완료 처리 — 이후 저장이 정상 동작하도록
+    const saved = readScrollState(storageKey);
+    if (!saved) {
+      restoredRef.current = true;
+      return;
+    }
+    // 검색 해제처럼 storageKey는 그대로인 복귀에서도 visible을 저장값으로 맞춘다 — resetKey
+    // effect는 skip=true로 갈 때만 리셋하므로, 여기서 안 하면 복귀 시 visible이 안 맞는다.
+    setVisible(saved.visible);
+    if (saved.scrollY <= 0) {
+      restoredRef.current = true;
       return;
     }
     let tries = 0;
