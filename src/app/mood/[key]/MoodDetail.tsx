@@ -1,17 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import BackButton from "@/components/BackButton";
 import MoodHero from "@/components/MoodHero";
 import ProductSection from "@/components/ProductSection";
 import WholeLook from "@/components/WholeLook";
 import { MOODS } from "@/lib/moods";
-import { buildLook, primaryPrice } from "@/lib/products";
-import type { MoodKey, PriceTier } from "@/lib/types";
+import { primaryPrice, productsFor } from "@/lib/products";
+import type { MoodKey } from "@/lib/types";
 
 export function MoodDetail({ moodKey }: { moodKey: string }) {
   const mood = MOODS[moodKey as MoodKey];
-  const [tier, setTier] = useState<PriceTier>("미드"); // 기본 = 미드 기본템
 
   if (!mood) {
     return (
@@ -22,8 +20,8 @@ export function MoodDetail({ moodKey }: { moodKey: string }) {
     );
   }
 
-  // 완성가·통째로 사기·다이얼 목록이 같은 4칸을 쓴다
-  const products = buildLook(mood.key, tier);
+  // 완성가·통째로 사기·상품 목록이 같은 기본템 4칸을 쓴다
+  const products = productsFor(mood.key);
   const total = products.reduce((sum, product) => sum + primaryPrice(product), 0);
 
   return (
@@ -38,7 +36,7 @@ export function MoodDetail({ moodKey }: { moodKey: string }) {
       </div>
 
       <WholeLook products={products} />
-      <ProductSection mood={mood} tier={tier} onTierChange={setTier} look={products} />
+      <ProductSection mood={mood} look={products} />
     </div>
   );
 }
