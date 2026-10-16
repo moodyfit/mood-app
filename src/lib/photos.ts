@@ -14,10 +14,24 @@ export interface Photo {
   caption_how?: string | null;
   // 작성자가 직접 쓴 한마디(FEAT-013). caption_* 는 AI 채점값이라 별개. 시드엔 없음.
   user_description?: string | null;
+  // top-level 컬럼(#20/#21 합의 — body_spec.gender가 아니라 여기가 정답). null = 미태깅(과거 90장 등).
+  gender?: "male" | "female" | null;
   is_flagship: boolean | null;
   // 메이슨리(전시 문법)용 세로 비율 = width/height. null이면 기본값.
   // 실값은 생성 단계(GENERATION)에서 부여(4:5 기본 + 3:4/9:16 일부) — 크롭으로 위조 금지.
   aspect_ratio?: number | null;
+}
+
+/**
+ * 성별 필터(FEAT-014) — "null은 전체에서만 보임" 규칙의 단일 소스. 홈·검색결과 두 곳에서
+ * 복붙되던 같은 식을 여기로 모았다(코드리뷰 P2-1). GenderFilter 타입은 store.tsx에 있지만
+ * 여기서 import하면 store↔photos 순환 참조가 생겨 리터럴 타입으로 직접 받는다.
+ */
+export function filterByGender<T extends { gender?: "male" | "female" | null }>(
+  items: T[],
+  gender: "all" | "male" | "female"
+): T[] {
+  return gender === "all" ? items : items.filter((p) => p.gender === gender);
 }
 
 /** 카드 기본 비율(width/height). 스트릿샷 세로 구도 기준 4:5. */
