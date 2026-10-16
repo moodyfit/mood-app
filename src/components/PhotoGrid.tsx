@@ -5,6 +5,7 @@ import type { Photo } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 import { TASTE_CARD_THRESHOLD } from "@/lib/taste";
 import { rankPersonalized, personalizationStrength, HERO_MIN_STRENGTH } from "@/lib/rank";
+import { useScrollRestore } from "@/lib/hooks/useScrollRestore";
 import PhotoCard from "./PhotoCard";
 import ResultToggle from "./ResultToggle";
 
@@ -33,13 +34,43 @@ export default function PhotoGrid({
   const { affinity, savedCount } = useMoodStore();
   // 프로필 형성 = 저장 3장 이상. 형성되면 기본값이 '너의 결과'.
   const formed = savedCount >= TASTE_CARD_THRESHOLD;
-  const [override, setOverride] = useState<boolean | null>(null);
-  const [visible, setVisible] = useState(INITIAL_VISIBLE);
+  // BUG-008 코드리뷰(소피) P1-1: override가 로컬 state라 리마운트(뒤로가기)되면 null로 리셋되고,
+  // scrollY는 복원되지만 정렬(personal)은 기본값으로 바뀌어서 "같은 위치, 다른 사진"이 보이는
+  // 불일치가 있었다 — sessionStorage에 override도 함께 저장·복원한다.
+  const overrideKey = `moodfit:results-override:${query}:${you}`;
+  const [override, setOverride] = useState<boolean | null>(() => {
+    try {
+      const raw = sessionStorage.getItem(overrideKey);
+      if (raw === "true") return true;
+      if (raw === "false") return false;
+    } catch {
+      /* sessionStorage 접근 불가 — 그냥 기본값으로 */
+    }
+    return null;
+  });
   const personal = override ?? (you || formed);
+  // BUG-008: 뒤로가기 시 로드량/스크롤 복원(HomeGallery와 동일한 BUG-004 패턴).
+  // storageKey에 query·you를 섞어 검색어·모드별로 복원 슬롯을 분리 — 다른 검색 결과의 스크롤
+  // 위치가 섞여 들어오지 않게 한다. skip은 항상 false라 resetKey(에 포함된 personal)는 여기선
+  // 리셋을 트리거하지 않는다(useScrollRestore는 skip=true로 가는 전환에서만 리셋) — [모두의
+  // 결과 ↔ 너의 결과] 토글 시 처음부터 다시 보여주는 건 아래 onToggle의 setVisible이 직접 담당.
+  // override가 위에서 이미 복원된 값으로 시작하므로, 뒤로가기 마운트 시점엔 visible/scrollY가
+  // "저장 당시와 같은 정렬" 위에서 복원된다.
+  const [visible, setVisible] = useScrollRestore(
+    `moodfit:results-scroll:${query}:${you}`,
+    `${query}|${you}|${personal}`,
+    INITIAL_VISIBLE,
+    false
+  );
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   function onToggle(v: boolean) {
     setOverride(v);
+    try {
+      sessionStorage.setItem(overrideKey, String(v));
+    } catch {
+      /* 무시 — 복원 실패해도 토글 자체는 정상 동작 */
+    }
     setVisible(INITIAL_VISIBLE); // 순서 바뀌니 처음부터 다시 끊어 보여줌
   }
 
