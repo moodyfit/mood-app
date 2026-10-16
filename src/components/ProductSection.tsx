@@ -1,18 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import type { Mood, PriceTier } from "@/lib/types";
+import type { Mood, PriceTier, Product } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
-import {
-  BUDGETS,
-  buildLook,
-  slotHasTier,
-  tierForBudget,
-  hasDial,
-  primaryPrice,
-  formatMan,
-} from "@/lib/products";
+import { slotHasTier, hasDial } from "@/lib/products";
 import ProductRow from "./ProductRow";
+
+// 금액 라벨은 룩 합계로 읽혀서(5만 → 실제 10.6만) 결로 표기한다
+const TIERS: { tier: PriceTier; label: string }[] = [
+  { tier: "로우", label: "가볍게" },
+  { tier: "미드", label: "기본" },
+  { tier: "하이", label: "제대로" },
+];
 
 /**
  * #8 예산 다이얼 — "같은 느낌, 다른 완성".
@@ -20,14 +18,20 @@ import ProductRow from "./ProductRow";
  * 티어 대안 없는 슬롯은 기본템 유지 + "이 슬롯은 그대로가 최선". 슬롯별 개별 애니메이션.
  * 취향(무드)은 그대로, 실행(예산)만 유저 것 — 제0조.
  */
-export default function ProductSection({ mood }: { mood: Mood }) {
+export default function ProductSection({
+  mood,
+  tier,
+  onTierChange,
+  look,
+}: {
+  mood: Mood;
+  tier: PriceTier;
+  onTierChange: (tier: PriceTier) => void;
+  look: Product[];
+}) {
   const { isSaved } = useMoodStore();
   const saved = isSaved(mood.key);
   const dial = hasDial(mood.key);
-
-  const [tier, setTier] = useState<PriceTier>("미드"); // 기본 = 미드 기본템
-  const look = buildLook(mood.key, tier);
-  const total = look.reduce((s, p) => s + primaryPrice(p), 0);
 
   const reason = saved
     ? "담은 무드와 같은 결의 아이템"
@@ -56,26 +60,18 @@ export default function ProductSection({ mood }: { mood: Mood }) {
         <div className="mt-5">
           <div className="text-[13px] font-semibold">같은 느낌, 다른 완성</div>
           <div className="mt-2 flex flex-wrap gap-2">
-            {BUDGETS.map((b) => {
-              const t = tierForBudget(b.won);
-              const active = t === tier;
-              return (
-                <button
-                  key={b.label}
-                  type="button"
-                  onClick={() => setTier(t)}
-                  className={`rounded-full border px-3.5 py-1.5 text-[13px] transition ${
-                    active ? "border-accent bg-accent text-white" : "border-line text-ink-soft hover:border-accent"
-                  }`}
-                >
-                  {b.label}
-                </button>
-              );
-            })}
-          </div>
-          <div className="mt-2.5 text-[13px] text-ink-soft">
-            이 느낌 완성 ·{" "}
-            <span className="font-latin tnum font-semibold text-ink">{formatMan(total)}</span>
+            {TIERS.map((t) => (
+              <button
+                key={t.tier}
+                type="button"
+                onClick={() => onTierChange(t.tier)}
+                className={`rounded-full border px-3.5 py-1.5 text-[13px] transition ${
+                  t.tier === tier ? "border-accent bg-accent text-white" : "border-line text-ink-soft hover:border-accent"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
         </div>
       )}

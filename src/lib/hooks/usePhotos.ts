@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import {
   fetchPhotos,
   fetchPhotoBySlug,
-  getProductsForMood,
   getProductsForPhoto,
 } from "@/lib/photos";
 import type { Photo, PhotoProductsSource } from "@/lib/photos";
@@ -39,19 +38,6 @@ export function usePhotoBySlug(slug: string) {
   }, [slug]);
 
   return { photo, loading };
-}
-
-export function useProductsForMood(moodKey: MoodKey) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    getProductsForMood(moodKey)
-      .then(setProducts)
-      .finally(() => setLoading(false));
-  }, [moodKey]);
-
-  return { products, loading };
 }
 
 export function useProductsForPhoto(imageUrl: string, moodKey: MoodKey, caption: string) {

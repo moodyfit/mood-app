@@ -61,13 +61,6 @@ export const DIAL_SLOT_COUNT = SLOTS.length;
 export function slotHasTier(i: number, tier: PriceTier): boolean {
   return Boolean(SLOTS[i]?.variants[tier]);
 }
-/** 예산 프리셋 → 목표 티어. 5만=로우 / 10만=미드 / 20만·상관없음=하이. 양방향 다이얼(상향 포함) */
-export function tierForBudget(won: number | null): PriceTier {
-  if (won == null) return "하이";
-  if (won <= 50000) return "로우";
-  if (won <= 100000) return "미드";
-  return "하이";
-}
 /** 티어별 대안 완비된 간판 룩만 다이얼 노출 (로컬 전체 true) */
 export function hasDial(moodKey: MoodKey): boolean {
   return Boolean(MOODS[moodKey]);
