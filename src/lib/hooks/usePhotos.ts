@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import {
   fetchPhotos,
   fetchPhotoBySlug,
-  getProductsForPhoto,
+  fetchProductsByPhoto,
 } from "@/lib/photos";
-import type { Photo, PhotoProductsSource } from "@/lib/photos";
-import type { MoodKey, Product } from "@/lib/types";
+import type { Photo } from "@/lib/photos";
+import type { Product } from "@/lib/types";
 import { isSupabaseEnabled } from "@/lib/supabase";
 
 export function usePhotos() {
@@ -40,9 +40,8 @@ export function usePhotoBySlug(slug: string) {
   return { photo, loading };
 }
 
-export function useProductsForPhoto(imageUrl: string, moodKey: MoodKey, caption: string) {
+export function useProductsForPhoto(imageUrl: string) {
   const [products, setProducts] = useState<Product[]>([]);
-  const [source, setSource] = useState<PhotoProductsSource>("matched");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,13 +50,10 @@ export function useProductsForPhoto(imageUrl: string, moodKey: MoodKey, caption:
       return;
     }
     setLoading(true);
-    getProductsForPhoto(imageUrl, moodKey, caption)
-      .then((r) => {
-        setProducts(r.products);
-        setSource(r.source);
-      })
+    fetchProductsByPhoto(imageUrl)
+      .then(setProducts)
       .finally(() => setLoading(false));
-  }, [imageUrl, moodKey, caption]);
+  }, [imageUrl]);
 
-  return { products, source, loading };
+  return { products, loading };
 }

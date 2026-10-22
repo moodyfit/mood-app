@@ -38,8 +38,6 @@ export interface Product {
   name: string;
   category: ProductCategory;
   tier: PriceTier;
-  imageUrl?: string;
-  gradient: string;
   /** 2~3곳 판매처, price 오름차순. sources[0] = 최저가(primary) */
   sources: ProductSource[];
 }

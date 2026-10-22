@@ -2,11 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { dominantMood } from "@/lib/photos";
 import { usePhotoBySlug, useProductsForPhoto } from "@/lib/hooks/usePhotos";
 import PhotoProductView from "@/components/PhotoProductView";
 import { useMoodStore } from "@/lib/store";
-import type { MoodKey } from "@/lib/types";
 
 export function PhotoDetail({ slug }: { slug: string }) {
   const { photo, loading: photoLoading } = usePhotoBySlug(slug);
@@ -21,12 +19,7 @@ export function PhotoDetail({ slug }: { slug: string }) {
     showToast("무드 붙였어");
   }, [uploaded, showToast]);
 
-  const moodKey = photo ? (dominantMood(photo.mood_vector) as MoodKey) : ("clean" as MoodKey);
-  const { products, source, loading: productsLoading } = useProductsForPhoto(
-    photo?.image_url ?? "",
-    moodKey,
-    photo?.caption_item ?? "",
-  );
+  const { products, loading: productsLoading } = useProductsForPhoto(photo?.image_url ?? "");
 
   if (photoLoading || productsLoading) {
     return (
@@ -44,5 +37,5 @@ export function PhotoDetail({ slug }: { slug: string }) {
     );
   }
 
-  return <PhotoProductView photo={photo} products={products} source={source} />;
+  return <PhotoProductView photo={photo} products={products} />;
 }

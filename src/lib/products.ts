@@ -69,15 +69,9 @@ export function buildLook(moodKey: MoodKey, tier: PriceTier = "미드"): Product
       name: v.name,
       category: s.category,
       tier: tierOf(sources[0].price),
-      gradient: shiftGradient(mood.gradient, i),
       sources,
     };
   });
-}
-
-function shiftGradient(gradient: string, i: number): string {
-  const angles = [150, 30, 210, 300];
-  return gradient.replace(/\d+deg/, `${angles[i % 4]}deg`);
 }
 
 /** 가격 → 티어 (7.10 태깅 스키마) */
