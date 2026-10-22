@@ -64,6 +64,13 @@ export default function ProductRow({
         onClick={() => goTo(cheapest?.affiliateUrl)}
         className="flex w-full items-center gap-3.5 text-left"
       >
+        {/* 코디 사진에서 크롭한 실사진이 있을 때만(10/16 회의록 "썸네일 크롭") — 없으면 텍스트만 */}
+        {product.imageUrl && (
+          <div
+            className="h-[72px] w-[72px] flex-shrink-0 rounded-[10px] bg-paper-2"
+            style={{ backgroundImage: `url(${product.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }}
+          />
+        )}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 text-sm font-medium">
             {product.name}
