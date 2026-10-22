@@ -94,6 +94,7 @@ interface ProductRow {
   price: number;
   source: string;
   affiliate_url: string | null;
+  image_url?: string | null;
 }
 
 /** (B) 사진 레벨 — 특정 사진에 연결된 상품(photo_products = products.photo_image_url) */
@@ -102,7 +103,7 @@ export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]>
   if (!sb) return [];
   const { data, error } = await sb
     .from("products")
-    .select("name,category,price,source,affiliate_url,mood_key")
+    .select("name,category,price,source,affiliate_url,mood_key,image_url")
     .eq("photo_image_url", imageUrl);
   if (error || !data) return []; // 컬럼 미존재/미연결 → 빈 배열, 화면은 빈 상태
   const byName = new Map<string, Product>();
@@ -116,6 +117,8 @@ export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]>
         name: r.name,
         category: r.category as Product["category"],
         tier: tierOf(r.price),
+        // 코디 사진에서 아이템 부위를 크롭한 실사진(10/16 회의록 "썸네일 크롭"). 없으면 미표시.
+        imageUrl: r.image_url ?? undefined,
         sources: [],
         photo: imageUrl,
       };
