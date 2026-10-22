@@ -138,7 +138,7 @@ export interface ToastState {
   link?: ToastLink;
 }
 
-const CLOSET_LINK: ToastLink = { href: "/closet", label: "옷장 보기 →" };
+const CLOSET_LINK: ToastLink = { href: "/closet", label: "옷장 보기" };
 
 const Ctx = createContext<MoodStore | null>(null);
 
@@ -550,7 +550,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         if (prev.some((o) => o.id === item.id)) {
           return prev.filter((o) => o.id !== item.id);
         }
-        showToast("내 옷에 담았어", CLOSET_LINK);
+        showToast("담았어", CLOSET_LINK);
         haptic();
         // 내 옷 담기 = 강한 취향 신호(저장에 준함) — affinity 반영 + 적재
         bump(item.moodKey, getConfig().wSave);
@@ -568,7 +568,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       if (fresh.length === 0) return;
       const at = Date.now();
       setOwned((prev) => [...prev, ...fresh.map((i) => ({ ...i, at }))]);
-      showToast(`${fresh.length}벌 옷장에 담았어`, CLOSET_LINK);
+      showToast(fresh.length > 1 ? `${fresh.length}벌 담았어` : "담았어", CLOSET_LINK);
       haptic();
       bump(fresh[0].moodKey, getConfig().wSave);
       for (const i of fresh) {

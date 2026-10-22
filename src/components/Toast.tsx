@@ -13,7 +13,7 @@ export default function Toast() {
     >
       {toast?.msg}
       {toast?.link && (
-        <Link href={toast.link.href} className="ml-3 font-semibold text-accent underline-offset-2 hover:underline">
+        <Link href={toast.link.href} className="ml-3 font-semibold underline underline-offset-2">
           {toast.link.label}
         </Link>
       )}
