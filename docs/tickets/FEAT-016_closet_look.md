@@ -61,11 +61,11 @@ BUG-010(PR #31)은 `Closet.tsx`·`space/page.tsx` 의 `href` 한 줄씩만 바�
 | 필드 | 예 | 빈 값일 때 |
 |---|---|---|
 | `OwnedItem.photo?` | `moods/m-street-001.jpg` | 더미·이 티켓 전에 담은 옷 → 무드 대표 사진, "이거 들어간 룩"은 아래 규칙 |
-| `Product.photo?` | 같음 | `fetchProductsByPhoto` 만 채움. 무드 상세 더미는 없음 |
+| `Product.photo?` | 같음 | `fetchProductsByPhoto` 만 채움(담기 버튼이 있는 `ProductRow` 가 상품만 받아 사진을 상품에 실음). 무드 상세 더미는 없음 |
 
 - "이거 들어간 룩": `photo` 있음 → 그 사진의 products, ✓는 id 일치. 더미 id → 4칸 유지, ✓는 슬롯 id(`{mood}-{i}-`) 일치. 그 밖·조회 0건 → 섹션 숨김
 - 사진 상세 하단 버튼: 담기 전 `내 옷장에 담기` / 일부 `나머지 N벌 옷장에 담기` / 전부 `옷장에 담겨 있어 ✓`(비활성). 안 담은 것만 넣고 토스트·affinity 1회
-- 토스트: `showToast(msg, link?)`. 담기(한 벌·코디)만 `옷장 보기 →` `/closet` 링크, 3초. 그 밖은 지금처럼 글자만 1.9초
+- 토스트: 지금은 문자열만 받아 링크를 못 담는다 → `showToast(msg, link?)`. 담기(한 벌·코디)만 `옷장 보기 →` `/closet` 링크, 3초. 그 밖은 지금처럼 글자만 1.9초
 - 복귀 인라인 버튼이 떠 있는 동안 '담기' 버튼은 숨긴다
 
 ---
