@@ -58,10 +58,13 @@ function blendFeed(personalOrder: Photo[], exploreOrder: Photo[]): Photo[] {
 
 export default function HomeGallery({
   photos = [],
+  loading = false,
   moodKeys,
   query,
 }: {
   photos?: Photo[];
+  /** usePhotos()의 loading — photos fetch 완료 전엔 복원(scrollTo)을 미루는 데 쓴다(BUG-011). */
+  loading?: boolean;
   /** FEAT-006: 검색 결과 모드 — 있으면 이 순서로, 없으면 기존 개인화 피드 */
   moodKeys?: string[];
   query?: string;
@@ -73,11 +76,15 @@ export default function HomeGallery({
   // BUG-004: 뒤로가기 시 로드량/스크롤 복원(검색 모드는 항상 새로 시작). resetKey가
   // searching/query를 함께 묶는 이유 — 홈은 별도 페이지 이동 없이 같은 인스턴스 안에서 검색
   // 모드가 켜지고 꺼지므로, storageKey 변경이 아니라 이 값 비교로 리셋을 감지해야 한다.
+  // BUG-011: ready=!loading — photos가 아직 로딩 중이면(6무드 폴백 UI로 렌더되는 짧은 순간)
+  // 복원 effect가 그 레이아웃을 "최종 상태"로 착각해 잘린 scrollY로 고정해버리는 경합이 있었다
+  // (재현: photos fetch를 인위로 지연시키면 100% 재현). loading이 끝난 뒤에만 복원을 시작한다.
   const [visible, setVisible] = useScrollRestore(
     "moodfit:home-scroll",
     `${searching}|${query}`,
     INITIAL_VISIBLE,
-    searching
+    searching,
+    !loading
   );
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
