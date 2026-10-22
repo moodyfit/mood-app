@@ -103,6 +103,7 @@ interface MoodStore {
   owned: OwnedItem[];
   isOwned: (id: string) => boolean;
   toggleOwned: (item: OwnedItem) => void;
+  addOwnedMany: (items: OwnedItem[]) => void;
   cardEverIssued: boolean;
   cardOpen: boolean;
   openCard: () => void;
@@ -124,9 +125,20 @@ interface MoodStore {
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
-  toast: string | null;
-  showToast: (msg: string) => void;
+  toast: ToastState | null;
+  showToast: (msg: string, link?: ToastLink) => void;
 }
+
+export interface ToastLink {
+  href: string;
+  label: string;
+}
+export interface ToastState {
+  msg: string;
+  link?: ToastLink;
+}
+
+const CLOSET_LINK: ToastLink = { href: "/closet", label: "옷장 보기 →" };
 
 const Ctx = createContext<MoodStore | null>(null);
 
@@ -144,7 +156,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [worn, setWorn] = useState<Record<string, number>>({});
   const [bodyProfile, setBodyProfileState] = useState<BodyProfile>({});
   const [genderFilter, setGenderFilterState] = useState<GenderFilter>("all");
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -327,10 +339,11 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     [bump, bumpVector]
   );
 
-  const showToast = useCallback((msg: string) => {
-    setToast(msg);
+  const showToast = useCallback((msg: string, link?: ToastLink) => {
+    setToast({ msg, link });
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(null), 1900);
+    // 링크가 있으면 누를 시간을 더 준다
+    toastTimer.current = setTimeout(() => setToast(null), link ? 3000 : 1900);
   }, []);
 
   const isSaved = useCallback(
@@ -537,7 +550,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         if (prev.some((o) => o.id === item.id)) {
           return prev.filter((o) => o.id !== item.id);
         }
-        showToast("내 옷에 담았어 — 도착하면 입을 조합 알려줄게");
+        showToast("내 옷에 담았어", CLOSET_LINK);
         haptic();
         // 내 옷 담기 = 강한 취향 신호(저장에 준함) — affinity 반영 + 적재
         bump(item.moodKey, getConfig().wSave);
@@ -546,6 +559,23 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       });
     },
     [showToast, bump]
+  );
+
+  // 코디 통째로 담기 — 안 담은 옷만 넣고, 취향 신호는 코디 1개로 센다
+  const addOwnedMany = useCallback(
+    (items: OwnedItem[]) => {
+      const fresh = items.filter((i) => !owned.some((o) => o.id === i.id));
+      if (fresh.length === 0) return;
+      const at = Date.now();
+      setOwned((prev) => [...prev, ...fresh.map((i) => ({ ...i, at }))]);
+      showToast(`${fresh.length}벌 옷장에 담았어`, CLOSET_LINK);
+      haptic();
+      bump(fresh[0].moodKey, getConfig().wSave);
+      for (const i of fresh) {
+        trackEvent(userIdRef.current, "owned", { mood_key: i.moodKey, photo_id: i.id });
+      }
+    },
+    [owned, showToast, bump]
   );
 
   const value = useMemo<MoodStore>(
@@ -566,6 +596,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       owned,
       isOwned,
       toggleOwned,
+      addOwnedMany,
       cardEverIssued,
       cardOpen,
       openCard: () => setCardOpen(true),
@@ -606,6 +637,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       owned,
       isOwned,
       toggleOwned,
+      addOwnedMany,
       cardEverIssued,
       cardOpen,
       scanDone,

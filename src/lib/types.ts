@@ -40,6 +40,7 @@ export interface Product {
   tier: PriceTier;
   /** 2~3곳 판매처, price 오름차순. sources[0] = 최저가(primary) */
   sources: ProductSource[];
+  photo?: string; // 사진 연결 상품만 — products.photo_image_url
 }
 
 /** Layer 2: 검색어 → 무드 매핑 (query_map 테이블). 상품과 무관, 이 테이블만 튜닝 */
@@ -66,6 +67,7 @@ export interface OwnedItem {
   name: string;
   category?: ProductCategory; // #9 마지막 조각: 슬롯 매칭용
   at?: number; // 담은 시각(ms) — '내 옷' 7일 승격용
+  photo?: string; // 담은 사진 — 같은 photo 끼리가 한 코디
 }
 
 /** 추구미 카드 계산 결과 */
