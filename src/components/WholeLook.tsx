@@ -19,32 +19,19 @@ export default function WholeLook({ products }: { products: Product[] }) {
   // 사진 상세(상품에 photo 있음)는 코디째 옷장에 담는다. 무드 상세는 구매 시트 그대로
   if (products[0]?.photo) {
     const missing = products.filter((p) => !isOwned(p.id));
-    const label =
-      missing.length === 0
-        ? "옷장에 담겨 있어 ✓"
-        : missing.length === products.length
-          ? "내 옷장에 담기"
-          : `나머지 ${missing.length}벌 옷장에 담기`;
+    if (missing.length === 0) return null;
     return (
-      <div className="fixed bottom-[calc(62px+env(safe-area-inset-bottom))] left-1/2 z-40 w-full max-w-frame -translate-x-1/2 px-5">
-        <button
-          type="button"
-          disabled={missing.length === 0}
-          onClick={() =>
-            addOwnedMany(
-              missing.map((p) => ({ id: p.id, moodKey: p.moodKey, name: p.name, category: p.category, photo: p.photo }))
-            )
-          }
-          className="flex w-full items-center justify-between rounded-[12px] bg-ink px-4 py-3.5 text-white shadow-[0_10px_28px_rgba(0,0,0,0.22)] disabled:opacity-60"
-        >
-          <span className="text-[14px] font-semibold">{label}</span>
-          {missing.length > 0 && (
-            <span className="font-latin tnum text-[14px] font-semibold">
-              {formatMan(missing.reduce((s, p) => s + primaryPrice(p), 0))}
-            </span>
-          )}
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() =>
+          addOwnedMany(
+            missing.map((p) => ({ id: p.id, moodKey: p.moodKey, name: p.name, category: p.category, photo: p.photo }))
+          )
+        }
+        className="mt-3 w-full rounded-[12px] border border-ink py-3 text-[14px] font-semibold text-ink transition hover:bg-paper-2"
+      >
+        {missing.length === products.length ? "코디 통째로 담기" : `나머지 ${missing.length}벌 담기`}
+      </button>
     );
   }
 

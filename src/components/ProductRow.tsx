@@ -77,7 +77,7 @@ export default function ProductRow({
             {formatPrice(primaryPrice(product))}
           </div>
           <div className="mt-0.5 text-[11px] text-ink-faint">
-            최저 · {cheapest?.name}
+            {product.sources.length > 1 ? `최저 · ${cheapest?.name}` : cheapest?.name}
           </div>
         </div>
         <div className="text-xl text-ink-faint">›</div>
@@ -128,7 +128,7 @@ export default function ProductRow({
           }}
           className="mt-2 w-full rounded-[8px] border border-accent bg-accent/10 py-2 text-[12.5px] font-semibold text-accent"
         >
-          담을래? 탭하면 ‘내 옷’으로 →
+          옷장에 담기
         </button>
       )}
     </div>
