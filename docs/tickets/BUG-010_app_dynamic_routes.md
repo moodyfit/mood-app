@@ -9,7 +9,7 @@ Capacitor 앱 빌드에서 `/photo/[slug]`·`/closet/[id]` 가 빠져 있어, �
 | Key | Value |
 |-----|-------|
 | Type | BUG |
-| Status | Todo |
+| Status | Done |
 | 우선순위 | P0 (앱스토어 제출 전) |
 | Layer | Build / Routing |
 | Related | CAP-001, CAP-002, FEAT-015 |
@@ -56,33 +56,34 @@ Capacitor 앱 빌드에서 `/photo/[slug]`·`/closet/[id]` 가 빠져 있어, �
 
 ## Scope
 
-### Step 1 — 쿼리 라우트 추가
+### Step 1 — 쿼리 라우트 추가 ✅
 1. `src/app/photo/page.tsx` — `?slug=` 로 `PhotoDetail` 렌더, `Suspense` 경계(BUG-005)
 2. `src/app/closet/item/page.tsx` — `?id=` 로 `ClosetItem` 렌더, `Suspense` 경계
 3. `src/app/photo/[slug]/PhotoDetail.tsx` → `src/app/photo/PhotoDetail.tsx` 이동 — `build:cap` 이 `[slug]` 폴더를 빼므로 그 안에 두면 앱 빌드가 깨진다
 
-### Step 2 — 링크 4곳 교체
+### Step 2 — 링크 4곳 교체 ✅
 1. `src/components/PhotoCard.tsx:56,73` — `/photo?slug=`
 2. `src/components/upload/UploadForm.tsx:72` — `/photo?slug=…&uploaded=1`
 3. `src/app/space/page.tsx:52`, `src/components/Closet.tsx:40` — `/closet/item?id=`
 
-### Step 3 — 옛 라우트 주석 정정
+### Step 3 — 옛 라우트 주석 정정 ✅
 1. `src/app/photo/[slug]/page.tsx:5`, `src/app/closet/[id]/page.tsx:4` — "SPA 폴백(CAP-002)" → "웹 옛 링크용, 앱은 쿼리 라우트"
 
-### Step 4 — 검증
+### Step 4 — 검증 ✅
 아래 Verification
 
-### Step 5 — 티켓 Done · PR
+### Step 5 — 티켓 Done · PR ✅
 
 ---
 
 ## Verification
 
-- `tsc` · `build` · `build:cap` 통과, 앱 빌드에 `out/photo.html`·`out/closet/item.html` 생성 (대기)
-- Android 에뮬레이터 — 사진 카드 탭 → 사진 상세, 상품 탭 → 인앱 브라우저 → 닫고 복귀 (대기)
-- Android — 업로드 직후 사진 상세 이동, 나의 공간 옷 → 옷 상세 (대기)
+- `tsc` · `build` · `build:cap` 통과. 앱 빌드에 `out/photo.html`·`out/closet/item.html` 생성
+- Android 에뮬레이터(API 35) — 홈 사진 탭 → 사진 상세(`/photo?slug=`) 열림, 상품 탭 → 인앱 브라우저(무신사 상품 페이지) → 닫고 복귀, "담을래?" 인라인 표시
+- Android — 담은 옷 → 나의 공간 → 옷 상세(`/closet/item?id=`) 열림
+- Android — 업로드 직후 이동: 확인 불가. 앱 빌드에서 `/api/photos/tag` 가 빠져 업로드 자체가 안 된다(CAP-001 제한사항, 이 티켓 범위 밖). 링크 교체만 코드로 확인
+- 웹(dev) — 옛 `/photo/m-street-010`, 새 `/photo?slug=m-street-010` 둘 다 같은 화면
 - iOS 시뮬레이터 (대기, Xcode 필요)
-- 웹 `/photo/[slug]`·기존 공유 링크 동작 유지 (대기)
 
 ---
 
