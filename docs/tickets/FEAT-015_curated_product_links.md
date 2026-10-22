@@ -9,7 +9,7 @@
 | Key | Value |
 |-----|-------|
 | Type | FEAT |
-| Status | In Progress |
+| Status | Done |
 | 우선순위 | P0 |
 | Layer | Data / Lib / Component |
 | Related | BUG-007, BUG-009 |
