@@ -53,7 +53,7 @@ export default function PhotoCard({
     }
     if (slug) {
       recordView(photo.mood_vector); // 클릭(상세 열기)도 취향 신호 → 점점 개인화, 다축 그대로 반영(FEAT-001)
-      router.push(`/photo/${slug}`);
+      router.push(`/photo?slug=${encodeURIComponent(slug)}`);
     }
   }
 
@@ -70,7 +70,7 @@ export default function PhotoCard({
         setCaption(false);
       }}
       onContextMenu={(e) => e.preventDefault()}
-      onKeyDown={(e) => slug && e.key === "Enter" && router.push(`/photo/${slug}`)}
+      onKeyDown={(e) => slug && e.key === "Enter" && router.push(`/photo?slug=${encodeURIComponent(slug)}`)}
       style={{ aspectRatio: String(ratio) }}
       className="group relative block w-full cursor-pointer select-none overflow-hidden rounded-2xl transition active:scale-[0.98]"
     >

@@ -1,7 +1,7 @@
 import { ClosetItemView } from "./ClosetItemView";
 
 // 정적 빌드용 — id는 유저 데이터 기반이라 빌드 시점에 열거 불가.
-// Capacitor에서는 SPA 폴백 라우팅(CAP-002)으로 처리.
+// 웹 옛 링크용. 앱 빌드에선 빠지고 /closet/item?id= 가 같은 화면을 연다.
 export async function generateStaticParams() {
   return [];
 }

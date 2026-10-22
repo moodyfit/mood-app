@@ -1,8 +1,8 @@
 import { Suspense } from "react";
-import { PhotoDetail } from "./PhotoDetail";
+import { PhotoDetail } from "../PhotoDetail";
 
 // 정적 빌드용 — slug는 DB 기반이라 빌드 시점에 열거 불가.
-// Capacitor에서는 SPA 폴백 라우팅(CAP-002)으로 처리.
+// 웹 옛 링크용. 앱 빌드에선 빠지고 /photo?slug= 가 같은 화면을 연다.
 export async function generateStaticParams() {
   return [];
 }

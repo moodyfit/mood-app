@@ -69,7 +69,7 @@ export default function UploadForm() {
     }
 
     // 토스트는 도착한 상세에서 띄운다 — 여기서 띄우면 화면 전환에 묻힌다
-    router.push(`/photo/${tagged.data.slug}?uploaded=1`);
+    router.push(`/photo?slug=${encodeURIComponent(tagged.data.slug)}&uploaded=1`);
   }
 
   return (
