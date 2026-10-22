@@ -19,12 +19,19 @@ import { useEffect, useRef, useState } from "react";
  *   실행되든 진짜 변경에서만 반응한다.
  * @param initialVisible 복원할 값이 없을 때의 시작 카드 수.
  * @param skip true면 복원·저장을 둘 다 하지 않는다(검색 모드처럼 세션 간 유지가 불필요한 경우).
+ * @param ready false면 복원 시도 자체를 미룬다(기본 true). 호출부의 데이터(photos 등)가 아직 비동기
+ *   로딩 중이면, 그 "로딩 중" 상태가 실제 콘텐츠보다 훨씬 짧은 레이아웃(예: 빈 배열 폴백 UI)으로
+ *   렌더되는 경우가 있다 — 이때 복원 effect가 "문서 높이가 목표에 도달 못 함"으로 착각해 잘린
+ *   scrollY로 강제 이동하고 완료 처리해버리면, 진짜 데이터가 나중에 도착해도 다시 복원을 안 한다
+ *   (프로덕션 재현: photos fetch를 인위로 지연시키면 100% 재현됨 — scrollY가 목표값 대신 로딩 중
+ *   렌더됐던 짧은 문서 높이로 고정됨). ready=false인 동안은 tick 재시도조차 시작하지 않는다.
  */
 export function useScrollRestore(
   storageKey: string,
   resetKey: string,
   initialVisible: number,
-  skip: boolean
+  skip: boolean,
+  ready = true
 ): readonly [number, React.Dispatch<React.SetStateAction<number>>] {
   const [visible, setVisible] = useState(() =>
     !skip ? (readScrollState(storageKey)?.visible ?? initialVisible) : initialVisible
@@ -78,6 +85,7 @@ export function useScrollRestore(
       if (!restoredRef.current) return;
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
+        if (!restoredRef.current) return; // 디바운스 대기 중 복원 플래그가 바뀔 수 있어 실행 시점에 재확인
         const y = window.scrollY;
         if (y <= 0) return;
         writeScrollState(storageKey, { visible: readScrollState(storageKey)?.visible ?? visible, scrollY: y });
@@ -101,6 +109,7 @@ export function useScrollRestore(
       restoredRef.current = true; // 검색 중엔 복원할 것도 저장할 것도 없음 — 바로 완료 처리
       return;
     }
+    if (!ready) return; // 데이터가 아직 로딩 중 — ready=true가 될 때 이 effect가 다시 돈다
     restoredRef.current = false;
     const saved = readScrollState(storageKey);
     if (!saved) {
@@ -129,7 +138,7 @@ export function useScrollRestore(
     timer = window.setTimeout(tick, 50);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storageKey, skip]);
+  }, [storageKey, skip, ready]);
 
   return [visible, setVisible] as const;
 }
