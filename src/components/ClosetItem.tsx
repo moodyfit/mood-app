@@ -20,7 +20,7 @@ interface LookRow {
 
 /**
  * #9 원본 소환 — '내 옷' 아이템 상세. 순서 고정:
- * ① 반했던 원본 무드샷 ② 해설 2행 ③ 입는 법(how, 없으면 미표시) ④ 이거 들어간 룩(마지막 조각).
+ * ① 반했던 원본 무드샷 ② 해설 2행 ③ 입는 법(how, 없으면 미표시) ④ 이 코디 구성 / 추천 조합(마지막 조각).
  * 금지: 옷을 평가하는 판정 문구 — 기준점 재제시만.
  */
 export default function ClosetItem({ id }: { id: string }) {
@@ -112,10 +112,10 @@ export default function ClosetItem({ id }: { id: string }) {
         <p className="mt-3 text-[13.5px] leading-relaxed text-ink-soft">{shot ? shot.caption_how : mood.how}</p>
       )}
 
-      {/* ④ 이거 들어간 룩 (마지막 조각) */}
+      {/* ④ 이 코디 구성(사진에서 담은 옷) / 추천 조합(더미 룩 옷) */}
       {rows.length > 0 && (
         <div className="mt-7">
-          <div className="mb-2 text-[13px] font-semibold">이거 들어간 룩</div>
+          <div className="mb-2 text-[13px] font-semibold">{item.photo ? "이 코디 구성" : "추천 조합"}</div>
           <div className="flex flex-col gap-2">
             {rows.map((r) => {
               if (r.has) {

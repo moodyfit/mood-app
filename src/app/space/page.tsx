@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import TasteProfile from "@/components/TasteProfile";
 import { MOODS } from "@/lib/moods";
+import { photoUrl } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 
 const PREVIEW_COUNT = 4;
@@ -56,8 +57,8 @@ export default function SpacePage() {
                     <div
                       className="absolute inset-0"
                       style={
-                        mood?.imageUrl
-                          ? { backgroundImage: `url(${mood.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+                        item.photo || mood?.imageUrl
+                          ? { backgroundImage: `url(${item.photo ? photoUrl(item.photo) : mood.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
                           : { background: mood?.gradient }
                       }
                     />
