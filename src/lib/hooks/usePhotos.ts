@@ -32,6 +32,12 @@ export function usePhotoBySlug(slug: string) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 빈 slug 는 ilike '%/.%' 가 되어 아무 사진이나 잡힌다
+    if (!slug) {
+      setPhoto(null);
+      setLoading(false);
+      return;
+    }
     fetchPhotoBySlug(slug)
       .then(setPhoto)
       .finally(() => setLoading(false));
