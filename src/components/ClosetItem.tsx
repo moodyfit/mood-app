@@ -21,10 +21,10 @@ interface LookRow {
 /**
  * #9 원본 소환 — '내 옷' 아이템 상세. 순서 고정:
  * ① 반했던 원본 무드샷 ② 해설 2행 ③ 입는 법(how, 없으면 미표시) ④ 이거 들어간 룩(마지막 조각).
- * 금지: 옷을 평가하는 판정 문구 — 기준점 재제시만. [입었어]는 조용한 카운트.
+ * 금지: 옷을 평가하는 판정 문구 — 기준점 재제시만.
  */
 export default function ClosetItem({ id }: { id: string }) {
-  const { owned, hydrated, wornOf, recordWorn } = useMoodStore();
+  const { owned, hydrated } = useMoodStore();
 
   // params.id 가 인코딩된 채 올 수도(%2F 미해제), 디코딩돼 올 수도 있어 양쪽 다 매칭.
   let decoded = id;
@@ -51,7 +51,6 @@ export default function ClosetItem({ id }: { id: string }) {
   }
 
   const mood = MOODS[item.moodKey];
-  const worn = wornOf(id);
   const heroUrl = item.photo ? photoUrl(item.photo) : mood.imageUrl;
   const ownedIds = new Set(owned.map((o) => o.id));
 
@@ -112,24 +111,6 @@ export default function ClosetItem({ id }: { id: string }) {
       {(shot ? shot.caption_how : mood.how) && (
         <p className="mt-3 text-[13.5px] leading-relaxed text-ink-soft">{shot ? shot.caption_how : mood.how}</p>
       )}
-
-      {/* [입었어] 축적 (조용한 카운트) + 착용 0 살리기 문구 */}
-      <div className="mt-5 flex items-center justify-between gap-3">
-        <div className="text-[13px] text-ink-soft">
-          {worn > 0 ? (
-            <span className="font-medium text-ink">{worn}번째 입음</span>
-          ) : (
-            "아직 못 입었지? 조합 3개 있어"
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={() => recordWorn(id)}
-          className="flex-shrink-0 rounded-full border border-line px-4 py-2 text-[13px] font-semibold text-ink transition hover:border-accent"
-        >
-          입었어
-        </button>
-      </div>
 
       {/* ④ 이거 들어간 룩 (마지막 조각) */}
       {rows.length > 0 && (
