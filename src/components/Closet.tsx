@@ -40,7 +40,7 @@ export default function Closet({
     <div>
       {!hideHeader && (
         <div className="mb-2 text-[12px] text-ink-faint">
-          {promotedName ? `새로 온 ${promotedName}, 입어볼 조합` : "내 옷"}
+          {promotedName ? `새로 온 ${promotedName}, 입어볼 조합` : "내 옷장"}
         </div>
       )}
 
