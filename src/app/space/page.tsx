@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import TasteProfile from "@/components/TasteProfile";
 import { MOODS } from "@/lib/moods";
+import { photoUrl } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 
 const PREVIEW_COUNT = 4;
@@ -28,10 +29,10 @@ export default function SpacePage() {
       {/* 블록 1: 취향 카드 + 공유 */}
       <TasteProfile />
 
-      {/* 블록 2: 내 옷 — 썸네일 프리뷰 + 더보기 */}
+      {/* 블록 2: 내 옷장 — 썸네일 프리뷰 + 더보기 */}
       <div className="mt-8">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-[16px] font-bold tracking-[-0.3px]">내 옷</h2>
+          <h2 className="text-[16px] font-bold tracking-[-0.3px]">내 옷장</h2>
           {owned.length > 0 && (
             <Link href="/closet" className="text-[13px] text-ink-soft">
               {owned.length}벌 ›
@@ -56,8 +57,8 @@ export default function SpacePage() {
                     <div
                       className="absolute inset-0"
                       style={
-                        mood?.imageUrl
-                          ? { backgroundImage: `url(${mood.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+                        item.photo || mood?.imageUrl
+                          ? { backgroundImage: `url(${item.photo ? photoUrl(item.photo) : mood.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
                           : { background: mood?.gradient }
                       }
                     />

@@ -68,7 +68,6 @@ const K_OWNED = "mood.owned.v1"; // 1.5.2 '내 옷' 소유 결
 const K_SCAN = "mood.scanDone.v1"; // 스캔 1회 완료 — 이후 스캔 탭은 전시 기본, 원할 때만 재스캔
 const K_DOT = "mood.spaceDot.v1"; // B5 카드 발급 dot (나의 공간 미확인 신호)
 const K_DISC = "mood.discovered.v1"; // C7 '발견' 결 (스크린샷 입주)
-const K_WORN = "mood.worn.v1"; // #9 [입었어] 착용 횟수 (아이템 id별)
 const K_BODY = "mood.bodyProfile.v1"; // 영상(룩북) 탭 — 신체 프로필(고정 검색축·락인)
 const K_UID = "mood.uid.v1"; // 익명 기기 신원(개인화 서버 적재 키. 로그인 도입 시 병합)
 const K_GENDER_FILTER = "mood.genderFilter.v1"; // 회의록(2026-10-08) 남/녀 토글 — v3(#20) 이후 남녀 코디가 섞여 나오는 문제
@@ -103,6 +102,7 @@ interface MoodStore {
   owned: OwnedItem[];
   isOwned: (id: string) => boolean;
   toggleOwned: (item: OwnedItem) => void;
+  addOwnedMany: (items: OwnedItem[]) => void;
   cardEverIssued: boolean;
   cardOpen: boolean;
   openCard: () => void;
@@ -114,8 +114,6 @@ interface MoodStore {
   clearSpaceDot: () => void;
   discovered: DiscoveredItem[];
   addDiscovered: (moodKey: MoodKey) => void;
-  recordWorn: (id: string) => void;
-  wornOf: (id: string) => number;
   bodyProfile: BodyProfile;
   setBodyProfile: (p: BodyProfile) => void;
   genderFilter: GenderFilter;
@@ -124,9 +122,20 @@ interface MoodStore {
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
-  toast: string | null;
-  showToast: (msg: string) => void;
+  toast: ToastState | null;
+  showToast: (msg: string, link?: ToastLink) => void;
 }
+
+export interface ToastLink {
+  href: string;
+  label: string;
+}
+export interface ToastState {
+  msg: string;
+  link?: ToastLink;
+}
+
+const CLOSET_LINK: ToastLink = { href: "/closet", label: "옷장 보기" };
 
 const Ctx = createContext<MoodStore | null>(null);
 
@@ -141,10 +150,9 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [scanDone, setScanDone] = useState(false);
   const [spaceDot, setSpaceDot] = useState(false);
   const [discovered, setDiscovered] = useState<DiscoveredItem[]>([]);
-  const [worn, setWorn] = useState<Record<string, number>>({});
   const [bodyProfile, setBodyProfileState] = useState<BodyProfile>({});
   const [genderFilter, setGenderFilterState] = useState<GenderFilter>("all");
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -181,8 +189,6 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       setSpaceDot(localStorage.getItem(K_DOT) === "1");
       const d = localStorage.getItem(K_DISC);
       if (d) setDiscovered((JSON.parse(d) as DiscoveredItem[]).filter((x) => isKnownMood(x.moodKey)));
-      const w = localStorage.getItem(K_WORN);
-      if (w) setWorn(JSON.parse(w));
       const bp = localStorage.getItem(K_BODY);
       if (bp) setBodyProfileState(JSON.parse(bp));
       const gf = localStorage.getItem(K_GENDER_FILTER);
@@ -294,11 +300,10 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(K_SEARCH, JSON.stringify(searchCounts));
       localStorage.setItem(K_OWNED, JSON.stringify(owned));
       localStorage.setItem(K_DISC, JSON.stringify(discovered));
-      localStorage.setItem(K_WORN, JSON.stringify(worn));
     } catch {
       /* ignore */
     }
-  }, [saves, savedPhotoIds, affinity, searchCounts, owned, discovered, worn, hydrated]);
+  }, [saves, savedPhotoIds, affinity, searchCounts, owned, discovered, hydrated]);
 
   const bump = useCallback((key: MoodKey, w: number) => {
     // 다축 곱셈(FEAT-001)의 소수 오차 정리 + 음수(취소 시 되돌리기, BUG-001) 0 하한 방어.
@@ -327,10 +332,11 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     [bump, bumpVector]
   );
 
-  const showToast = useCallback((msg: string) => {
-    setToast(msg);
+  const showToast = useCallback((msg: string, link?: ToastLink) => {
+    setToast({ msg, link });
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(null), 1900);
+    // 링크가 있으면 누를 시간을 더 준다
+    toastTimer.current = setTimeout(() => setToast(null), link ? 3000 : 1900);
   }, []);
 
   const isSaved = useCallback(
@@ -449,13 +455,6 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // #9 [입었어] — 조용한 카운트(팡파레·보상 없음). user_actions.worn 대응(로컬)
-  const recordWorn = useCallback((id: string) => {
-    trackEvent(userIdRef.current, "worn", { photo_id: id });
-    setWorn((prev) => ({ ...prev, [id]: (prev[id] ?? 0) + 1 }));
-  }, []);
-  const wornOf = useCallback((id: string) => worn[id] ?? 0, [worn]);
-
   const setBodyProfile = useCallback((p: BodyProfile) => {
     trackEvent(userIdRef.current, "profile_set", { meta: p as Record<string, unknown> });
     setBodyProfileState(p);
@@ -537,7 +536,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         if (prev.some((o) => o.id === item.id)) {
           return prev.filter((o) => o.id !== item.id);
         }
-        showToast("내 옷에 담았어 — 도착하면 입을 조합 알려줄게");
+        showToast("담았어", CLOSET_LINK);
         haptic();
         // 내 옷 담기 = 강한 취향 신호(저장에 준함) — affinity 반영 + 적재
         bump(item.moodKey, getConfig().wSave);
@@ -546,6 +545,23 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       });
     },
     [showToast, bump]
+  );
+
+  // 코디 통째로 담기 — 안 담은 옷만 넣고, 취향 신호는 코디 1개로 센다
+  const addOwnedMany = useCallback(
+    (items: OwnedItem[]) => {
+      const fresh = items.filter((i) => !owned.some((o) => o.id === i.id));
+      if (fresh.length === 0) return;
+      const at = Date.now();
+      setOwned((prev) => [...prev, ...fresh.map((i) => ({ ...i, at }))]);
+      showToast(fresh.length > 1 ? `${fresh.length}벌 담았어` : "담았어", CLOSET_LINK);
+      haptic();
+      bump(fresh[0].moodKey, getConfig().wSave);
+      for (const i of fresh) {
+        trackEvent(userIdRef.current, "owned", { mood_key: i.moodKey, photo_id: i.id });
+      }
+    },
+    [owned, showToast, bump]
   );
 
   const value = useMemo<MoodStore>(
@@ -566,6 +582,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       owned,
       isOwned,
       toggleOwned,
+      addOwnedMany,
       cardEverIssued,
       cardOpen,
       openCard: () => setCardOpen(true),
@@ -577,8 +594,6 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       clearSpaceDot,
       discovered,
       addDiscovered,
-      recordWorn,
-      wornOf,
       bodyProfile,
       setBodyProfile,
       genderFilter,
@@ -606,6 +621,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       owned,
       isOwned,
       toggleOwned,
+      addOwnedMany,
       cardEverIssued,
       cardOpen,
       scanDone,
@@ -615,8 +631,6 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       clearSpaceDot,
       discovered,
       addDiscovered,
-      recordWorn,
-      wornOf,
       bodyProfile,
       setBodyProfile,
       genderFilter,

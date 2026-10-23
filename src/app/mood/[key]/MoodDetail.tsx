@@ -20,7 +20,7 @@ export function MoodDetail({ moodKey }: { moodKey: string }) {
     );
   }
 
-  // 완성가·통째로 사기·상품 목록이 같은 기본템 4칸을 쓴다
+  // 완성가·통째로 담기·상품 목록이 같은 기본템 4칸을 쓴다
   const products = productsFor(mood.key);
   const total = products.reduce((sum, product) => sum + primaryPrice(product), 0);
 
@@ -35,8 +35,8 @@ export function MoodDetail({ moodKey }: { moodKey: string }) {
         <p className="text-[14px] leading-relaxed">{mood.caption}</p>
       </div>
 
-      <WholeLook products={products} />
       <ProductSection mood={mood} look={products} />
+      <WholeLook products={products} />
     </div>
   );
 }

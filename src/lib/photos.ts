@@ -117,6 +117,7 @@ export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]>
         category: r.category as Product["category"],
         tier: tierOf(r.price),
         sources: [],
+        photo: imageUrl,
       };
       byName.set(r.name, p);
     }
