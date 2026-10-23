@@ -23,7 +23,7 @@ export default function HomeCloset() {
         className="flex items-center justify-between rounded-xl border border-line bg-white px-4 py-3 transition hover:bg-paper-2"
       >
         <span className="text-[13px] font-medium">
-          산 {item.name}, 오늘 입어볼까
+          담은 {item.name}, 이 조합 다시 볼까
         </span>
         <span className="text-ink-faint">›</span>
       </Link>

@@ -112,7 +112,7 @@ export default function ProductRow({
                   : "border-line text-ink-soft hover:border-accent"
               }`}
             >
-              {owned ? "✓ 내 옷" : "담기"}
+              {owned ? "✓ 담음" : "담기"}
             </button>
           )}
         </div>

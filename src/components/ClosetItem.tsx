@@ -125,7 +125,7 @@ export default function ClosetItem({ id }: { id: string }) {
                     className="flex items-center justify-between rounded-xl border border-line bg-white p-3 text-[13px]"
                   >
                     <span className="font-medium">{r.name}</span>
-                    <span className="text-accent">있는 것 ✓</span>
+                    <span className="text-accent">담은 것 ✓</span>
                   </div>
                 );
               }
