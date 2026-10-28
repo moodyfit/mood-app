@@ -32,7 +32,9 @@ export default function PhotoProductView({
 
   return (
     <div className="animate-fade px-5 pb-8">
-      <BackButton href="/results" />
+      {/* 검색결과·옷장·업로드 완료 등 여러 곳에서 들어올 수 있어 href를 고정하지 않는다 —
+          고정하면(예: "/results") 다른 경로로 들어온 경우 엉뚱한 화면으로 보내버린다. */}
+      <BackButton />
 
       {/* 반했던 원본 사진 */}
       <div
