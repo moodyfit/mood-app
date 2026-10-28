@@ -31,7 +31,7 @@ export default function PhotoProductView({
   const total = products.reduce((s, p) => s + primaryPrice(p), 0);
 
   return (
-    <div className="animate-fade px-5 pb-32">
+    <div className="animate-fade px-5 pb-8">
       <BackButton href="/results" />
 
       {/* 반했던 원본 사진 */}
@@ -68,8 +68,8 @@ export default function PhotoProductView({
 
       {/* 그 사진 속 아이템 */}
       <div className="mt-6 mb-2 flex items-baseline justify-between">
-        <div className="text-[13px] font-semibold">이 사진 그대로</div>
-        {products.length > 0 && <div className="text-[11px] text-ink-faint">가격은 판매처 기준으로 달라질 수 있어요</div>}
+        <div className="text-[13px] font-semibold">사진 속 아이템</div>
+        {products.length > 0 && <div className="text-[11px] text-ink-faint">가격은 판매처 기준</div>}
       </div>
       {products.length > 0 ? (
         <>

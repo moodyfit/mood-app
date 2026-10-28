@@ -6,7 +6,7 @@ export default function ClosetPage() {
   return (
     <div className="animate-fade px-5 pb-14">
       <BackButton href="/space" />
-      <h1 className="mb-4 text-[22px] font-extrabold tracking-[-0.5px]">내 옷</h1>
+      <h1 className="mb-4 text-[22px] font-extrabold tracking-[-0.5px]">내 옷장</h1>
       <Closet hideHeader />
     </div>
   );
