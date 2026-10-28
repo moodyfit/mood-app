@@ -10,6 +10,16 @@ import CapacitorInit from "@/components/CapacitorInit";
 export const metadata: Metadata = {
   title: "무드핏 MOODFIT — 취향 번역기",
   description: "취향이 없는 게 아니다. 이름을 몰랐을 뿐. 느낌만 적으면 무드로 보여준다.",
+  // PWA 설치(FEAT-018) — manifest 자체는 app/manifest.ts가 자동 연결, 여기선 iOS 전용 메타만.
+  // iOS Safari는 manifest.icons를 안 읽고 apple-touch-icon을 따로 봐서 명시가 필요하다.
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "무드핏",
+  },
+  icons: {
+    apple: "/icons/apple-touch-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
