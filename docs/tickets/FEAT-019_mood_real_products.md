@@ -9,10 +9,10 @@
 | Key | Value |
 |-----|-------|
 | Type | FEAT |
-| Status | Done |
+| Status | In Progress |
 | 우선순위 | P1 |
 | Layer | Lib / Component |
-| Related | FEAT-015, FEAT-016 후속 1, 10/23 회의록 f |
+| Related | FEAT-015, FEAT-016 후속 1, 10/23 회의록 f, FEAT-017(#34), FEAT-020 |
 
 ---
 
@@ -53,17 +53,17 @@ photos 에 이미 무드 × 성별마다 대표 사진(`is_flagship`) 2장씩, 2
 
 ### 포함
 
-1. `src/lib/photos.ts:104-176` — 상품 묶기를 `toProducts` 로 분리(카테고리 순 정렬), `fetchFlagshipLooks`(대표 사진 + 상품, 모듈 캐시), `pickFlagshipLook`
+1. `src/lib/photos.ts:100-186` — 상품 묶기를 `toProducts` 로 분리(카테고리 순 정렬), `fetchFlagshipLooks`(대표 사진 + 상품, 모듈 캐시), `pickFlagshipLook`
 2. `src/lib/products.ts` — 더미 `SLOTS`·`buildLook`·`productsFor`·`slotPieces`·`lookTotal` 삭제
 3. `src/lib/hooks/usePhotos.ts:71` — `useMoodLooks()` → `{ lookFor, loading }`, store `genderFilter` 반영
 4. `src/app/mood/[key]/MoodDetail.tsx`, `MoodHero.tsx`, `ProductSection.tsx` — 사진·해설·썸네일·상품·완성가를 대표 사진으로. 없으면 내장 이미지·`mood.caption`, 상품 섹션·담기·칩 숨김
 5. `src/components/MoodCard.tsx`, `src/components/PromiseMode.tsx` — 완성 금액을 대표 사진 상품 합계로, 0원이면 숨김
 6. `src/components/ClosetItem.tsx:56` — 더미 분기·`추천 조합` 라벨 삭제
+7. `src/lib/photos.ts` — #34(FEAT-017) 머지 후 rebase, `toProducts`·조회 컬럼에 `image_url` 연결. 무드 상세 상품 카드에도 크롭 썸네일
 
 ### 제외
 
 - 이미 담긴 더미 옷 저장 데이터 정리 — 그대로 둔다
-- 상품 카드 크롭 썸네일(h) — 에린 작업 후 붙인다
 
 ---
 
@@ -91,6 +91,7 @@ photos 에 이미 무드 × 성별마다 대표 사진(`is_flagship`) 2장씩, 2
 4. ✅ 무드 카드·약속 모드
 5. ✅ 옷 상세 더미 분기 삭제
 6. ✅ 검증
+7. #34(FEAT-017) 머지 후 rebase·크롭 썸네일 연결
 
 ---
 
@@ -102,6 +103,7 @@ photos 에 이미 무드 × 성별마다 대표 사진(`is_flagship`) 2장씩, 2
 - [x] 상품을 못 불러오면 상품 섹션·`코디 통째로 담기`·완성가 칩이 빈 칸 없이 숨는다
 - [x] 무드 상세에서 담은 옷이 옷장 '코디' 카드로 묶이고, 옷 상세에 `이 코디 구성` 이 뜬다
 - [x] 이미 담긴 더미 옷의 상세가 열리고 조합 섹션이 없다
+- [ ] 무드 상세 상품 카드에 크롭 썸네일이 뜬다
 
 ---
 
@@ -116,6 +118,15 @@ photos 에 이미 무드 × 성별마다 대표 사진(`is_flagship`) 2장씩, 2
 - 상품 순서: soft 무드 상세·사진 상세 모두 `크림색 케이블니트 · 베이지 팬츠 · 화이트 스니커즈`
 - `tsc --noEmit` 통과. lint 는 저장소에 ESLint 설정이 없어 생략
 - `npm run build:cap` 통과 — `/mood/[key]` 6경로·`/closet/item`·`/photo` 정적 생성
+- 크롭 썸네일 — (대기)
+
+---
+
+## Implementation Notes
+
+### 번호
+
+FEAT-018 로 발급했지만 #35(PWA)가 같은 번호를 먼저 써서 FEAT-019 로 바꿨다. 썸네일 줄 후속은 FEAT-020.
 
 ---
 
