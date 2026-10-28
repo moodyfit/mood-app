@@ -12,7 +12,7 @@ import { useMoodStore } from "@/lib/store";
 // 홈 = 약속 모드 진입 카드 + 종합 취향 상시 메이슨리 전시. 검색은 /search 페이지로 분리.
 // HomeGallery는 moodKeys/query를 받아 인플레이스 필터링 지원 (FEAT-006).
 export default function HomePage() {
-  const { photos } = usePhotos();
+  const { photos, loading } = usePhotos();
   const [query, setQuery] = useState("");
   const [moodKeys, setMoodKeys] = useState<string[]>([]);
   // 회의록(2026-10-08) 남/녀 토글 — v3(#20) 이후 남녀 코디가 피드에 섞여 나오던 문제.
@@ -70,7 +70,7 @@ export default function HomePage() {
       </div>
 
       <div className="pt-3">
-        <HomeGallery photos={filteredPhotos} moodKeys={moodKeys} query={query} />
+        <HomeGallery photos={filteredPhotos} loading={loading} moodKeys={moodKeys} query={query} />
       </div>
     </div>
   );
