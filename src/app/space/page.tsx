@@ -49,7 +49,7 @@ export default function SpacePage() {
                 return (
                   <Link
                     key={item.id}
-                    href={`/closet/${encodeURIComponent(item.id)}`}
+                    href={`/closet/item?id=${encodeURIComponent(item.id)}`}
                     className="relative overflow-hidden rounded-xl"
                     style={{ aspectRatio: "1" }}
                   >
