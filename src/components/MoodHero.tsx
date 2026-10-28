@@ -5,7 +5,16 @@ import type { Mood } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
 import { formatMan } from "@/lib/products";
 
-export default function MoodHero({ mood, total }: { mood: Mood; total: number }) {
+/** imageUrl — 대표 사진. 없으면 무드 내장 이미지 */
+export default function MoodHero({
+  mood,
+  total,
+  imageUrl = mood.imageUrl,
+}: {
+  mood: Mood;
+  total: number;
+  imageUrl?: string;
+}) {
   const { isSaved, toggleSave, recordView } = useMoodStore();
   const saved = isSaved(mood.key);
 
@@ -19,12 +28,12 @@ export default function MoodHero({ mood, total }: { mood: Mood; total: number })
       <div
         className="absolute inset-0"
         style={
-          mood.imageUrl
-            ? { backgroundImage: `url(${mood.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+          imageUrl
+            ? { backgroundImage: `url(${imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
             : { background: mood.gradient }
         }
       />
-      {!mood.imageUrl && <div className="grain" />}
+      {!imageUrl && <div className="grain" />}
       <button
         type="button"
         onClick={() => toggleSave(mood.key)}
@@ -37,9 +46,11 @@ export default function MoodHero({ mood, total }: { mood: Mood; total: number })
       >
         {saved ? "♥" : "♡"}
       </button>
-      <div className="absolute bottom-3 left-3 rounded-full bg-black/45 px-3 py-1.5 text-[12px] font-medium text-white backdrop-blur">
-        이 느낌 완성 · <span className="font-latin tnum">{formatMan(total)}</span>
-      </div>
+      {total > 0 && (
+        <div className="absolute bottom-3 left-3 rounded-full bg-black/45 px-3 py-1.5 text-[12px] font-medium text-white backdrop-blur">
+          이 느낌 완성 · <span className="font-latin tnum">{formatMan(total)}</span>
+        </div>
+      )}
     </div>
   );
 }

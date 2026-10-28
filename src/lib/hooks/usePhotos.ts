@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   fetchPhotos,
   fetchPhotoBySlug,
   fetchProductsByPhoto,
+  fetchFlagshipLooks,
+  pickFlagshipLook,
 } from "@/lib/photos";
-import type { Photo } from "@/lib/photos";
-import type { Product } from "@/lib/types";
+import type { FlagshipLook, Photo } from "@/lib/photos";
+import type { MoodKey, Product } from "@/lib/types";
+import { useMoodStore } from "@/lib/store";
 import { isSupabaseEnabled } from "@/lib/supabase";
 
 export function usePhotos() {
@@ -62,4 +65,24 @@ export function useProductsForPhoto(imageUrl: string) {
   }, [imageUrl]);
 
   return { products, loading };
+}
+
+/** 무드 대표 코디(대표 사진 + 상품) — 홈 성별 필터를 따른다 */
+export function useMoodLooks() {
+  const { genderFilter } = useMoodStore();
+  const [looks, setLooks] = useState<FlagshipLook[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchFlagshipLooks()
+      .then(setLooks)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const lookFor = useCallback(
+    (moodKey: MoodKey) => pickFlagshipLook(looks, moodKey, genderFilter),
+    [looks, genderFilter]
+  );
+
+  return { lookFor, loading };
 }

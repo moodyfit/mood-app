@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import BackButton from "./BackButton";
 import { resolveMoods, MOODS } from "@/lib/moods";
 import type { Mood } from "@/lib/types";
-import { productsFor, fitLookToBudget, formatMan, BUDGETS } from "@/lib/products";
+import { fitLookToBudget, formatMan, BUDGETS } from "@/lib/products";
+import { useMoodLooks } from "@/lib/hooks/usePhotos";
 import { moodAliasType } from "@/lib/taste";
 import { useMoodStore } from "@/lib/store";
 
@@ -31,6 +32,7 @@ function cover(mood: Mood) {
 export default function PromiseMode() {
   const router = useRouter();
   const { recordSearch } = useMoodStore();
+  const { lookFor } = useMoodLooks();
   const [occasion, setOccasion] = useState<string | null>(null);
   const [free, setFree] = useState("");
   const [budget, setBudget] = useState<number | null>(null);
@@ -116,7 +118,7 @@ export default function PromiseMode() {
             {moods.map((k) => {
               const mood = MOODS[k];
               if (!mood) return null;
-              const fit = fitLookToBudget(productsFor(k), budget);
+              const fit = fitLookToBudget(lookFor(k)?.products ?? [], budget);
               return (
                 <button
                   key={k}
@@ -128,10 +130,12 @@ export default function PromiseMode() {
                   <div className="min-w-0 flex-1">
                     <div className="text-[15px] font-bold">{moodAliasType(k)}</div>
                     <div className="mt-0.5 line-clamp-1 text-[12.5px] text-ink-soft">{mood.description}</div>
-                    <div className="mt-1 text-[13px]">
-                      이 느낌 완성 ·{" "}
-                      <span className="font-latin tnum font-semibold">{formatMan(fit.total)}</span>
-                    </div>
+                    {fit.total > 0 && (
+                      <div className="mt-1 text-[13px]">
+                        이 느낌 완성 ·{" "}
+                        <span className="font-latin tnum font-semibold">{formatMan(fit.total)}</span>
+                      </div>
+                    )}
                   </div>
                   <span className="text-ink-faint">›</span>
                 </button>
