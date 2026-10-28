@@ -78,6 +78,15 @@ export function useScrollRestore(
   // 페이지가 계속 마운트 상태로 남아있어서(App Router 특성) 그 리셋 이벤트가 디바운스 타이머보다
   // 먼저 끝나버려 실제 위치를 0으로 덮어쓰는 경합이 있었다. 0은 저장 안 해도 "복원할 값 없음"과
   // 결과가 같으므로, 사용자가 실제로 맨 위로 스크롤한 경우를 놓쳐도 안전하다.
+  //
+  // 디바운스 콜백 안에서 restoredRef를 재확인하는 이유(BUG-011 코드리뷰 P2-1): 이벤트 발생 시점엔
+  // restoredRef가 true였어도(= 이 인스턴스가 복원을 마친 상태), 그 뒤 실제 unmount(라우트 전환,
+  // 클릭→router.push로 다음 페이지 데이터가 준비되는 동안 이 인스턴스가 잠깐 더 떠있는 App Router
+  // 특성)가 200ms 디바운스보다 늦게 끝나면, 이미 죽은 인스턴스의 effect cleanup이 clearTimeout하기
+  // 전에 타이머가 먼저 발화해 scrollY(네비게이션이 만든 애매한 값)를 그대로 써버릴 수 있다. 이
+  // cleanup-vs-타이머 경합은 네트워크/렌더 속도에 좌우되는 비결정적 레이스라 고정된 재현 순서는
+  // 없다(로컬에서 서버 콜드스타트 직후엔 재현, 워밍업 후엔 거의 안 남 — Playwright 반복 실측).
+  // 가드 자체는 걸릴 때만 막는 안전망이라 평소엔 아무 영향이 없다.
   useEffect(() => {
     if (skip) return;
     let timer = 0;
@@ -85,7 +94,7 @@ export function useScrollRestore(
       if (!restoredRef.current) return;
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
-        if (!restoredRef.current) return; // 디바운스 대기 중 복원 플래그가 바뀔 수 있어 실행 시점에 재확인
+        if (!restoredRef.current) return;
         const y = window.scrollY;
         if (y <= 0) return;
         writeScrollState(storageKey, { visible: readScrollState(storageKey)?.visible ?? visible, scrollY: y });
