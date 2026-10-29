@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import type { Product } from "@/lib/types";
+import Link from "next/link";
+import type { MoodKey, Product } from "@/lib/types";
 import type { Photo } from "@/lib/photos";
-import { photoUrl } from "@/lib/photos";
+import { dominantMood, photoUrl } from "@/lib/photos";
+import { MOODS } from "@/lib/moods";
 import { primaryPrice, formatMan } from "@/lib/products";
 import { useMoodStore } from "@/lib/store";
 import BackButton from "./BackButton";
@@ -22,12 +24,14 @@ export default function PhotoProductView({
   photo: Photo;
   products: Product[];
 }) {
-  const { recordView } = useMoodStore();
+  const { recordView, isPhotoSaved, togglePhotoSave } = useMoodStore();
+  const saved = isPhotoSaved(photo.id);
   useEffect(() => {
     if (photo.mood_vector) recordView(photo.mood_vector); // 다축 그대로 반영(FEAT-001)
   }, [photo.mood_vector, recordView]);
 
   const url = photoUrl(photo.image_url);
+  const mood = MOODS[dominantMood(photo.mood_vector) as MoodKey];
   const total = products.reduce((s, p) => s + primaryPrice(p), 0);
 
   return (
@@ -43,6 +47,25 @@ export default function PhotoProductView({
           className="absolute inset-0 bg-paper-2"
           style={url ? { backgroundImage: `url(${url})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
         />
+        {/* 이 사진의 주 무드 — 누르면 그 무드의 다른 코디로 */}
+        {mood && (
+          <Link
+            href={`/mood/${mood.key}`}
+            className="absolute left-3 top-3 rounded-full bg-black/45 px-3 py-1.5 text-[12px] font-medium text-white backdrop-blur"
+          >
+            {mood.name} ›
+          </Link>
+        )}
+        <button
+          type="button"
+          onClick={() => togglePhotoSave(photo.id, photo.mood_vector)}
+          aria-label={saved ? "담기 취소" : "담기"}
+          className={`absolute right-2.5 top-2.5 flex h-[34px] w-[34px] items-center justify-center rounded-full border text-base backdrop-blur transition ${
+            saved ? "border-accent bg-accent text-white" : "border-white/35 bg-black/25 text-white"
+          }`}
+        >
+          {saved ? "♥" : "♡"}
+        </button>
         {total > 0 && (
           <div className="absolute bottom-3 left-3 rounded-full bg-black/45 px-3 py-1.5 text-[12px] font-medium text-white backdrop-blur">
             이 느낌 완성 · <span className="font-latin tnum">{formatMan(total)}</span>
