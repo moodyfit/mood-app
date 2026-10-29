@@ -69,7 +69,10 @@ export default function UploadForm() {
     }
 
     // 토스트는 도착한 상세에서 띄운다 — 여기서 띄우면 화면 전환에 묻힌다
-    router.push(`/photo?slug=${encodeURIComponent(tagged.data.slug)}&uploaded=1`);
+    // replace(push 아님) — 업로드 폼이 히스토리에 남으면 상세에서 뒤로가기 시 빈 폼으로
+    // 돌아가 "업로드가 안 됐나" 헷갈리게 한다(코드리뷰 P1-2). 상세가 폼 자리를 대신해서
+    // 뒤로가기 한 번이면 업로드를 시작한 화면(보통 /space)으로 바로 간다.
+    router.replace(`/photo?slug=${encodeURIComponent(tagged.data.slug)}&uploaded=1`);
   }
 
   return (
