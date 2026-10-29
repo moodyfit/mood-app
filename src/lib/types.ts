@@ -41,6 +41,7 @@ export interface Product {
   /** 2~3곳 판매처, price 오름차순. sources[0] = 최저가(primary) */
   sources: ProductSource[];
   photo?: string; // 사진 연결 상품만 — products.photo_image_url
+  imageUrl?: string; // 코디 사진에서 아이템 부위를 크롭한 실사진(10/16 회의록 "썸네일 크롭")
 }
 
 /** Layer 2: 검색어 → 무드 매핑 (query_map 테이블). 상품과 무관, 이 테이블만 튜닝 */
