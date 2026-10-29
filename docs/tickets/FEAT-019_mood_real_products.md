@@ -9,7 +9,7 @@
 | Key | Value |
 |-----|-------|
 | Type | FEAT |
-| Status | In Progress |
+| Status | Done |
 | 우선순위 | P1 |
 | Layer | Lib / Component |
 | Related | FEAT-015, FEAT-016 후속 1, 10/23 회의록 f, FEAT-017(#34), FEAT-020 |
@@ -91,7 +91,7 @@ photos 에 이미 무드 × 성별마다 대표 사진(`is_flagship`) 2장씩, 2
 4. ✅ 무드 카드·약속 모드
 5. ✅ 옷 상세 더미 분기 삭제
 6. ✅ 검증
-7. #34(FEAT-017) 머지 후 rebase·크롭 썸네일 연결
+7. ✅ #34(FEAT-017) 머지 후 rebase·크롭 썸네일 연결
 
 ---
 
@@ -103,7 +103,7 @@ photos 에 이미 무드 × 성별마다 대표 사진(`is_flagship`) 2장씩, 2
 - [x] 상품을 못 불러오면 상품 섹션·`코디 통째로 담기`·완성가 칩이 빈 칸 없이 숨는다
 - [x] 무드 상세에서 담은 옷이 옷장 '코디' 카드로 묶이고, 옷 상세에 `이 코디 구성` 이 뜬다
 - [x] 이미 담긴 더미 옷의 상세가 열리고 조합 섹션이 없다
-- [ ] 무드 상세 상품 카드에 크롭 썸네일이 뜬다
+- [x] 무드 상세 상품 카드에 크롭 썸네일이 뜬다
 
 ---
 
@@ -118,7 +118,7 @@ photos 에 이미 무드 × 성별마다 대표 사진(`is_flagship`) 2장씩, 2
 - 상품 순서: soft 무드 상세·사진 상세 모두 `크림색 케이블니트 · 베이지 팬츠 · 화이트 스니커즈`
 - `tsc --noEmit` 통과. lint 는 저장소에 ESLint 설정이 없어 생략
 - `npm run build:cap` 통과 — `/mood/[key]` 6경로·`/closet/item`·`/photo` 정적 생성
-- 크롭 썸네일 — (대기)
+- 크롭 썸네일: clean 무드 상세 상품 3장 `crops/m-clean-001-top·bottom·shoes.jpg` 표시. rebase 후 `tsc`·`build:cap` 통과
 
 ---
 
