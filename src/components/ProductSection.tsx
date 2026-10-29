@@ -4,8 +4,16 @@ import type { Mood, Product } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
 import ProductRow from "./ProductRow";
 
-/** 무드 상세 상품 섹션 — 추천 이유 + 기본템(미드) 4칸 */
-export default function ProductSection({ mood, look }: { mood: Mood; look: Product[] }) {
+/** 무드 상세 상품 섹션 — 추천 이유 + 대표 사진 코디 */
+export default function ProductSection({
+  mood,
+  look,
+  imageUrl = mood.imageUrl,
+}: {
+  mood: Mood;
+  look: Product[];
+  imageUrl?: string;
+}) {
   const { isSaved } = useMoodStore();
   const saved = isSaved(mood.key);
 
@@ -20,8 +28,8 @@ export default function ProductSection({ mood, look }: { mood: Mood; look: Produ
         <div
           className="h-11 w-11 flex-shrink-0 rounded-lg"
           style={
-            mood.imageUrl
-              ? { backgroundImage: `url(${mood.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+            imageUrl
+              ? { backgroundImage: `url(${imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
               : { background: mood.gradient }
           }
         />

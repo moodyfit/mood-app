@@ -94,20 +94,17 @@ interface ProductRow {
   price: number;
   source: string;
   affiliate_url: string | null;
-  image_url?: string | null;
+  image_url: string | null;
+  mood_key: string;
 }
 
-/** (B) 사진 레벨 — 특정 사진에 연결된 상품(photo_products = products.photo_image_url) */
-export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]> {
-  const sb = getSupabase();
-  if (!sb) return [];
-  const { data, error } = await sb
-    .from("products")
-    .select("name,category,price,source,affiliate_url,mood_key,image_url")
-    .eq("photo_image_url", imageUrl);
-  if (error || !data) return []; // 컬럼 미존재/미연결 → 빈 배열, 화면은 빈 상태
+const PRODUCT_COLUMNS = "name,category,price,source,affiliate_url,mood_key,image_url";
+const CATEGORY_ORDER = ["아우터", "상의", "하의", "신발"];
+
+/** 사진 1장의 상품 행 → 상품(같은 이름은 판매처로 묶음) */
+function toProducts(rows: ProductRow[], imageUrl: string): Product[] {
   const byName = new Map<string, Product>();
-  for (const r of data as (ProductRow & { mood_key: string })[]) {
+  for (const r of rows) {
     let p = byName.get(r.name);
     if (!p) {
       p = {
@@ -128,7 +125,67 @@ export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]>
   }
   const list = [...byName.values()];
   for (const p of list) p.sources.sort((a, b) => a.price - b.price);
-  return list;
+  return list.sort((a, b) => CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category));
+}
+
+/** (B) 사진 레벨 — 특정 사진에 연결된 상품(photo_products = products.photo_image_url) */
+export async function fetchProductsByPhoto(imageUrl: string): Promise<Product[]> {
+  const sb = getSupabase();
+  if (!sb) return [];
+  const { data, error } = await sb.from("products").select(PRODUCT_COLUMNS).eq("photo_image_url", imageUrl);
+  if (error || !data) return []; // 컬럼 미존재/미연결 → 빈 배열, 화면은 빈 상태
+  return toProducts(data as ProductRow[], imageUrl);
+}
+
+/** (C) 무드 레벨 — 대표 사진(is_flagship)과 그 상품 */
+export interface FlagshipLook {
+  photo: Photo;
+  products: Product[];
+}
+
+let flagshipPromise: Promise<FlagshipLook[]> | null = null;
+
+/** 무드 카드 여러 장이 요청 1번을 나눠 쓴다. 실패하면 캐시를 비워 다음 화면에서 다시 시도 */
+export function fetchFlagshipLooks(): Promise<FlagshipLook[]> {
+  flagshipPromise ??= (async () => {
+    const sb = getSupabase();
+    if (!sb) return [];
+    const photos = await sb.from("photos").select("*").eq("is_flagship", true);
+    const urls = ((photos.data ?? []) as Photo[]).map((p) => p.image_url);
+    const products = await sb
+      .from("products")
+      .select(`${PRODUCT_COLUMNS},photo_image_url`)
+      .in("photo_image_url", urls);
+    if (photos.error || products.error || !products.data) {
+      flagshipPromise = null;
+      return [];
+    }
+    const rows = products.data as (ProductRow & { photo_image_url: string })[];
+    return (photos.data as Photo[]).map((photo) => ({
+      photo,
+      products: toProducts(
+        rows.filter((r) => r.photo_image_url === photo.image_url),
+        photo.image_url
+      ),
+    }));
+  })();
+  return flagshipPromise;
+}
+
+/** 무드 대표 코디 — 성별 필터에 맞는 대표 사진 중 상품이 많은 것, 같으면 파일명 순 */
+export function pickFlagshipLook(
+  looks: FlagshipLook[],
+  moodKey: string,
+  gender: "all" | "male" | "female"
+): FlagshipLook | null {
+  const shown = new Set(filterByGender(looks.map((l) => l.photo), gender));
+  return (
+    looks
+      .filter((l) => shown.has(l.photo) && l.products.length > 0 && dominantMood(l.photo.mood_vector) === moodKey)
+      .sort(
+        (a, b) => b.products.length - a.products.length || a.photo.image_url.localeCompare(b.photo.image_url)
+      )[0] ?? null
+  );
 }
 
 /**

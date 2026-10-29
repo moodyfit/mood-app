@@ -4,7 +4,8 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Mood } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
-import { lookTotal, formatMan } from "@/lib/products";
+import { formatMan, primaryPrice } from "@/lib/products";
+import { useMoodLooks } from "@/lib/hooks/usePhotos";
 import { moodCoverRatio } from "@/lib/photos";
 
 /**
@@ -30,6 +31,8 @@ export default function MoodCard({
   const router = useRouter();
   const { isSaved, toggleSave } = useMoodStore();
   const saved = isSaved(mood.key);
+  const { lookFor } = useMoodLooks();
+  const total = (lookFor(mood.key)?.products ?? []).reduce((sum, p) => sum + primaryPrice(p), 0);
   const hero = size === "hero";
   // 실측 비율 미도입 로컬 커버는 key 기반 안전 변주로 메이슨리 스태거 확보
   const cardR = ratio ?? moodCoverRatio(mood.key);
@@ -136,9 +139,9 @@ export default function MoodCard({
       )}
 
       {/* 완성가 라벨 — 중대형 카드 전체(비-bare). 상단-좌측(해설 밴드와 겹침 방지). 상품 없으면 미렌더 */}
-      {!bare && lookTotal(mood.key) > 0 && (
+      {!bare && total > 0 && (
         <div className="absolute left-2 top-2 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur">
-          이 느낌 완성 · <span className="tnum">{formatMan(lookTotal(mood.key))}</span>
+          이 느낌 완성 · <span className="tnum">{formatMan(total)}</span>
         </div>
       )}
 
