@@ -18,7 +18,9 @@ export const metadata: Metadata = {
     title: "무드핏",
   },
   icons: {
-    apple: "/icons/apple-touch-icon.png",
+    // 루트 경로(코드리뷰 P2-2) — iOS 등이 <link> 없이도 기본으로 찾는 경로라 여기 하나로
+    // 통일한다(바꿀 땐 이 파일 하나만 교체하면 됨, public/icons/apple-touch-icon.png 사본 없음).
+    apple: "/apple-touch-icon.png",
   },
 };
 
@@ -26,7 +28,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#ffffff",
+  // manifest.ts의 theme_color와 동일(코드리뷰 P2-1) — 앱 배경(paper)과 같은 톤.
+  themeColor: "#FAFAF8",
 };
 
 export default function RootLayout({

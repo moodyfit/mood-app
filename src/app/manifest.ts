@@ -10,7 +10,9 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     display: "standalone",
     background_color: "#FAFAF8",
-    theme_color: "#1A1A1A",
+    // 웹 viewport(layout.tsx)와 동일한 값(코드리뷰 P2-1) — 앱 배경(paper)과 같은 밝은 톤으로
+    // 맞춰, 설치한 앱의 상태바가 화면마다 따로 튀지 않게 한다.
+    theme_color: "#FAFAF8",
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
       { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
