@@ -49,7 +49,7 @@ export default function TasteCardModal() {
           }}
           className="mt-5 w-full rounded-[10px] bg-white py-3.5 text-sm font-bold text-ink"
         >
-          이 추구미로 다시 보기
+          내 취향 코디 보기
         </button>
       </div>
     </div>

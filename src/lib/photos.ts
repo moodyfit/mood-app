@@ -172,6 +172,27 @@ export function fetchFlagshipLooks(): Promise<FlagshipLook[]> {
   return flagshipPromise;
 }
 
+let photoProductsPromise: Promise<Map<string, Product[]>> | null = null;
+
+/** 사진별 상품 전체(사진 경로 → 상품). 무드 상세에서 코디를 바꿀 때 조회 없이 바로 보여준다 */
+export function fetchPhotoProducts(): Promise<Map<string, Product[]>> {
+  photoProductsPromise ??= (async () => {
+    const sb = getSupabase();
+    if (!sb) return new Map();
+    const { data, error } = await sb.from("products").select(`${PRODUCT_COLUMNS},photo_image_url`);
+    if (error || !data) {
+      photoProductsPromise = null;
+      return new Map();
+    }
+    const byPhoto = new Map<string, ProductRow[]>();
+    for (const r of data as (ProductRow & { photo_image_url: string })[]) {
+      byPhoto.set(r.photo_image_url, [...(byPhoto.get(r.photo_image_url) ?? []), r]);
+    }
+    return new Map([...byPhoto].map(([url, rows]) => [url, toProducts(rows, url)]));
+  })();
+  return photoProductsPromise;
+}
+
 /** 무드 대표 코디 — 성별 필터에 맞는 대표 사진 중 상품이 많은 것, 같으면 파일명 순 */
 export function pickFlagshipLook(
   looks: FlagshipLook[],

@@ -73,9 +73,9 @@ export default function TasteProfile() {
         <div className="mt-4 flex gap-2">
           <Link
             href="/results?you=1"
-            className="flex-1 rounded-[10px] bg-white py-2.5 text-center text-[13px] font-bold text-ink"
+            className="flex flex-1 items-center justify-center rounded-[10px] bg-white text-[13px] font-bold text-ink"
           >
-            이 추구미로 다시 보기
+            내 취향 코디 보기
           </Link>
           <button
             type="button"

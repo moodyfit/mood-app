@@ -2,21 +2,24 @@
 
 import { useEffect } from "react";
 import type { Mood } from "@/lib/types";
+import type { Photo } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 import { formatMan } from "@/lib/products";
 
-/** imageUrl — 대표 사진. 없으면 무드 내장 이미지 */
+/** imageUrl — 지금 보는 사진. 없으면 무드 내장 이미지. photo — 하트가 저장할 사진, 없으면 무드를 저장 */
 export default function MoodHero({
   mood,
   total,
   imageUrl = mood.imageUrl,
+  photo,
 }: {
   mood: Mood;
   total: number;
   imageUrl?: string;
+  photo?: Photo;
 }) {
-  const { isSaved, toggleSave, recordView } = useMoodStore();
-  const saved = isSaved(mood.key);
+  const { isSaved, toggleSave, isPhotoSaved, togglePhotoSave, recordView } = useMoodStore();
+  const saved = photo ? isPhotoSaved(photo.id) : isSaved(mood.key);
 
   // 7.6 프로필 누적: 무드 상세 조회도 취향 신호
   useEffect(() => {
@@ -24,7 +27,7 @@ export default function MoodHero({
   }, [mood.key, recordView]);
 
   return (
-    <div className="relative mb-1 aspect-[3/4] overflow-hidden rounded-xl">
+    <div className="relative mb-1 aspect-[3/4] overflow-hidden rounded-xl bg-paper-2">
       <div
         className="absolute inset-0"
         style={
@@ -36,7 +39,7 @@ export default function MoodHero({
       {!imageUrl && <div className="grain" />}
       <button
         type="button"
-        onClick={() => toggleSave(mood.key)}
+        onClick={() => (photo ? togglePhotoSave(photo.id, photo.mood_vector) : toggleSave(mood.key))}
         aria-label={saved ? "담기 취소" : "담기"}
         className={`absolute right-2.5 top-2.5 flex h-[34px] w-[34px] items-center justify-center rounded-full border text-base backdrop-blur transition ${
           saved
