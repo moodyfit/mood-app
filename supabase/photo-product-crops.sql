@@ -1,18 +1,13 @@
 -- 10/16 회의록 "썸네일 사진을 코디 사진에서 크롭해서 보여주게 수정" <에린>.
 -- products.image_url 에 코디 사진에서 아이템 부위를 크롭한 실사진 URL을 채운다.
--- 없으면 ProductRow가 gradient placeholder로 폴백(src/components/ProductRow.tsx).
+-- 없으면 ProductRow가 썸네일 없이 텍스트만 보여준다(src/components/ProductRow.tsx —
+-- gradient placeholder는 #32에서 폐기됨).
 --
--- photos 테이블 전체(120장) × 연결 상품(336개)을 백그라운드로 크롭 완료, 사용자 검수 대기 중
--- (검수용 갤러리: 크롭 결과를 사진별로 모아 한 번에 보는 내부 페이지, 세션 아티팩트로 공유됨).
--- 아래 UPDATE 336건은 검수 통과 후 실행한다 — 검수에서 빠지거나 재크롭이 필요한 건이 나오면
--- 이 파일에서 해당 줄만 고치면 됨.
+-- photos 테이블 전체(120장) × 연결 상품(336개) 크롭·검수·Storage 업로드·아래 UPDATE 실행까지
+-- 전부 완료됨(image_url is not null 336건 = 사진 연결 상품 전체). 재크롭이 필요한 건이 나오면
+-- 이 파일 맨 아래에 UPDATE 문을 이어 붙인다.
 --
--- 실행 전 준비(Storage 콘솔, 서비스롤 키 필요 — anon 키로는 RLS에 막혀 업로드 불가):
---   1) "moods" 버킷에 crops/ 폴더 생성(없으면)
---   2) 로컬 images/crops/ 전체(336개 jpg)를 crops/ 에 업로드
---   3) 아래 ALTER + UPDATE를 SQL 에디터에서 실행
---
--- 컬럼이 이미 있으면 ALTER는 그냥 통과한다(IF NOT EXISTS).
+-- 컬럼이 이미 있으면 ALTER는 그냥 통과한다(IF NOT EXISTS) — 재실행해도 안전.
 alter table products add column if not exists image_url text;
 
 update products set image_url = 'https://sjcslybbczaizmfosqge.supabase.co/storage/v1/object/public/moods/crops/m-amekaji-005-outer.jpg' where photo_image_url = 'moods/m-amekaji-005.jpg' and name = '블루 데님 트러커 자켓';
