@@ -3,25 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import BackButton from "./BackButton";
-import { resolveMoods, MOODS } from "@/lib/moods";
+import { MOODS } from "@/lib/moods";
 import type { Mood } from "@/lib/types";
-import { fitLookToBudget, formatMan, BUDGETS } from "@/lib/products";
+import { formatMan, primaryPrice } from "@/lib/products";
 import { useMoodLooks } from "@/lib/hooks/usePhotos";
 import { moodAliasType } from "@/lib/taste";
 import { useMoodStore } from "@/lib/store";
 
 /**
- * 약속 모드 (★ v1) — 상황·언제·예산 → 완성 조합 2~3개 택일. "3분 안에 결정 끝."
- * 제0조: 취향(무드)은 상황이 정하고, 실행(예산 맞춤·판매처)은 무드핏이. 생성형 조합 없음.
+ * 약속 모드 — 상황 → 완성 조합 최대 3개. "3분 안에 결정 끝."
+ * 제0조: 취향(무드)은 상황이 정하고, 실행(판매처)은 무드핏이. 생성형 조합 없음.
+ * 10/28 회의록 "약속 기능 중복제거(검색창으로 통일)" — "언제"·"예산" 단계 삭제, 자유 입력을
+ * 룰베이스(resolveMoods)가 아니라 검색(/search)과 같은 AI 번역 파이프라인으로 통일했다.
  */
 // 약속 모드 = 마감 있는 결정용. '동네 산책'은 검색 칩에 이미 있어 제외, '갑자기 모임' 추가.
 const OCCASIONS = ["첫 소개팅", "퇴근 후 술약속", "친구 결혼식", "주말 카페", "면접 가는 날", "갑자기 모임"];
-
-const WHEN = [
-  { label: "오늘·내일", note: "급하니까 바로 결정" },
-  { label: "이번 주말", note: "넉넉하게 골라도 돼" },
-  { label: "여유 있어", note: "천천히 봐도 좋아" },
-];
 
 function cover(mood: Mood) {
   return mood.imageUrl
@@ -35,18 +31,35 @@ export default function PromiseMode() {
   const { lookFor } = useMoodLooks();
   const [occasion, setOccasion] = useState<string | null>(null);
   const [free, setFree] = useState("");
-  const [budget, setBudget] = useState<number | null>(null);
-  const [when, setWhen] = useState<(typeof WHEN)[number] | null>(null);
+  const [moods, setMoods] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  // 자유 입력 = 아무말 검색과 동일 파이프라인(resolveMoods 폴백). 미매핑 상황어는 로깅(겹5 수요 주도)
-  function commitFree() {
-    const q = free.trim();
-    if (!q) return;
-    recordSearch(q); // user_actions.query_text 대응(로컬). DB 연동 시 동일 파이프라인
-    setOccasion(q);
+  // 검색(/search)과 같은 AI 번역 엔진(/api/search/translate)으로 통일 — 룰베이스는 이제 PromiseMode가
+  // 아니라 API 내부 폴백(키 없음/실패/타임아웃)에서만 쓰인다.
+  async function runOccasion(q: string) {
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    recordSearch(trimmed); // user_actions.query_text 대응(로컬). DB 연동 시 동일 파이프라인
+    setOccasion(trimmed);
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/search/translate?q=${encodeURIComponent(trimmed)}`);
+      const data = (await res.json()) as { moodKeys?: string[] };
+      // 캐논 축으로 억지로 채우지 않는다(코드리뷰 — 서로 다른 상황인데 똑같이 채워져 "전부
+      // 같은 조합"으로 보이는 역효과가 있었다). AI가 확신에 차서 1개만 주면 1개 그대로 — 그게
+      // 오히려 "이 상황엔 이거 하나면 충분하다"는 정직한 신호다.
+      setMoods((data.moodKeys ?? []).slice(0, 3));
+    } catch {
+      setMoods([]); // 네트워크 실패 — 조용히 빈 결과(에러 화면 대신)
+    } finally {
+      setLoading(false);
+    }
   }
 
-  const moods = occasion ? resolveMoods(occasion).slice(0, 3) : [];
+  function commitFree() {
+    if (!free.trim()) return;
+    runOccasion(free);
+  }
 
   const chip = (active: boolean) =>
     `rounded-full border px-3.5 py-1.5 text-[13px] transition ${
@@ -77,7 +90,7 @@ export default function PromiseMode() {
               type="button"
               onClick={() => {
                 setFree("");
-                setOccasion(s);
+                runOccasion(s);
               }}
               className={chip(occasion === s)}
             >
@@ -87,61 +100,48 @@ export default function PromiseMode() {
         </div>
       </div>
 
-      <div className="mt-5">
-        <div className="mb-2 text-[13px] font-semibold">언제야</div>
-        <div className="flex flex-wrap gap-2">
-          {WHEN.map((w) => (
-            <button key={w.label} type="button" onClick={() => setWhen(w)} className={chip(when?.label === w.label)}>
-              {w.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-5">
-        <div className="mb-2 text-[13px] font-semibold">예산은</div>
-        <div className="flex flex-wrap gap-2">
-          {BUDGETS.map((b) => (
-            <button key={b.label} type="button" onClick={() => setBudget(b.won)} className={chip(budget === b.won)}>
-              {b.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {occasion ? (
         <div className="mt-8">
           {/* 유저 표현 그대로 되받기 — 축 이름·번역 노출 금지 */}
           <div className="mb-1 text-[15px] font-bold">‘{occasion}’ — 이 조합이면 돼</div>
-          {when && <div className="mb-3 text-[12.5px] text-ink-soft">{when.note}</div>}
-          <div className="flex flex-col gap-3">
-            {moods.map((k) => {
-              const mood = MOODS[k];
-              if (!mood) return null;
-              const fit = fitLookToBudget(lookFor(k)?.products ?? [], budget);
-              return (
-                <button
-                  key={k}
-                  type="button"
-                  onClick={() => router.push(`/mood/${k}`)}
-                  className="flex items-center gap-3 rounded-2xl border border-line bg-white p-3 text-left transition hover:border-accent active:scale-[0.99]"
-                >
-                  <div className="h-20 w-16 flex-shrink-0 rounded-xl" style={cover(mood)} />
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[15px] font-bold">{moodAliasType(k)}</div>
-                    <div className="mt-0.5 line-clamp-1 text-[12.5px] text-ink-soft">{mood.description}</div>
-                    {fit.total > 0 && (
-                      <div className="mt-1 text-[13px]">
-                        이 느낌 완성 ·{" "}
-                        <span className="font-latin tnum font-semibold">{formatMan(fit.total)}</span>
-                      </div>
-                    )}
-                  </div>
-                  <span className="text-ink-faint">›</span>
-                </button>
-              );
-            })}
-          </div>
+          {loading ? (
+            <div className="flex flex-col gap-3">
+              {Array.from({ length: 2 }, (_, i) => (
+                <div key={i} className="h-[92px] animate-pulse rounded-2xl bg-paper-2" />
+              ))}
+            </div>
+          ) : moods.length > 0 ? (
+            <div className="flex flex-col gap-3">
+              {moods.map((k) => {
+                const mood = MOODS[k];
+                if (!mood) return null;
+                const total = (lookFor(k)?.products ?? []).reduce((sum, p) => sum + primaryPrice(p), 0);
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => router.push(`/mood/${k}`)}
+                    className="flex items-center gap-3 rounded-2xl border border-line bg-white p-3 text-left transition hover:border-accent active:scale-[0.99]"
+                  >
+                    <div className="h-20 w-16 flex-shrink-0 rounded-xl" style={cover(mood)} />
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[15px] font-bold">{moodAliasType(k)}</div>
+                      <div className="mt-0.5 line-clamp-1 text-[12.5px] text-ink-soft">{mood.description}</div>
+                      {total > 0 && (
+                        <div className="mt-1 text-[13px]">
+                          이 느낌 완성 ·{" "}
+                          <span className="font-latin tnum font-semibold">{formatMan(total)}</span>
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-ink-faint">›</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-center text-[13px] text-ink-faint">맞는 조합을 못 찾았어 — 다르게 적어볼래?</p>
+          )}
           <p className="mt-3 text-center text-[12px] text-ink-faint">
             골라서 누르면, 바로 살 수 있게 정리돼 있어
           </p>
