@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import BackButton from "./BackButton";
-import { MOODS, ALL_MOOD_KEYS } from "@/lib/moods";
+import { MOODS } from "@/lib/moods";
 import type { Mood } from "@/lib/types";
 import { formatMan, primaryPrice } from "@/lib/products";
 import { useMoodLooks } from "@/lib/hooks/usePhotos";
@@ -45,14 +45,10 @@ export default function PromiseMode() {
     try {
       const res = await fetch(`/api/search/translate?q=${encodeURIComponent(trimmed)}`);
       const data = (await res.json()) as { moodKeys?: string[] };
-      const keys = (data.moodKeys ?? []).slice(0, 3);
-      // AI가 확신에 찬 상황(결혼식·면접 등)일수록 1개로 좁혀서 "택일"이 안 됐다(실측: OCCASIONS
-      // 6개 중 5개가 1~2개만 반환). 적어도 둘 중 고르게 안 겹치는 다른 무드로 채운다.
-      for (const k of ALL_MOOD_KEYS) {
-        if (keys.length >= 2) break;
-        if (!keys.includes(k)) keys.push(k);
-      }
-      setMoods(keys);
+      // 캐논 축으로 억지로 채우지 않는다(코드리뷰 — 서로 다른 상황인데 똑같이 채워져 "전부
+      // 같은 조합"으로 보이는 역효과가 있었다). AI가 확신에 차서 1개만 주면 1개 그대로 — 그게
+      // 오히려 "이 상황엔 이거 하나면 충분하다"는 정직한 신호다.
+      setMoods((data.moodKeys ?? []).slice(0, 3));
     } catch {
       setMoods([]); // 네트워크 실패 — 조용히 빈 결과(에러 화면 대신)
     } finally {
