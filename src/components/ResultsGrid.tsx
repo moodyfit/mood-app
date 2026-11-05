@@ -1,27 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import MoodCard from "./MoodCard";
 import SearchMemory from "./SearchMemory";
 import { MOODS, ALL_MOOD_KEYS, resolveMoods } from "@/lib/moods";
 import { personalizeOrder, TASTE_CARD_THRESHOLD } from "@/lib/taste";
 import { useMoodStore } from "@/lib/store";
 import GridTail from "./GridTail";
-import ResultToggle from "./ResultToggle";
 
 /**
- * 모먼트 3 + 7.6: [모두의 결과 ↔ 너의 결과] 토글. (로컬 폴백 메이슨리)
- * 균등 격자 대신 메이슨리(전시 문법). 너의 결과에서만 최상위 매치를 전면폭 히어로로 = 개인화 시각화.
+ * (로컬 폴백 메이슨리, DB photos 없을 때) 균등 격자 대신 메이슨리(전시 문법). 개인화 결과에서만
+ * 최상위 매치를 전면폭 히어로로. 10/28 회의록 "모두의 결과/너의 결과 토글 제거" —
+ * `formed`(저장 3장 이상) 여부로 자동 결정, 수동 전환 없음.
  */
 export default function ResultsGrid({ query, you = false }: { query: string; you?: boolean }) {
   const { affinity, savedCount } = useMoodStore();
   const formed = savedCount >= TASTE_CARD_THRESHOLD;
-  const [override, setOverride] = useState<boolean | null>(null);
-  const personal = override ?? (you || formed);
+  const personal = you || formed;
 
   const base = you ? [...ALL_MOOD_KEYS] : resolveMoods(query);
   const personalOrder = personalizeOrder(base, affinity);
-  const changedCount = base.reduce((n, k, i) => (personalOrder[i] !== k ? n + 1 : n), 0);
   const ordered = personal ? personalOrder : base;
 
   // B6: 1번 카드는 모두/너의 무관하게 항상 대형 고정 + 해설 펼침
@@ -35,14 +32,6 @@ export default function ResultsGrid({ query, you = false }: { query: string; you
       </h2>
 
       {!you && <SearchMemory query={query} />}
-
-      <ResultToggle
-        personal={personal}
-        formed={formed}
-        savedCount={savedCount}
-        changedCount={changedCount}
-        onChange={setOverride}
-      />
 
       {heroKey && MOODS[heroKey] && (
         <div className="mb-3 animate-rise">
