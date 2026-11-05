@@ -240,3 +240,21 @@ export function rankPhotos(photos: Photo[], moodKeys: string[]): Photo[] {
     .sort((a, b) => b.s - a.s)
     .map((x) => x.p);
 }
+
+/**
+ * 제품 검색(10/28 회의록 — "와이드 슬랙스" 검색 시 그 상품이 포함된 코디 목록). 상품명에 검색어가
+ * 부분 포함된 행의 photo_image_url을 모은다. 매칭 0건이면 null — 호출부가 기존 무드 검색으로
+ * 폴백하는 신호로 쓴다(제품명이 아니라 상황/느낌 검색어였다는 뜻이므로).
+ */
+export async function fetchProductPhotoUrls(query: string): Promise<Set<string> | null> {
+  const sb = getSupabase();
+  const q = query.trim();
+  if (!sb || !q) return null;
+  const { data, error } = await sb
+    .from("products")
+    .select("photo_image_url")
+    .ilike("name", `%${q}%`)
+    .not("photo_image_url", "is", null);
+  if (error || !data || data.length === 0) return null;
+  return new Set(data.map((r) => r.photo_image_url as string));
+}
