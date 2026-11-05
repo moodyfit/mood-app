@@ -175,7 +175,7 @@ export default function HomeGallery({
                   .map(({ p, i }) => (
                     // FEAT-010: 무한반복이라 같은 사진 id가 여러 번 나올 수 있음 — 인덱스 합성 key 필요.
                     <div key={`${p.id}-${i}`} className="animate-rise">
-                      <PhotoCard photo={p} query={query} hint={!heroPhoto && i === 0} />
+                      <PhotoCard photo={p} query={query} />
                     </div>
                   ))}
               </div>
