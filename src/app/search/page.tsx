@@ -1,45 +1,30 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMoodStore } from "@/lib/store";
+import { usePhotos } from "@/lib/hooks/usePhotos";
+import { topSituations } from "@/lib/photos";
 import { MOODS, ALL_MOOD_KEYS } from "@/lib/moods";
 
 const PENDING_SHOT_KEY = "moodfit.pendingShot";
 
-const DAILY = [
-  "전여친 결혼식",
-  "월급날 플렉스인 척",
-  "비 오는 날 재즈바",
-  "퇴사 통보하는 날",
-  "아무도 안 만나는 날",
-  "집앞인데 각 잡고",
-  "첫 출근 얕보이기 싫을 때",
-];
-
-const SITUATION_CHIPS = [
-  "소개팅 깔끔하게",
-  "퇴근 후 약속",
-  "면접인데 안 딱딱하게",
-  "꾸안꾸 그거 뭐냐",
-  "남들이 아는 그 느낌",
-  "퇴근하고 한잔",
-];
-
+// 밈 언어는 DB 태그가 아니라 트렌드 문구라 실데이터화 대상이 아니다(상황별과 성격이 다름).
 const MEME_CHIPS = ["테토남 그 느낌", "느좋 그 자체", "남친룩"];
 
 export default function SearchPage() {
   const router = useRouter();
   const { recordSearch } = useMoodStore();
+  const { photos } = usePhotos();
   const [query, setQuery] = useState("");
-  const [dailyIdx, setDailyIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const shotInput = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    setDailyIdx(Math.floor(Date.now() / 86400000) % DAILY.length);
-  }, []);
+  // 10/28 회의록 "검색창의 추천/상황별(더미데이터->실데이터로 교체)" — photos.situations를
+  // 빈도순 집계(topSituations)해서 "오늘의 추천"(날짜 기반 로테이션 1개)과 "상황별"(전체) 둘 다 쓴다.
+  const situations = useMemo(() => topSituations(photos), [photos]);
+  const todayChip = situations.length > 0 ? situations[Math.floor(Date.now() / 86400000) % situations.length] : null;
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -64,8 +49,6 @@ export default function SearchPage() {
     };
     reader.readAsDataURL(file);
   }
-
-  const todayChip = DAILY[dailyIdx];
 
   return (
     <div className="animate-fade px-5 pb-14">
@@ -113,45 +96,51 @@ export default function SearchPage() {
       />
 
       {/* 오늘의 추천 + 밈 */}
-      <div className="mt-8">
-        <h2 className="mb-3 text-[14px] font-bold tracking-[-0.3px]">오늘의 추천</h2>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => search(todayChip)}
-            className="rounded-full border border-accent/30 bg-accent/5 px-3.5 py-2 text-[13px] font-medium text-ink transition hover:bg-accent/10"
-          >
-            {todayChip}
-          </button>
-          {MEME_CHIPS.map((chip) => (
-            <button
-              key={chip}
-              type="button"
-              onClick={() => search(chip)}
-              className="rounded-full border border-line px-3.5 py-2 text-[13px] transition hover:border-accent hover:bg-paper-2"
-            >
-              {chip}
-            </button>
-          ))}
+      {(todayChip || MEME_CHIPS.length > 0) && (
+        <div className="mt-8">
+          <h2 className="mb-3 text-[14px] font-bold tracking-[-0.3px]">오늘의 추천</h2>
+          <div className="flex flex-wrap gap-2">
+            {todayChip && (
+              <button
+                type="button"
+                onClick={() => search(todayChip)}
+                className="rounded-full border border-accent/30 bg-accent/5 px-3.5 py-2 text-[13px] font-medium text-ink transition hover:bg-accent/10"
+              >
+                {todayChip}
+              </button>
+            )}
+            {MEME_CHIPS.map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => search(chip)}
+                className="rounded-full border border-line px-3.5 py-2 text-[13px] transition hover:border-accent hover:bg-paper-2"
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* 상황별 검색 */}
-      <div className="mt-8">
-        <h2 className="mb-3 text-[14px] font-bold tracking-[-0.3px]">상황별</h2>
-        <div className="flex flex-wrap gap-2">
-          {SITUATION_CHIPS.map((chip) => (
-            <button
-              key={chip}
-              type="button"
-              onClick={() => search(chip)}
-              className="rounded-full border border-line px-3.5 py-2 text-[13px] transition hover:border-accent hover:bg-paper-2"
-            >
-              {chip}
-            </button>
-          ))}
+      {/* 상황별 검색 — photos.situations 실데이터 */}
+      {situations.length > 0 && (
+        <div className="mt-8">
+          <h2 className="mb-3 text-[14px] font-bold tracking-[-0.3px]">상황별</h2>
+          <div className="flex flex-wrap gap-2">
+            {situations.map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => search(chip)}
+                className="rounded-full border border-line px-3.5 py-2 text-[13px] transition hover:border-accent hover:bg-paper-2"
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 무드별 탐색 */}
       <div className="mt-8">

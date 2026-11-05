@@ -240,3 +240,20 @@ export function rankPhotos(photos: Photo[], moodKeys: string[]): Photo[] {
     .sort((a, b) => b.s - a.s)
     .map((x) => x.p);
 }
+
+/**
+ * 검색 화면 "상황별" 칩(10/28 회의록 — 더미 문구 대신 실데이터). photos.situations를 빈도순으로
+ * 집계해 상위 limit개만 보여준다. minCount 미만(샘플 너무 적은 롱테일, 예: 1장짜리)은 제외해
+ * 믿을 만한 상황만 노출한다.
+ */
+export function topSituations(photos: Photo[], limit = 6, minCount = 5): string[] {
+  const counts = new Map<string, number>();
+  for (const p of photos) {
+    for (const s of p.situations ?? []) counts.set(s, (counts.get(s) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .filter(([, n]) => n >= minCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([s]) => s);
+}
