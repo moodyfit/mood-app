@@ -76,7 +76,7 @@ export default function PhotoGrid({
   return (
     <div>
       <h2 className="mb-4 text-[20px] font-bold tracking-[-0.4px]">
-        {you ? "너의 추구미로 골라봤어" : `‘${query}’ — 대충 쳐도 돼`}
+        {you ? "너의 추구미로 골라봤어" : `‘${query}’`}
       </h2>
 
       {/* 개인화 전용 히어로: 개인화 결과에서만 최상위 매치를 전면폭으로 = 크기로 적합도를 말한다 */}
@@ -88,9 +88,9 @@ export default function PhotoGrid({
 
       {/* 메이슨리 = CSS 멀티컬럼(핀터레스트 배치). 세로 리듬은 사진 실비율에서 나옴 */}
       <div style={{ columnCount: 2, columnGap: "12px" }}>
-        {rest.map((p, idx) => (
+        {rest.map((p) => (
           <div key={p.id} className="mb-3 break-inside-avoid animate-rise">
-            <PhotoCard photo={p} query={query} hint={!hero && idx === 0} />
+            <PhotoCard photo={p} query={query} />
           </div>
         ))}
       </div>

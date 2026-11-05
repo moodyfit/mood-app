@@ -16,12 +16,10 @@ import { useMoodStore } from "@/lib/store";
 export default function PhotoCard({
   photo,
   query,
-  hint = false,
   size = "sm",
 }: {
   photo: Photo;
   query?: string;
-  hint?: boolean;
   size?: "hero" | "sm";
 }) {
   const router = useRouter();
@@ -30,7 +28,6 @@ export default function PhotoCard({
   // (B) 사진 전용 상품 뷰로 — slug = 파일명(moods/clean-001.jpg → clean-001)
   const slug = photo.image_url.split("/").pop()?.replace(/\.\w+$/, "") ?? "";
   const hero = size === "hero";
-  const showCaption = hero || hint;
   const ratio = hero ? 0.78 : cardRatio(photo);
 
   const [caption, setCaption] = useState(false);
@@ -95,17 +92,12 @@ export default function PhotoCard({
         {saved ? "♥" : "♡"}
       </button>
 
-      {/* hero/첫 카드: 해설을 '펼쳐서' 상시 노출 (v2.6 1번 사진 해설 펼침 + §7.10 무기#1).
-          왜 멋있는지를 롱프레스 없이 즉시 보여 최강 무기를 전면화. 소형 일반 카드는 생략(②) */}
-      {showCaption && !caption && photo.caption_item && (
+      {/* 모든 카드에 제목(caption_item)을 상시 노출(10/28 회의록 — 1번 카드만 보이던 걸
+          일관되게, 부가설명은 빼고 제목 글자를 키워 가독성 위주로). 부가설명(caption_why)은
+          롱프레스 전문 오버레이에서만 — 아래 참고. */}
+      {!caption && photo.caption_item && (
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
-          <div className="text-[12.5px] font-semibold text-white">{photo.caption_item}</div>
-          {/* 해설이 펼쳐진 것 자체가 노출 — 별도 안내 문구 금지(스펙) */}
-          {photo.caption_why && (
-            <div className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-white/85">
-              {photo.caption_why}
-            </div>
-          )}
+          <div className="text-[13.5px] font-semibold leading-snug text-white">{photo.caption_item}</div>
         </div>
       )}
 
