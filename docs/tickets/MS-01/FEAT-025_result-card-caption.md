@@ -20,5 +20,4 @@
 
 - 로컬 Playwright로 `/results?q=와이드+슬랙스` 스크린샷 확인 — 헤더가 `'와이드 슬랙스'`로
   단순화, 모든 카드에 제목 상시 노출됨.
-- `tsc --noEmit`, `npm run build` 통과.
-- **PR 미생성 — 로컬 확인 단계(사용자 지시)**.
+- `tsc --noEmit`, `npm run build` 통과. PR #43.

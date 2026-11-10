@@ -92,9 +92,8 @@ export default function PhotoCard({
         {saved ? "♥" : "♡"}
       </button>
 
-      {/* 모든 카드에 제목(caption_item)을 상시 노출(10/28 회의록 — 1번 카드만 보이던 걸
-          일관되게, 부가설명은 빼고 제목 글자를 키워 가독성 위주로). 부가설명(caption_why)은
-          롱프레스 전문 오버레이에서만 — 아래 참고. */}
+      {/* 모든 카드에 제목(caption_item)을 상시 노출, 부가설명(caption_why)은 상시 노출에서
+          빼고 롱프레스 전문 오버레이에서만 — 근거는 FEAT-025 티켓 참고. */}
       {!caption && photo.caption_item && (
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
           <div className="text-[13.5px] font-semibold leading-snug text-white">{photo.caption_item}</div>
