@@ -20,13 +20,11 @@ AI 번역이 스타일을 구분할 정보가 부족해서 대부분 비슷한 �
 
 - `/search`: 검색 입력창(제품명 검색, placeholder를 "제품명으로 검색해봐"로 변경) + 스크린샷으로
   찾기만 남김. "오늘의 추천"/"상황별"/"무드별" 섹션·관련 상수(`MEME_CHIPS` 등) 전부 제거.
-- `src/lib/photos.ts`의 `topSituations` — 다른 소비자 없음(grep 확인) 제거(데드코드, 1차 작업에서
-  추가했던 것).
 
 ## Verification
 
-- `tsc --noEmit` 통과.
-- **PR 미생성 — 로컬 확인 단계(사용자 지시)**.
+- `tsc --noEmit`, `npm run build` 통과.
+- 로컬 브라우저로 직접 확인. PR #39.
 
 ## 참고
 
