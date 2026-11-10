@@ -8,23 +8,24 @@
 
 ## Scope
 
-- `src/lib/photos.ts`에 `fetchProductPhotoUrls(query)` 추가 — `products.name ilike '%q%'`로
-  매칭된 행의 `photo_image_url` 집합을 반환. 매칭 0건이면 `null`.
+- `src/lib/photos.ts`에 `fetchProductPhotoUrls(query)` 추가 — 검색어 글자가 순서대로(사이에
+  다른 글자 허용) `products.name`에 들어간 행의 `photo_image_url` 집합을 반환(띄어쓰기 변형 대응,
+  표기 차이는 FEAT-026). 매칭 0건이면 `null`.
 - `/results`: 검색어 바뀔 때 기존 무드 번역(`/api/search/translate`)과 별도로
   `fetchProductPhotoUrls`도 호출. 매칭 있으면(제품 검색) 그 사진들만 필터링해 보여주고, 없으면
   (상황/느낌 검색어) 기존 무드 랭킹으로 폴백 — 같은 검색창, 결과만 자동으로 갈림.
 
 ## Verification
 
-- DB에서 "와이드 슬랙스" 부분 매칭 고유 사진 22장 확인.
-- `/results?q=와이드+슬랙스` 로컬 테스트: 무한스크롤 끝까지 카드 22장으로 정확히 수렴(DB 수치와
+- DB에서 "와이드 슬랙스" 글자 순서 매칭 고유 사진 24장 확인.
+- `/results?q=와이드+슬랙스` 로컬 테스트: 무한스크롤 끝까지 카드 24장으로 정확히 수렴(DB 수치와
   일치) — 제품 검색 분기 확인.
 - `/results?q=우아한+데이트하고싶어`(제품명 아님): 스크롤 84장+ (전체 120장 대상, 계속 순환) —
   기존 무드 검색 경로 그대로 동작, 회귀 없음.
-- `tsc --noEmit`, `npm run build` 통과.
-- **PR 미생성 — 로컬 확인 단계(사용자 지시)**.
+- `tsc --noEmit`, `npm run build` 통과. PR #41.
 
 ## 후속(이번 범위 아님)
 
 - 검색 결과 헤더 문구가 제품 검색일 때도 "'와이드 슬랙스' — 대충 쳐도 돼"로 동일 — 제품 검색
   전용 문구("'와이드 슬랙스' 포함된 코디" 등)로 분리할지는 디자인 결정 필요.
+- 표기 차이(자켓/재킷 등) 매칭 — FEAT-026.
