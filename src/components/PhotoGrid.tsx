@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import type { Photo } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
-import { TASTE_CARD_THRESHOLD } from "@/lib/taste";
 import { rankPersonalized, personalizationStrength, HERO_MIN_STRENGTH } from "@/lib/rank";
 import { useScrollRestore } from "@/lib/hooks/useScrollRestore";
 import PhotoCard from "./PhotoCard";
@@ -14,9 +13,9 @@ const LOAD_STEP = 12;
 
 /**
  * DB photos 메이슨리. 균등 격자(커머스 문법=비교) 대신 메이슨리(전시 문법=갤러리/무드보드).
- * 크기 = 정보 채널: 개인화(취향 형성 후)에서만 최상위 매치를 전면폭 히어로로.
- * 10/28 회의록 "모두의 결과/너의 결과 토글 제거" — 수동 전환 없이 `formed`(저장 3장 이상)
- * 여부로 자동 결정. /results?you=1(홈 "내 취향 코디 보기")은 항상 개인화.
+ * 크기 = 정보 채널: 개인화에서만 최상위 매치를 전면폭 히어로로.
+ * 10/28 회의록 "모두의 결과/너의 결과 토글 제거" — 검색 결과(you=false)는 항상 검색 순서,
+ * /results?you=1(홈 "내 취향 코디 보기")만 항상 개인화(코드리뷰 P0-1).
  * FEAT-004(2026-08-19 회의): 무한 스크롤 — 핀터레스트처럼 스크롤 끝에서 자동 로드.
  * "유한 구경" 원칙은 폐기됨. 전체 사진은 이미 한 번에 받아온 상태(photos prop)라
  * 추가 네트워크 요청 없이 클라이언트에서 보여줄 양만 늘림.
@@ -30,10 +29,11 @@ export default function PhotoGrid({
   query: string;
   you?: boolean;
 }) {
-  const { affinity, savedCount } = useMoodStore();
-  // 프로필 형성 = 저장 3장 이상. 형성되면 자동으로 개인화 결과.
-  const formed = savedCount >= TASTE_CARD_THRESHOLD;
-  const personal = you || formed;
+  const { affinity } = useMoodStore();
+  // 코드리뷰 P0-1: `rankPersonalized`는 검색 순서(rankPhotos)를 쓰지 않고 취향 점수로 전체를
+  // 다시 줄 세운다 — 저장 3장 이상(formed)이면 검색어와 상관없이 결과가 거의 똑같아지는 버그가
+  // 있었다. 검색 결과(you=false)는 검색 순서를 그대로, 개인화는 검색어가 없는 you=1 화면에만.
+  const personal = you;
   // BUG-008: 뒤로가기 시 로드량/스크롤 복원(HomeGallery와 동일한 BUG-004 패턴).
   // storageKey에 query·you를 섞어 검색어·모드별로 복원 슬롯을 분리 — 다른 검색 결과의 스크롤
   // 위치가 섞여 들어오지 않게 한다.
