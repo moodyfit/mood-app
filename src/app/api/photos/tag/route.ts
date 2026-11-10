@@ -66,6 +66,10 @@ async function scoreWithClaude(
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 1024,
+      // claude-sonnet-5는 기본으로 extended thinking이 켜져 있다 — 비전 채점도 JSON 1개만
+      // 돌려주면 되는 작업이라 thinking이 필요 없고, 끄면 thinking 블록 자체가 안 와서 아래
+      // content.find도 사실상 항상 1-shot으로 text를 찾는다(find는 방어적으로 유지).
+      thinking: { type: "disabled" },
       messages: [
         {
           role: "user",
