@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import BackButton from "./BackButton";
 import { MOODS, resolveMoods } from "@/lib/moods";
@@ -18,6 +18,9 @@ import { useMoodStore } from "@/lib/store";
  */
 // 약속 모드 = 마감 있는 결정용. '동네 산책'은 마감이 없어 제외, '갑자기 모임' 추가.
 const OCCASIONS = ["첫 소개팅", "퇴근 후 술약속", "친구 결혼식", "주말 카페", "면접 가는 날", "갑자기 모임"];
+// #39에서 /search 상황별·밈 칩을 걷어내면서, OCCASIONS에 대응 문구가 없는 것만 옮겼다(코드리뷰
+// P1-2). '오늘의 추천'(날짜 기반 로테이션)은 대응 칩도 없고 별도 로직이라 이번엔 옮기지 않음.
+const VIBE_CHIPS = ["꾸안꾸 그거 뭐냐", "남들이 아는 그 느낌", "테토남 그 느낌", "느좋 그 자체", "남친룩"];
 
 function cover(mood: Mood) {
   return mood.imageUrl
@@ -33,29 +36,38 @@ export default function PromiseMode() {
   const [free, setFree] = useState("");
   const [moods, setMoods] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  // 마지막으로 보낸 요청만 결과를 반영 — blur 요청과 칩 클릭 요청이 거의 동시에 나가면
+  // 늦게 도착한 쪽이 먼저 온 결과를 덮어써서 헤더·카드가 서로 다른 상황을 가리키는 문제가
+  // 있었다(코드리뷰 P0-2). /results의 cancelled 패턴과 동일한 발상.
+  const requestRef = useRef(0);
 
   // 검색(/search)과 같은 AI 번역 엔진(/api/search/translate)으로 통일 — 룰베이스는 이제 PromiseMode가
   // 아니라 API 내부 폴백(키 없음/실패/타임아웃)에서만 쓰인다.
   async function runOccasion(q: string) {
     const trimmed = q.trim();
-    if (!trimmed) return;
+    // 이미 처리한 값이면 건너뛴다(코드리뷰 P1-1) — onBlur가 Enter 제출 뒤에도 매번 불려서
+    // 같은 입력으로 요청·기록이 중복되던 문제.
+    if (!trimmed || trimmed === occasion) return;
     recordSearch(trimmed); // user_actions.query_text 대응(로컬). DB 연동 시 동일 파이프라인
     setOccasion(trimmed);
     setLoading(true);
+    const reqId = ++requestRef.current;
     try {
       const res = await fetch(`/api/search/translate?q=${encodeURIComponent(trimmed)}`);
       const data = (await res.json()) as { moodKeys?: string[] };
+      if (requestRef.current !== reqId) return; // 더 최신 요청이 나간 뒤 — 이 응답은 버림
       // 캐논 축으로 억지로 채우지 않는다(코드리뷰 — 서로 다른 상황인데 똑같이 채워져 "전부
       // 같은 조합"으로 보이는 역효과가 있었다). AI가 확신에 차서 1개만 주면 1개 그대로 — 그게
       // 오히려 "이 상황엔 이거 하나면 충분하다"는 정직한 신호다.
       setMoods((data.moodKeys ?? []).slice(0, 3));
     } catch {
+      if (requestRef.current !== reqId) return;
       // Capacitor 앱 빌드(output: "export")엔 API 라우트가 없어 이 catch가 매번 실행된다
       // (별도 BUG 티켓 — Capacitor API 호출 아키텍처). 그때도 결과가 비면 안 되니 기존
       // 룰베이스(resolveMoods)로 폴백 — 웹에서도 네트워크 실패 시 같은 경로를 탄다.
       setMoods(resolveMoods(trimmed).slice(0, 3));
     } finally {
-      setLoading(false);
+      if (requestRef.current === reqId) setLoading(false);
     }
   }
 
@@ -88,6 +100,25 @@ export default function PromiseMode() {
         />
         <div className="flex flex-wrap gap-2">
           {OCCASIONS.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => {
+                setFree("");
+                runOccasion(s);
+              }}
+              className={chip(occasion === s)}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-5">
+        <div className="mb-2 text-[13px] font-semibold">이런 느낌도 돼</div>
+        <div className="flex flex-wrap gap-2">
+          {VIBE_CHIPS.map((s) => (
             <button
               key={s}
               type="button"
