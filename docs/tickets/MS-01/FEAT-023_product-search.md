@@ -11,9 +11,12 @@
 - `src/lib/photos.ts`에 `fetchProductPhotoUrls(query)` 추가 — 검색어 글자가 순서대로(사이에
   다른 글자 허용) `products.name`에 들어간 행의 `photo_image_url` 집합을 반환(띄어쓰기 변형 대응,
   표기 차이는 FEAT-026). 매칭 0건이면 `null`.
-- `/results`: 검색어 바뀔 때 기존 무드 번역(`/api/search/translate`)과 별도로
-  `fetchProductPhotoUrls`도 호출. 매칭 있으면(제품 검색) 그 사진들만 필터링해 보여주고, 없으면
-  (상황/느낌 검색어) 기존 무드 랭킹으로 폴백 — 같은 검색창, 결과만 자동으로 갈림.
+- `/results`: 검색어 바뀌면 먼저 `fetchProductPhotoUrls`로 제품 매칭을 조회(조회 중엔 스켈레톤,
+  코드리뷰 P1-2). 매칭 있으면(제품 검색) 그 사진들만 필터링해 보여주고, 없으면(상황/느낌 검색어)
+  그때서야 무드 번역(`/api/search/translate`)을 호출해 무드 랭킹으로 폴백(P2-2 — 매칭 성공 시엔
+  번역 호출 자체를 생략) — 같은 검색창, 결과만 자동으로 갈림.
+- 제품 매칭 후 성별 필터링이 0장이 되면(P1-1) 전역 필터는 바꾸지 않고 이 화면에서만 전체 성별로
+  넓혀 보여주고 안내 문구를 붙인다.
 
 ## Verification
 
