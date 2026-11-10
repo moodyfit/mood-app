@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import BackButton from "./BackButton";
-import { MOODS } from "@/lib/moods";
+import { MOODS, resolveMoods } from "@/lib/moods";
 import type { Mood } from "@/lib/types";
 import { formatMan, primaryPrice } from "@/lib/products";
 import { useMoodLooks } from "@/lib/hooks/usePhotos";
@@ -16,7 +16,7 @@ import { useMoodStore } from "@/lib/store";
  * 10/28 회의록 "약속 기능 중복제거(검색창으로 통일)" — "언제"·"예산" 단계 삭제, 자유 입력을
  * 룰베이스(resolveMoods)가 아니라 검색(/search)과 같은 AI 번역 파이프라인으로 통일했다.
  */
-// 약속 모드 = 마감 있는 결정용. '동네 산책'은 검색 칩에 이미 있어 제외, '갑자기 모임' 추가.
+// 약속 모드 = 마감 있는 결정용. '동네 산책'은 마감이 없어 제외, '갑자기 모임' 추가.
 const OCCASIONS = ["첫 소개팅", "퇴근 후 술약속", "친구 결혼식", "주말 카페", "면접 가는 날", "갑자기 모임"];
 
 function cover(mood: Mood) {
@@ -50,7 +50,10 @@ export default function PromiseMode() {
       // 오히려 "이 상황엔 이거 하나면 충분하다"는 정직한 신호다.
       setMoods((data.moodKeys ?? []).slice(0, 3));
     } catch {
-      setMoods([]); // 네트워크 실패 — 조용히 빈 결과(에러 화면 대신)
+      // Capacitor 앱 빌드(output: "export")엔 API 라우트가 없어 이 catch가 매번 실행된다
+      // (별도 BUG 티켓 — Capacitor API 호출 아키텍처). 그때도 결과가 비면 안 되니 기존
+      // 룰베이스(resolveMoods)로 폴백 — 웹에서도 네트워크 실패 시 같은 경로를 탄다.
+      setMoods(resolveMoods(trimmed).slice(0, 3));
     } finally {
       setLoading(false);
     }
@@ -142,9 +145,11 @@ export default function PromiseMode() {
           ) : (
             <p className="text-center text-[13px] text-ink-faint">맞는 조합을 못 찾았어 — 다르게 적어볼래?</p>
           )}
-          <p className="mt-3 text-center text-[12px] text-ink-faint">
-            골라서 누르면, 바로 살 수 있게 정리돼 있어
-          </p>
+          {moods.length > 0 && (
+            <p className="mt-3 text-center text-[12px] text-ink-faint">
+              골라서 누르면, 바로 살 수 있게 정리돼 있어
+            </p>
+          )}
         </div>
       ) : (
         <p className="mt-8 text-center text-[13px] text-ink-faint">자리만 골라도 조합이 떠</p>

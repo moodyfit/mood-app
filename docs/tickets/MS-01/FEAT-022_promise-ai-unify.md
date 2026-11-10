@@ -25,11 +25,14 @@
 - Playwright로 자유 입력 "비오는날 재즈바"/"우아한 데이트하고싶어" 테스트 — `/api/search/translate`
   네트워크 호출 실제 발생 확인(네트워크 레벨로 검증, 룰베이스가 아니라 AI 경로 탄다는 증거).
 - 화면에서 "언제야"/"예산은" 섹션 완전히 사라짐, 완성가·카드 클릭(→ `/mood/[key]`) 정상.
-- `tsc --noEmit`, `npm run build` 통과.
-- **PR 미생성 — 로컬 확인 단계(사용자 지시)**.
+- `tsc --noEmit`, `npm run build` 통과. PR #40.
 
 ## 참고
 
 `/api/search/translate`가 thinking 블록 파싱 버그(BUG-012, PR #38)로 간헐적으로 AI 대신
 폴백(`resolveMoods`)으로 떨어지는 문제가 아직 main에 남아있음 — #38이 머지되면 이 화면도 같이
 안정화됨. 이번 작업 범위 밖이라 손 안 댐.
+
+Capacitor 앱 빌드(`output: "export"`)엔 이 API 라우트 자체가 없어서 catch가 매번 실행되는
+문제는 PromiseMode만의 문제가 아니라 프로젝트 전역 구조 문제 — 별도 BUG 티켓으로 분리(코드리뷰
+P0-1). 이 PR엔 catch에서 `resolveMoods`로 폴백하는 안전망만 추가했다.
