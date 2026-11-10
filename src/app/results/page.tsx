@@ -48,8 +48,14 @@ function ResultsContent() {
   );
 
   useEffect(() => {
-    if (you || !q) return;
+    if (you) return;
     setMoodKeys(resolveMoods(q)); // 제품 매칭이 없을 때 쓸 폴백 순서를 미리 준비(빈 화면 없음)
+    if (!q) {
+      // 쿼리 없이 바로 /results 진입(북마크·히스토리 등) — 조회할 게 없으니 "매칭 없음"으로
+      // 바로 확정한다. undefined로 두면 아래 fetch가 전혀 안 돌아서 스켈레톤이 영원히 안 풀림(회귀).
+      setProductPhotoUrls(null);
+      return;
+    }
     setProductPhotoUrls(undefined); // q 바뀌면 새로 "조회 중"부터
     let cancelled = false;
     fetchProductPhotoUrls(q).then((urls) => {
