@@ -20,7 +20,10 @@ import { useMoodStore } from "@/lib/store";
 const OCCASIONS = ["첫 소개팅", "퇴근 후 술약속", "친구 결혼식", "주말 카페", "면접 가는 날", "갑자기 모임"];
 // #39에서 /search 상황별·밈 칩을 걷어내면서, OCCASIONS에 대응 문구가 없는 것만 옮겼다(코드리뷰
 // P1-2). '오늘의 추천'(날짜 기반 로테이션)은 대응 칩도 없고 별도 로직이라 이번엔 옮기지 않음.
-const VIBE_CHIPS = ["꾸안꾸 그거 뭐냐", "남들이 아는 그 느낌", "테토남 그 느낌", "느좋 그 자체", "남친룩"];
+// '남들이 아는 그 느낌'은 QUERY_MAP에 매칭 키워드가 없어 AI 번역이 안 닿을 때(앱 빌드·API
+// 실패) 글자 수 기반 폴백으로 떨어져 뜻과 무관한 결과가 나오고, AI가 닿아도 다른 칩과 결과가
+// 겹쳐서 뺐다(코드리뷰 P2-5 — 실측 확인).
+const VIBE_CHIPS = ["꾸안꾸 그거 뭐냐", "테토남 그 느낌", "느좋 그 자체", "남친룩"];
 
 function cover(mood: Mood) {
   return mood.imageUrl
@@ -183,7 +186,9 @@ export default function PromiseMode() {
           )}
         </div>
       ) : (
-        <p className="mt-8 text-center text-[13px] text-ink-faint">자리만 골라도 조합이 떠</p>
+        // 자리 칩·느낌 칩·직접 입력이 모두 같은 occasion 하나를 덮어쓴다 — 상황 대신 고르는
+        // 대안이라 둘을 조합하진 않는다(코드리뷰 Q-1 답변). "하나만"으로 그 점을 드러낸다.
+        <p className="mt-8 text-center text-[13px] text-ink-faint">하나만 골라도 조합이 떠</p>
       )}
     </div>
   );

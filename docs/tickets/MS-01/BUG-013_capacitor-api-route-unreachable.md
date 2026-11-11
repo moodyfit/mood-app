@@ -8,11 +8,20 @@ Next.js API Route를 빌드에서 뺀다(CLAUDE.md에 이미 명시된 제약). 
 구조적으로 전부 실패한다.
 
 영향받는 호출(전수 grep, 2026-11-10 기준):
-- `src/app/page.tsx`, `src/app/results/page.tsx` — `/api/search/translate`
+- `src/app/page.tsx`, `src/app/results/page.tsx`, `src/components/PromiseMode.tsx` —
+  `/api/search/translate`
 - `src/lib/upload.ts` — `/api/photos/tag`
 - `src/app/admin/page.tsx` — `/api/admin/insights`
 
 PromiseMode(#40 코드리뷰 P0-1)에서 처음 드러났지만 PromiseMode만의 문제가 아니다.
+
+### 앱에서의 결과(코드리뷰 P2-4)
+
+API가 안 닿으면 번역 호출 3곳(`page.tsx`/`results/page.tsx`/`PromiseMode.tsx`) 전부 키워드
+매칭(`resolveMoods`)으로 대체된다. `QUERY_MAP`에 매칭 키워드가 있는 입력(정의된 상황어 등)은
+룰베이스로도 맞는 결과가 나오지만, 매칭 키워드가 없는 입력(대부분의 직접 입력 — 예: "전 직장
+동료 결혼식 2차")은 `fallbackMoods`가 글자 수로 무드를 고르기 때문에 뜻과 상관없는 결과가
+나온다. 우선순위를 정할 때 이 체감 차이를 참고.
 
 ## 원인
 
