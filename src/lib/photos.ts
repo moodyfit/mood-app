@@ -245,7 +245,7 @@ export function rankPhotos(photos: Photo[], moodKeys: string[]): Photo[] {
  * 제품 검색(10/28 회의록 — "와이드 슬랙스" 검색 시 그 상품이 포함된 코디 목록). 상품명에 검색어
  * 글자가 순서대로(사이에 다른 글자 허용) 들어간 행의 photo_image_url을 모은다. 매칭 0건이면
  * null — 호출부가 기존 무드 검색으로 폴백하는 신호로 쓴다(제품명이 아니라 상황/느낌 검색어였다는
- * 뜻이므로). 표기 차이(자켓/재킷 등)는 못 잡음 — FEAT-026.
+ * 뜻이므로). 표기 차이(자켓/재킷 등)는 못 잡음 — FEAT-028.
  */
 export async function fetchProductPhotoUrls(query: string): Promise<Set<string> | null> {
   const sb = getSupabase();
