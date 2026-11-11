@@ -9,18 +9,19 @@
 
 - `PhotoGrid.tsx`, `ResultsGrid.tsx`: `ResultToggle` 렌더·`override` state(+ `PhotoGrid`의
   sessionStorage 복원 로직, BUG-008 P1-1)·`onToggle`·`changedCount` 계산 제거.
-- `personal`을 `you || formed`로 고정 — 저장 3장 이상(`TASTE_CARD_THRESHOLD`)이면 자동 개인화,
-  수동 전환 없음. `/results?you=1`(홈 "내 취향 코디 보기")은 항상 개인화 그대로.
+- `personal`을 `you`로 고정 — 검색 결과(`you=false`)는 저장량과 상관없이 항상 검색 순서,
+  `/results?you=1`(홈 "내 취향 코디 보기")만 항상 개인화(코드리뷰 P0-1 — 처음엔
+  `you || formed`로 고정했다가, 저장 3장 이상이면 검색어와 무관하게 결과가 거의 똑같아지는
+  버그를 소피 코드리뷰에서 발견해 수정함).
 - `ResultToggle.tsx` — 다른 소비자 없음(grep 확인) 삭제.
 
 ## Verification
 
 - 로컬에서 `/results?q=소개팅` 렌더 텍스트에 "모두의 결과"/"너의 결과" 문구 둘 다 없음 확인.
-- `tsc --noEmit`, `npm run build` 통과.
-- **PR 미생성 — 로컬 확인 단계(사용자 지시)**.
+- `tsc --noEmit`, `npm run build` 통과. PR #42.
 
 ## 참고
 
-히어로 카드(개인화 결과에서만 최상위 매치를 전면폭으로)·스크롤 복원(BUG-008)·메이슨리 레이아웃은
-그대로 — 토글 UI와 수동 전환 경로만 제거했고, "저장 쌓이면 자동으로 개인화된다"는 동작 자체는
-유지된다.
+히어로 카드·스크롤 복원(BUG-008)·메이슨리 레이아웃은 그대로 — 토글 UI와 수동 전환 경로만
+제거했다. "저장 쌓이면 자동 개인화"는 `/results?you=1`에서만 의미 있고, 검색 결과에선 저장량이
+검색 순서를 덮지 않는다(코드리뷰 P0-1).
