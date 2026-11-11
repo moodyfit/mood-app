@@ -10,7 +10,7 @@ import { useMoodStore } from "@/lib/store";
  * DB photos 카드 (메이슨리 = 전시 문법).
  * 단일 탭 = 무드 상세(살 수 있는 surface) / 롱프레스 = 해설 / 하트 = 저장.
  * size: "hero"(개인화 시각화 — 너의 결과 최상위 매치, 전면폭) | "sm"(일반).
- * 해설 밴드는 hero/hint 카드에서만 → 소형 카드는 사진을 덮지 않음(액자 원칙 ②).
+ * 카드엔 상시 캡션 없음 — 사진만(액자 원칙 ②). 설명은 롱프레스에서만(FEAT-025 팀 결정).
  * 높이는 사진 실비율(cardRatio)로 — 크롭으로 세로를 위조하지 않음(①).
  */
 export default function PhotoCard({
@@ -91,14 +91,6 @@ export default function PhotoCard({
       >
         {saved ? "♥" : "♡"}
       </button>
-
-      {/* 모든 카드에 제목(caption_item)을 상시 노출, 부가설명(caption_why)은 상시 노출에서
-          빼고 롱프레스 전문 오버레이에서만 — 근거는 FEAT-025 티켓 참고. */}
-      {!caption && photo.caption_item && (
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
-          <div className="text-[13.5px] font-semibold leading-snug text-white">{photo.caption_item}</div>
-        </div>
-      )}
 
       {/* 롱프레스 해설 (전문) */}
       <div
