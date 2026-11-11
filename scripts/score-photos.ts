@@ -61,6 +61,9 @@ async function scoreOne(imgPath: string): Promise<{ base: string; violations: st
     headers: { "x-api-key": process.env.ANTHROPIC_API_KEY!, "anthropic-version": "2023-06-01", "content-type": "application/json" },
     body: JSON.stringify({
       model: MODEL, max_tokens: 1024,
+      // BUG-012와 같은 패턴 — claude-sonnet-5는 기본 adaptive thinking이라 content[0]이 thinking
+      // 블록일 수 있다. JSON 1개만 돌려주면 되는 채점 작업이라 thinking이 필요 없어 끈다.
+      thinking: { type: "disabled" },
       messages: [{ role: "user", content: [
         { type: "image", source: { type: "base64", media_type: "image/jpeg", data: b64 } },
         { type: "text", text: scoringPrompt(axisHint, gender) },
@@ -69,7 +72,8 @@ async function scoreOne(imgPath: string): Promise<{ base: string; violations: st
   });
   if (!res.ok) throw new Error(`${res.status} ${(await res.text()).slice(0, 200)}`);
   const j: any = await res.json();
-  const text: string = j?.content?.[0]?.text ?? "";
+  // thinking을 꺼도 방어적으로 유지(두 API 라우트와 동일 — thinking이 다시 켜져도 안전).
+  const text: string = j?.content?.find((b: any) => b.type === "text")?.text ?? "";
   const m = text.match(/\{[\s\S]*\}/);
   if (!m) throw new Error(`JSON 파싱 실패: ${text.slice(0, 120)}`);
   const o = JSON.parse(m[0]);
