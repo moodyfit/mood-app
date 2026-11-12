@@ -10,7 +10,9 @@ import { useMoodStore } from "@/lib/store";
  * DB photos 카드 (메이슨리 = 전시 문법).
  * 단일 탭 = 무드 상세(살 수 있는 surface) / 롱프레스 = 해설 / 하트 = 저장.
  * size: "hero"(개인화 시각화 — 너의 결과 최상위 매치, 전면폭) | "sm"(일반).
- * 해설 밴드는 hero/hint 카드에서만 → 소형 카드는 사진을 덮지 않음(액자 원칙 ②).
+ * 해설 밴드는 hero/hint 카드에서만 → 소형 카드는 사진을 덮지 않음(액자 원칙 ②). FEAT-025
+ * 코드리뷰에서 "모든 카드 상시 캡션"으로 한 번 바꿨다가, 소피 코드리뷰(Q-1)로 main 동작(hero/
+ * hint만 캡션)이 맞다는 게 확인돼 원복 — 이 PR에서 실제로 바뀐 건 헤더 문구뿐.
  * 높이는 사진 실비율(cardRatio)로 — 크롭으로 세로를 위조하지 않음(①).
  */
 export default function PhotoCard({

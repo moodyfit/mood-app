@@ -27,7 +27,7 @@ export default function ResultsGrid({ query, you = false }: { query: string; you
   return (
     <div>
       <h2 className="mb-4 text-[20px] font-bold tracking-[-0.4px]">
-        {you ? "너의 추구미로 골라봤어" : `‘${query}’ — 대충 쳐도 돼`}
+        {you ? "너의 추구미로 골라봤어" : `‘${query}’`}
       </h2>
 
       {!you && <SearchMemory query={query} />}
