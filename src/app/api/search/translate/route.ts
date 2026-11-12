@@ -35,13 +35,20 @@ async function translateWithClaude(query: string): Promise<Record<string, number
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 256,
+        // claude-sonnet-5는 기본으로 extended thinking이 켜져 있다 — JSON 1개만 돌려주면 되는
+        // 작업이라 thinking이 필요 없고, 끄면 thinking 블록 자체가 안 와서 아래 content.find도
+        // 사실상 항상 1-shot으로 text를 찾는다(find는 방어적으로 유지).
+        thinking: { type: "disabled" },
         messages: [{ role: "user", content: translationPrompt(query) }],
       }),
       signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return null;
-    const j = (await res.json()) as { content?: { text?: string }[] };
-    const text = j?.content?.[0]?.text ?? "";
+    const j = (await res.json()) as { content?: { type?: string; text?: string }[] };
+    // claude-sonnet-5는 기본으로 extended thinking을 켜서 content[0]이 thinking 블록일 수 있다 —
+    // 그러면 content[0].text가 undefined가 되어 매번 조용히 폴백으로 떨어진다(실측: 검색어에 따라
+    // thinking 블록 포함 여부가 갈려 간헐적으로 재현됨). type이 "text"인 블록을 직접 찾는다.
+    const text = j?.content?.find((b) => b.type === "text")?.text ?? "";
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return null;
     const parsed = JSON.parse(m[0]) as { mood_vector?: Record<string, number> };

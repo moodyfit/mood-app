@@ -66,6 +66,10 @@ async function scoreWithClaude(
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 1024,
+      // claude-sonnet-5는 기본으로 extended thinking이 켜져 있다 — 비전 채점도 JSON 1개만
+      // 돌려주면 되는 작업이라 thinking이 필요 없고, 끄면 thinking 블록 자체가 안 와서 아래
+      // content.find도 사실상 항상 1-shot으로 text를 찾는다(find는 방어적으로 유지).
+      thinking: { type: "disabled" },
       messages: [
         {
           role: "user",
@@ -82,8 +86,10 @@ async function scoreWithClaude(
     console.error(`[photos/tag] Anthropic ${res.status}: ${(await res.text()).slice(0, 300)}`);
     throw new Error("AI 채점 실패");
   }
-  const j = (await res.json()) as { content?: { text?: string }[] };
-  const text = j?.content?.[0]?.text ?? "";
+  const j = (await res.json()) as { content?: { type?: string; text?: string }[] };
+  // claude-sonnet-5는 기본으로 extended thinking을 켜서 content[0]이 thinking 블록일 수 있다 —
+  // content[0].text로만 읽으면 간헐적으로 undefined가 되어 파싱이 실패한다. type "text" 블록을 찾는다.
+  const text = j?.content?.find((b) => b.type === "text")?.text ?? "";
   const m = text.match(/\{[\s\S]*\}/);
   if (!m) {
     console.error(`[photos/tag] JSON 파싱 실패: ${text.slice(0, 200)}`);

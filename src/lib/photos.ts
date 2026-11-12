@@ -240,3 +240,27 @@ export function rankPhotos(photos: Photo[], moodKeys: string[]): Photo[] {
     .sort((a, b) => b.s - a.s)
     .map((x) => x.p);
 }
+
+/**
+ * 제품 검색(10/28 회의록 — "와이드 슬랙스" 검색 시 그 상품이 포함된 코디 목록). 상품명에 검색어
+ * 글자가 순서대로(사이에 다른 글자 허용) 들어간 행의 photo_image_url을 모은다. 매칭 0건이면
+ * null — 호출부가 기존 무드 검색으로 폴백하는 신호로 쓴다(제품명이 아니라 상황/느낌 검색어였다는
+ * 뜻이므로). 표기 차이(자켓/재킷 등)는 못 잡음 — FEAT-028.
+ */
+export async function fetchProductPhotoUrls(query: string): Promise<Set<string> | null> {
+  const sb = getSupabase();
+  const q = query.trim().replace(/\s+/g, "");
+  if (!sb || !q) return null;
+  // 띄어쓰기 변형에 약했다(실측: "데님자켓"은 DB의 "청데님자켓"만 걸리고 "데님 트러커 자켓"
+  // 등은 연속 문자열이 아니라서 못 잡음). 검색어 글자 순서만 보존하고 사이에 다른 글자가
+  // 껴도 매치되게 글자마다 와일드카드를 끼운다("데님자켓" -> "%데%님%자%켓%").
+  // ILIKE 와일드카드 문자(%,_) 자체가 검색어에 있으면 리터럴로 취급되게 이스케이프.
+  const pattern = `%${[...q].map((ch) => ch.replace(/[%_]/g, "\\$&")).join("%")}%`;
+  const { data, error } = await sb
+    .from("products")
+    .select("photo_image_url")
+    .ilike("name", pattern)
+    .not("photo_image_url", "is", null);
+  if (error || !data || data.length === 0) return null;
+  return new Set(data.map((r) => r.photo_image_url as string));
+}
