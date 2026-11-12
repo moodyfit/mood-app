@@ -88,9 +88,9 @@ export default function PhotoGrid({
 
       {/* 메이슨리 = CSS 멀티컬럼(핀터레스트 배치). 세로 리듬은 사진 실비율에서 나옴 */}
       <div style={{ columnCount: 2, columnGap: "12px" }}>
-        {rest.map((p) => (
+        {rest.map((p, idx) => (
           <div key={p.id} className="mb-3 break-inside-avoid animate-rise">
-            <PhotoCard photo={p} query={query} />
+            <PhotoCard photo={p} query={query} hint={!hero && idx === 0} />
           </div>
         ))}
       </div>

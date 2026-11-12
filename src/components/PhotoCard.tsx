@@ -10,16 +10,20 @@ import { useMoodStore } from "@/lib/store";
  * DB photos 카드 (메이슨리 = 전시 문법).
  * 단일 탭 = 무드 상세(살 수 있는 surface) / 롱프레스 = 해설 / 하트 = 저장.
  * size: "hero"(개인화 시각화 — 너의 결과 최상위 매치, 전면폭) | "sm"(일반).
- * 카드엔 상시 캡션 없음 — 사진만(액자 원칙 ②). 설명은 롱프레스에서만(FEAT-025 팀 결정).
+ * 해설 밴드는 hero/hint 카드에서만 → 소형 카드는 사진을 덮지 않음(액자 원칙 ②). FEAT-025
+ * 코드리뷰에서 "모든 카드 상시 캡션"으로 한 번 바꿨다가, 소피 코드리뷰(Q-1)로 main 동작(hero/
+ * hint만 캡션)이 맞다는 게 확인돼 원복 — 이 PR에서 실제로 바뀐 건 헤더 문구뿐.
  * 높이는 사진 실비율(cardRatio)로 — 크롭으로 세로를 위조하지 않음(①).
  */
 export default function PhotoCard({
   photo,
   query,
+  hint = false,
   size = "sm",
 }: {
   photo: Photo;
   query?: string;
+  hint?: boolean;
   size?: "hero" | "sm";
 }) {
   const router = useRouter();
@@ -28,6 +32,7 @@ export default function PhotoCard({
   // (B) 사진 전용 상품 뷰로 — slug = 파일명(moods/clean-001.jpg → clean-001)
   const slug = photo.image_url.split("/").pop()?.replace(/\.\w+$/, "") ?? "";
   const hero = size === "hero";
+  const showCaption = hero || hint;
   const ratio = hero ? 0.78 : cardRatio(photo);
 
   const [caption, setCaption] = useState(false);
@@ -91,6 +96,20 @@ export default function PhotoCard({
       >
         {saved ? "♥" : "♡"}
       </button>
+
+      {/* hero/첫 카드: 해설을 '펼쳐서' 상시 노출 (v2.6 1번 사진 해설 펼침 + §7.10 무기#1).
+          왜 멋있는지를 롱프레스 없이 즉시 보여 최강 무기를 전면화. 소형 일반 카드는 생략(②) */}
+      {showCaption && !caption && photo.caption_item && (
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
+          <div className="text-[12.5px] font-semibold text-white">{photo.caption_item}</div>
+          {/* 해설이 펼쳐진 것 자체가 노출 — 별도 안내 문구 금지(스펙) */}
+          {photo.caption_why && (
+            <div className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-white/85">
+              {photo.caption_why}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* 롱프레스 해설 (전문) */}
       <div
