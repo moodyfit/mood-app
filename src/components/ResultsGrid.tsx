@@ -38,16 +38,25 @@ export default function ResultsGrid({ query, you = false }: { query: string; you
         </div>
       )}
 
-      <div style={{ columnCount: 2, columnGap: "12px" }}>
-        {restKeys.map((key, idx) => {
-          const mood = MOODS[key];
-          if (!mood) return null;
-          return (
-            <div key={key} className="mb-3 break-inside-avoid animate-rise">
-              <MoodCard mood={mood} query={query} hint={!heroKey && idx === 0} />
-            </div>
-          );
-        })}
+      {/* 2열(홈·PhotoGrid.tsx와 동일 기술, 사용자 요청) — 왼-오-왼-오로 쌓임. CSS 멀티컬럼은
+          왼쪽을 먼저 다 채운 뒤 오른쪽으로 넘어가 보기 순서가 검색 순서와 어긋났었다. */}
+      <div className="flex gap-3">
+        {[0, 1].map((col) => (
+          <div key={col} className="flex flex-1 flex-col gap-3">
+            {restKeys
+              .map((key, idx) => ({ key, idx }))
+              .filter(({ idx }) => idx % 2 === col)
+              .map(({ key, idx }) => {
+                const mood = MOODS[key];
+                if (!mood) return null;
+                return (
+                  <div key={key} className="animate-rise">
+                    <MoodCard mood={mood} query={query} hint={!heroKey && idx === 0} />
+                  </div>
+                );
+              })}
+          </div>
+        ))}
       </div>
 
       <GridTail query={query} count={ordered.length} unit="개" />

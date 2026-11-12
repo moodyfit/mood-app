@@ -86,11 +86,21 @@ export default function PhotoGrid({
         </div>
       )}
 
-      {/* 메이슨리 = CSS 멀티컬럼(핀터레스트 배치). 세로 리듬은 사진 실비율에서 나옴 */}
-      <div style={{ columnCount: 2, columnGap: "12px" }}>
-        {rest.map((p, idx) => (
-          <div key={p.id} className="mb-3 break-inside-avoid animate-rise">
-            <PhotoCard photo={p} query={query} hint={!hero && idx === 0} />
+      {/* 메이슨리 = 2열(홈과 동일 기술, 사용자 요청) — 인덱스를 좌/우에 번갈아 배분해 왼쪽부터
+          채우고 다 차면 오른쪽으로 "쭉" 넘어가지 않고 왼-오-왼-오 순서로 쌓인다. CSS 멀티컬럼
+          (columnCount)은 왼쪽 열을 먼저 끝까지 채운 뒤 오른쪽으로 넘기는 방식이라 보기 순서가
+          검색 순서와 어긋났었다. */}
+      <div className="flex gap-3">
+        {[0, 1].map((col) => (
+          <div key={col} className="flex flex-1 flex-col gap-3">
+            {rest
+              .map((p, i) => ({ p, i }))
+              .filter(({ i }) => i % 2 === col)
+              .map(({ p, i }) => (
+                <div key={p.id} className="animate-rise">
+                  <PhotoCard photo={p} query={query} hint={!hero && i === 0} />
+                </div>
+              ))}
           </div>
         ))}
       </div>
