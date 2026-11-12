@@ -96,9 +96,9 @@ export default function PhotoGrid({
             {rest
               .map((p, i) => ({ p, i }))
               .filter(({ i }) => i % 2 === col)
-              .map(({ p }) => (
+              .map(({ p, i }) => (
                 <div key={p.id} className="animate-rise">
-                  <PhotoCard photo={p} query={query} />
+                  <PhotoCard photo={p} query={query} hint={!hero && i === 0} />
                 </div>
               ))}
           </div>
