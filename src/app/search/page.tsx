@@ -1,45 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMoodStore } from "@/lib/store";
-import { MOODS, ALL_MOOD_KEYS } from "@/lib/moods";
 
 const PENDING_SHOT_KEY = "moodfit.pendingShot";
-
-const DAILY = [
-  "전여친 결혼식",
-  "월급날 플렉스인 척",
-  "비 오는 날 재즈바",
-  "퇴사 통보하는 날",
-  "아무도 안 만나는 날",
-  "집앞인데 각 잡고",
-  "첫 출근 얕보이기 싫을 때",
-];
-
-const SITUATION_CHIPS = [
-  "소개팅 깔끔하게",
-  "퇴근 후 약속",
-  "면접인데 안 딱딱하게",
-  "꾸안꾸 그거 뭐냐",
-  "남들이 아는 그 느낌",
-  "퇴근하고 한잔",
-];
-
-const MEME_CHIPS = ["테토남 그 느낌", "느좋 그 자체", "남친룩"];
 
 export default function SearchPage() {
   const router = useRouter();
   const { recordSearch } = useMoodStore();
   const [query, setQuery] = useState("");
-  const [dailyIdx, setDailyIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const shotInput = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setDailyIdx(Math.floor(Date.now() / 86400000) % DAILY.length);
-  }, []);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -65,11 +37,10 @@ export default function SearchPage() {
     reader.readAsDataURL(file);
   }
 
-  const todayChip = DAILY[dailyIdx];
-
   return (
     <div className="animate-fade px-5 pb-14">
-      {/* 검색 입력 */}
+      {/* 제품 검색(10/28 회의록) — "와이드 슬랙스"처럼 입력하면 /results가 상품명 매칭을
+          우선 시도한다. 상황/느낌 탐색은 약속 모드(/promise)로 역할이 분리됐다. */}
       <div className="relative mt-2">
         <input
           ref={inputRef}
@@ -78,7 +49,7 @@ export default function SearchPage() {
           onKeyDown={(event) => {
             if (event.key === "Enter") search(query);
           }}
-          placeholder="느낌, 상황, 뭐든 검색해봐"
+          placeholder="제품명으로 검색해봐 — 예) 와이드 슬랙스"
           className="w-full rounded-[10px] border border-line bg-white py-4 pl-4 pr-[52px] text-[15px] outline-none transition placeholder:text-ink-faint focus:border-accent"
         />
         <button
@@ -111,78 +82,6 @@ export default function SearchPage() {
         className="hidden"
         onChange={onShot}
       />
-
-      {/* 오늘의 추천 + 밈 */}
-      <div className="mt-8">
-        <h2 className="mb-3 text-[14px] font-bold tracking-[-0.3px]">오늘의 추천</h2>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => search(todayChip)}
-            className="rounded-full border border-accent/30 bg-accent/5 px-3.5 py-2 text-[13px] font-medium text-ink transition hover:bg-accent/10"
-          >
-            {todayChip}
-          </button>
-          {MEME_CHIPS.map((chip) => (
-            <button
-              key={chip}
-              type="button"
-              onClick={() => search(chip)}
-              className="rounded-full border border-line px-3.5 py-2 text-[13px] transition hover:border-accent hover:bg-paper-2"
-            >
-              {chip}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 상황별 검색 */}
-      <div className="mt-8">
-        <h2 className="mb-3 text-[14px] font-bold tracking-[-0.3px]">상황별</h2>
-        <div className="flex flex-wrap gap-2">
-          {SITUATION_CHIPS.map((chip) => (
-            <button
-              key={chip}
-              type="button"
-              onClick={() => search(chip)}
-              className="rounded-full border border-line px-3.5 py-2 text-[13px] transition hover:border-accent hover:bg-paper-2"
-            >
-              {chip}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 무드별 탐색 */}
-      <div className="mt-8">
-        <h2 className="mb-3 text-[14px] font-bold tracking-[-0.3px]">무드별</h2>
-        <div className="grid grid-cols-3 gap-2">
-          {ALL_MOOD_KEYS.map((moodKey) => {
-            const mood = MOODS[moodKey];
-            return (
-              <Link
-                key={moodKey}
-                href={`/mood/${moodKey}`}
-                className="relative overflow-hidden rounded-xl"
-                style={{ aspectRatio: "1" }}
-              >
-                <div
-                  className="absolute inset-0"
-                  style={
-                    mood.imageUrl
-                      ? { backgroundImage: `url(${mood.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
-                      : { background: mood.gradient }
-                  }
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-2 left-2.5 text-[12px] font-semibold text-white">
-                  {mood.name}
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }
