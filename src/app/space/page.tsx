@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import LikedLooks from "@/components/LikedLooks";
 import TasteProfile from "@/components/TasteProfile";
 import { MOODS } from "@/lib/moods";
 import { photoUrl } from "@/lib/photos";
@@ -10,38 +11,38 @@ import { useMoodStore } from "@/lib/store";
 const PREVIEW_COUNT = 4;
 
 /**
- * 나의 공간 — 3블록 구조: 취향 카드 + 내 옷(썸네일 프리뷰) + 계정.
+ * 나의 공간 — 취향 카드 + 내 취향 코디 + 내 옷장 + 계정.
  */
 export default function SpacePage() {
-  const { clearSpaceDot, owned, user, signOut } = useMoodStore();
+  const { clearSpaceDot, wardrobeItems, user, signOut } = useMoodStore();
 
   useEffect(() => {
     clearSpaceDot();
   }, [clearSpaceDot]);
 
-  const preview = owned.slice(0, PREVIEW_COUNT);
-  const hasMore = owned.length > PREVIEW_COUNT;
+  const preview = wardrobeItems.slice(0, PREVIEW_COUNT);
+  const hasMore = wardrobeItems.length > PREVIEW_COUNT;
 
   return (
     <div className="animate-fade px-5 pb-14">
       <h1 className="mb-4 pt-3 text-[22px] font-extrabold tracking-[-0.5px]">나의 공간</h1>
 
-      {/* 블록 1: 취향 카드 + 공유 */}
       <TasteProfile />
 
-      {/* 블록 2: 내 옷장 — 썸네일 프리뷰 + 더보기 */}
+      <LikedLooks />
+
       <div className="mt-8">
         <div className="mb-2.5 flex items-center justify-between">
           <h2 className="text-[16px] font-bold tracking-[-0.3px]">내 옷장</h2>
-          {owned.length > 0 && (
+          {wardrobeItems.length > 0 && (
             <Link href="/closet" className="text-[13px] text-ink-soft">
-              {owned.length}벌 ›
+              {wardrobeItems.length}벌 ›
             </Link>
           )}
         </div>
 
-        {owned.length === 0 ? (
-          <p className="text-[13px] text-ink-soft">아직 담은 옷이 없어.</p>
+        {wardrobeItems.length === 0 ? (
+          <p className="text-[13px] text-ink-soft">코디 속 사고 싶은 옷을 담아 봐.</p>
         ) : (
           <>
             <div className="grid grid-cols-4 gap-2">
@@ -81,7 +82,6 @@ export default function SpacePage() {
         )}
       </div>
 
-      {/* 블록 3: 로그인/계정 */}
       {user ? (
         <div className="mt-8 flex items-center justify-between rounded-[12px] border border-line px-4 py-3.5">
           <div className="min-w-0">

@@ -22,7 +22,7 @@ interface LookRow {
  * 금지: 옷을 평가하는 판정 문구 — 기준점 재제시만.
  */
 export default function ClosetItem({ id }: { id: string }) {
-  const { owned, hydrated } = useMoodStore();
+  const { wardrobeItems, hydrated } = useMoodStore();
 
   // params.id 가 인코딩된 채 올 수도(%2F 미해제), 디코딩돼 올 수도 있어 양쪽 다 매칭.
   let decoded = id;
@@ -31,7 +31,7 @@ export default function ClosetItem({ id }: { id: string }) {
   } catch {
     /* 잘못된 인코딩이면 원본 사용 */
   }
-  const item = owned.find(
+  const item = wardrobeItems.find(
     (o) => o.id === id || o.id === decoded || encodeURIComponent(o.id) === id
   );
   const { products: lookProducts } = useProductsForPhoto(item?.photo ?? "");
@@ -50,7 +50,7 @@ export default function ClosetItem({ id }: { id: string }) {
 
   const mood = MOODS[item.moodKey];
   const heroUrl = item.photo ? photoUrl(item.photo) : mood.imageUrl;
-  const ownedIds = new Set(owned.map((o) => o.id));
+  const ownedIds = new Set(wardrobeItems.map((o) => o.id));
 
   // 사진에서 담은 옷 → 그 사진의 상품. 그 밖(무드 상세·예전 더미 옷)은 섹션 숨김
   const rows: LookRow[] = item.photo

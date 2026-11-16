@@ -58,7 +58,8 @@ export interface DiscoveredItem {
   at: number;
 }
 
-const K_SAVES = "mood.saves.v1";
+// mood.saves.v1은 사진 하트의 자동 기록과 구분할 수 없어 읽지 않는다
+const K_LIKED_MOODS = "mood.likedMoods.v1";
 const K_SAVED_PHOTOS = "mood.savedPhotos.v1"; // 사진별 저장(전시 하트) — 무드 저장과 별개
 const K_CARD = "mood.cardIssued.v1";
 const K_AFFINITY = "mood.affinity.v1"; // 7.6 프로필 무드 벡터
@@ -87,19 +88,20 @@ function normalizeQuery(q: string): string {
 }
 
 interface MoodStore {
-  saves: SaveRecord[];
+  likedMoods: SaveRecord[];
+  likedPhotoIds: string[];
   savedCount: number;
   affinity: Affinity;
   isSaved: (key: MoodKey) => boolean;
   toggleSave: (key: MoodKey, query?: string) => void;
   isPhotoSaved: (id: string) => boolean;
-  togglePhotoSave: (id: string, moodVector?: MoodKey | Affinity, query?: string) => void;
+  togglePhotoSave: (id: string, moodVector?: MoodKey | Affinity) => void;
   recordView: (input: MoodKey | Affinity) => void;
   recordScanLike: (key: MoodKey) => void;
   recordSearch: (query: string) => void;
   recordProductClick: (moodKey: MoodKey, name: string) => void;
   searchCount: (query: string) => number;
-  owned: OwnedItem[];
+  wardrobeItems: OwnedItem[];
   isOwned: (id: string) => boolean;
   toggleOwned: (item: OwnedItem) => void;
   addOwnedMany: (items: OwnedItem[]) => void;
@@ -135,17 +137,16 @@ export interface ToastState {
   link?: ToastLink;
 }
 
-const CLOSET_LINK: ToastLink = { href: "/closet", label: "옷장 보기" };
-const TASTE_LINK: ToastLink = { href: "/results?you=1", label: "내 취향 코디 보기" };
+const CLOSET_LINK: ToastLink = { href: "/closet", label: "내 옷장 보기" };
 
 const Ctx = createContext<MoodStore | null>(null);
 
 export function MoodProvider({ children }: { children: React.ReactNode }) {
-  const [saves, setSaves] = useState<SaveRecord[]>([]);
-  const [savedPhotoIds, setSavedPhotoIds] = useState<string[]>([]);
+  const [likedMoods, setLikedMoods] = useState<SaveRecord[]>([]);
+  const [likedPhotoIds, setLikedPhotoIds] = useState<string[]>([]);
   const [affinity, setAffinity] = useState<Affinity>({});
   const [searchCounts, setSearchCounts] = useState<Record<string, number>>({});
-  const [owned, setOwned] = useState<OwnedItem[]>([]);
+  const [wardrobeItems, setWardrobeItems] = useState<OwnedItem[]>([]);
   const [cardEverIssued, setCardEverIssued] = useState(false);
   const [cardOpen, setCardOpen] = useState(false);
   const [scanDone, setScanDone] = useState(false);
@@ -163,16 +164,16 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const affinityRef = useRef<Affinity>({});
   const savedRef = useRef<string[]>([]);
   affinityRef.current = affinity;
-  savedRef.current = savedPhotoIds;
+  savedRef.current = likedPhotoIds;
 
   // 초기 로드 (localStorage)
   useEffect(() => {
     try {
       // 캐논 6축에 없는 스테일 키(옛 버전 localStorage 잔재)는 로드 시 제거 → self-heal
-      const s = localStorage.getItem(K_SAVES);
-      if (s) setSaves((JSON.parse(s) as SaveRecord[]).filter((r) => isKnownMood(r.moodKey)));
+      const s = localStorage.getItem(K_LIKED_MOODS);
+      if (s) setLikedMoods((JSON.parse(s) as SaveRecord[]).filter((r) => isKnownMood(r.moodKey)));
       const sp = localStorage.getItem(K_SAVED_PHOTOS);
-      if (sp) setSavedPhotoIds(JSON.parse(sp) as string[]);
+      if (sp) setLikedPhotoIds(JSON.parse(sp) as string[]);
       const a = localStorage.getItem(K_AFFINITY);
       if (a) {
         const raw = JSON.parse(a) as Affinity;
@@ -184,7 +185,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       const q = localStorage.getItem(K_SEARCH);
       if (q) setSearchCounts(JSON.parse(q));
       const o = localStorage.getItem(K_OWNED);
-      if (o) setOwned(JSON.parse(o));
+      if (o) setWardrobeItems(JSON.parse(o));
       setCardEverIssued(localStorage.getItem(K_CARD) === "1");
       setScanDone(localStorage.getItem(K_SCAN) === "1");
       setSpaceDot(localStorage.getItem(K_DOT) === "1");
@@ -225,7 +226,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         setAffinity((prev) => (Object.keys(prev).length > 0 ? prev : decayed));
       }
       if (Array.isArray(t.saved_photo_ids) && t.saved_photo_ids.length > 0) {
-        setSavedPhotoIds((prev) => (prev.length > 0 ? prev : (t.saved_photo_ids as string[])));
+        setLikedPhotoIds((prev) => (prev.length > 0 ? prev : (t.saved_photo_ids as string[])));
       }
     };
 
@@ -263,7 +264,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
             const mergedAff = mergeAffinity(serverAff, affinityRef.current);
             const mergedSaved = Array.from(new Set([...(server?.saved_photo_ids ?? []), ...savedRef.current]));
             setAffinity(mergedAff);
-            setSavedPhotoIds(mergedSaved);
+            setLikedPhotoIds(mergedSaved);
             syncTaste(u.id, mergedAff, mergedSaved);
           })();
         }
@@ -278,8 +279,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   // 취향 스냅샷 → 서버 upsert(영속·복구·로그인 병합 대비). 로컬 변경 시마다.
   useEffect(() => {
     if (!hydrated || !userIdRef.current) return;
-    syncTaste(userIdRef.current, affinity, savedPhotoIds);
-  }, [affinity, savedPhotoIds, hydrated]);
+    syncTaste(userIdRef.current, affinity, likedPhotoIds);
+  }, [affinity, likedPhotoIds, hydrated]);
 
   // 감쇠(affinity 누적 모델) 타임스탬프 — affinity 자체가 바뀔 때만 갱신(다른 상태 변화에 안 섞이게 별도 effect).
   useEffect(() => {
@@ -295,16 +296,16 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!hydrated) return;
     try {
-      localStorage.setItem(K_SAVES, JSON.stringify(saves));
-      localStorage.setItem(K_SAVED_PHOTOS, JSON.stringify(savedPhotoIds));
+      localStorage.setItem(K_LIKED_MOODS, JSON.stringify(likedMoods));
+      localStorage.setItem(K_SAVED_PHOTOS, JSON.stringify(likedPhotoIds));
       localStorage.setItem(K_AFFINITY, JSON.stringify(affinity));
       localStorage.setItem(K_SEARCH, JSON.stringify(searchCounts));
-      localStorage.setItem(K_OWNED, JSON.stringify(owned));
+      localStorage.setItem(K_OWNED, JSON.stringify(wardrobeItems));
       localStorage.setItem(K_DISC, JSON.stringify(discovered));
     } catch {
       /* ignore */
     }
-  }, [saves, savedPhotoIds, affinity, searchCounts, owned, discovered, hydrated]);
+  }, [likedMoods, likedPhotoIds, affinity, searchCounts, wardrobeItems, discovered, hydrated]);
 
   const bump = useCallback((key: MoodKey, w: number) => {
     // 다축 곱셈(FEAT-001)의 소수 오차 정리 + 음수(취소 시 되돌리기, BUG-001) 0 하한 방어.
@@ -341,16 +342,16 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const isSaved = useCallback(
-    (key: MoodKey) => saves.some((s) => s.moodKey === key),
-    [saves]
+    (key: MoodKey) => likedMoods.some((s) => s.moodKey === key),
+    [likedMoods]
   );
 
   // Issue #3 7번: togglePhotoSave(BUG-001)와 동일한 비대칭이 무드 레벨 저장에도 있었음 — 취소 시 대칭 복원.
   const toggleSave = useCallback(
     (key: MoodKey, query?: string) => {
-      const exists0 = saves.some((s) => s.moodKey === key);
+      const exists0 = likedMoods.some((s) => s.moodKey === key);
       trackEvent(userIdRef.current, exists0 ? "unsave" : "save", { mood_key: key });
-      setSaves((prev) => {
+      setLikedMoods((prev) => {
         const exists = prev.some((s) => s.moodKey === key);
         if (exists) {
           bump(key, -getConfig().wSave);
@@ -358,7 +359,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         }
 
         const next = [...prev, { moodKey: key, savedAt: Date.now(), query }];
-        showToast("담았어", TASTE_LINK);
+        showToast("내 취향에 반영했어");
         haptic(); // soft impact
         bump(key, getConfig().wSave); // 프로필 가중 (저장은 강한 신호)
 
@@ -376,33 +377,30 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         return next;
       });
     },
-    [cardEverIssued, showToast, bump, saves]
+    [cardEverIssued, showToast, bump, likedMoods]
   );
 
   const isPhotoSaved = useCallback(
-    (id: string) => savedPhotoIds.includes(id),
-    [savedPhotoIds]
+    (id: string) => likedPhotoIds.includes(id),
+    [likedPhotoIds]
   );
 
   // 사진별 저장(전시 하트). 다축 mood_vector면 축별 값에 비례해 affinity 반영(FEAT-001). 취향카드 발급도 사진 저장 수 기준.
   // BUG-001: 취소 시 그때 올렸던 만큼(다축 전체) 대칭으로 되돌림 — 저장/취소 반복해도 무한 누적 안 됨.
   const togglePhotoSave = useCallback(
-    (id: string, moodInput?: MoodKey | Affinity, query?: string) => {
+    (id: string, moodInput?: MoodKey | Affinity) => {
       const domKey = moodInput == null ? undefined : typeof moodInput === "string" ? moodInput : (dominantMood(moodInput) as MoodKey);
-      const exists0 = savedPhotoIds.includes(id);
+      const exists0 = likedPhotoIds.includes(id);
       trackEvent(userIdRef.current, exists0 ? "unsave" : "save", { photo_id: id, mood_key: domKey });
-      setSavedPhotoIds((prev) => {
+      setLikedPhotoIds((prev) => {
         if (prev.includes(id)) {
           if (moodInput != null) bumpInput(moodInput, -getConfig().wSave);
           return prev.filter((x) => x !== id);
         }
         const next = [...prev, id];
-        showToast("담았어", TASTE_LINK);
+        showToast("내 취향에 반영했어");
         haptic();
-        if (moodInput != null && domKey) {
-          bumpInput(moodInput, getConfig().wSave);
-          setSaves((s) => (s.some((r) => r.moodKey === domKey) ? s : [...s, { moodKey: domKey, savedAt: Date.now(), query }]));
-        }
+        if (moodInput != null) bumpInput(moodInput, getConfig().wSave);
         if (next.length >= TASTE_CARD_THRESHOLD && !cardEverIssued) {
           setCardEverIssued(true);
           setSpaceDot(true);
@@ -416,7 +414,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         return next;
       });
     },
-    [cardEverIssued, showToast, bumpInput, savedPhotoIds]
+    [cardEverIssued, showToast, bumpInput, likedPhotoIds]
   );
 
   // 다축 mood_vector(사진) 또는 단일 MoodKey(무드 상세) 둘 다 수용 — 축별 값에 비례해 affinity 반영(FEAT-001).
@@ -527,13 +525,13 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   );
 
   const isOwned = useCallback(
-    (id: string) => owned.some((o) => o.id === id),
-    [owned]
+    (id: string) => wardrobeItems.some((o) => o.id === id),
+    [wardrobeItems]
   );
 
   const toggleOwned = useCallback(
     (item: OwnedItem) => {
-      setOwned((prev) => {
+      setWardrobeItems((prev) => {
         if (prev.some((o) => o.id === item.id)) {
           return prev.filter((o) => o.id !== item.id);
         }
@@ -551,10 +549,10 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   // 코디 통째로 담기 — 안 담은 옷만 넣고, 취향 신호는 코디 1개로 센다
   const addOwnedMany = useCallback(
     (items: OwnedItem[]) => {
-      const fresh = items.filter((i) => !owned.some((o) => o.id === i.id));
+      const fresh = items.filter((i) => !wardrobeItems.some((o) => o.id === i.id));
       if (fresh.length === 0) return;
       const at = Date.now();
-      setOwned((prev) => [...prev, ...fresh.map((i) => ({ ...i, at }))]);
+      setWardrobeItems((prev) => [...prev, ...fresh.map((i) => ({ ...i, at }))]);
       showToast(fresh.length > 1 ? `${fresh.length}벌 담았어` : "담았어", CLOSET_LINK);
       haptic();
       bump(fresh[0].moodKey, getConfig().wSave);
@@ -562,14 +560,15 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
         trackEvent(userIdRef.current, "owned", { mood_key: i.moodKey, photo_id: i.id });
       }
     },
-    [owned, showToast, bump]
+    [wardrobeItems, showToast, bump]
   );
 
   const value = useMemo<MoodStore>(
     () => ({
-      saves,
+      likedMoods,
+      likedPhotoIds,
       // 취향 형성 기준 = 사진 저장 수(전시 주 경로), 폴백(무드 저장)도 포괄
-      savedCount: Math.max(savedPhotoIds.length, saves.length),
+      savedCount: Math.max(likedPhotoIds.length, likedMoods.length),
       affinity,
       isSaved,
       toggleSave,
@@ -580,7 +579,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       recordSearch,
       recordProductClick,
       searchCount,
-      owned,
+      wardrobeItems,
       isOwned,
       toggleOwned,
       addOwnedMany,
@@ -607,8 +606,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       showToast,
     }),
     [
-      saves,
-      savedPhotoIds,
+      likedMoods,
+      likedPhotoIds,
       affinity,
       isSaved,
       toggleSave,
@@ -619,7 +618,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       recordSearch,
       recordProductClick,
       searchCount,
-      owned,
+      wardrobeItems,
       isOwned,
       toggleOwned,
       addOwnedMany,

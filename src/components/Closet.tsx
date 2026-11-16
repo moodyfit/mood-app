@@ -18,15 +18,15 @@ export default function Closet({
   promotedName?: string;
   hideHeader?: boolean;
 }) {
-  const { owned } = useMoodStore();
-  if (owned.length === 0) {
+  const { wardrobeItems } = useMoodStore();
+  if (wardrobeItems.length === 0) {
     return <p className="text-[13px] text-ink-soft">아직 담은 옷이 없어.</p>;
   }
 
   // 같은 photo 는 코디로 묶고(최근 담은 코디가 위), photo 없는 옷은 담은 순서대로 따로
   const byPhoto = new Map<string, OwnedItem[]>();
   const singles: OwnedItem[] = [];
-  for (const item of owned) {
+  for (const item of wardrobeItems) {
     if (!item.photo) {
       singles.push(item);
       continue;

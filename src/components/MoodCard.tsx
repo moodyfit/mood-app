@@ -127,7 +127,8 @@ export default function MoodCard({
             e.stopPropagation();
             toggleSave(mood.key, query);
           }}
-          aria-label={saved ? "담기 취소" : "담기"}
+          aria-label="내 취향에 반영"
+          aria-pressed={saved}
           className={`absolute right-2.5 top-2.5 flex h-[34px] w-[34px] items-center justify-center rounded-full border text-base backdrop-blur transition ${
             saved
               ? "border-accent bg-accent text-white"
