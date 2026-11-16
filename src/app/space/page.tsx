@@ -1,27 +1,30 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import LikedLooks from "@/components/LikedLooks";
+import ShelfCard, { Shelf, ShelfHeader } from "@/components/ShelfCard";
 import TasteProfile from "@/components/TasteProfile";
 import { MOODS } from "@/lib/moods";
-import { photoUrl } from "@/lib/photos";
+import { fetchPhotoProducts, photoUrl } from "@/lib/photos";
+import type { Product } from "@/lib/types";
 import { useMoodStore } from "@/lib/store";
-
-const PREVIEW_COUNT = 4;
 
 /**
  * 나의 공간 — 취향 카드 + 내 취향 코디 + 내 옷장 + 계정.
  */
 export default function SpacePage() {
   const { clearSpaceDot, wardrobeItems, user, signOut } = useMoodStore();
+  // null = 상품 조회 중. 실패하면 빈 Map이 와서 코디 사진으로 넘어간다
+  const [byPhoto, setByPhoto] = useState<Map<string, Product[]> | null>(null);
 
   useEffect(() => {
     clearSpaceDot();
   }, [clearSpaceDot]);
 
-  const preview = wardrobeItems.slice(0, PREVIEW_COUNT);
-  const hasMore = wardrobeItems.length > PREVIEW_COUNT;
+  useEffect(() => {
+    fetchPhotoProducts().then(setByPhoto);
+  }, []);
 
   return (
     <div className="animate-fade px-5 pb-14">
@@ -32,53 +35,30 @@ export default function SpacePage() {
       <LikedLooks />
 
       <div className="mt-8">
-        <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-[16px] font-bold tracking-[-0.3px]">내 옷장</h2>
-          {wardrobeItems.length > 0 && (
-            <Link href="/closet" className="text-[13px] text-ink-soft">
-              {wardrobeItems.length}벌 ›
-            </Link>
-          )}
-        </div>
+        <ShelfHeader title="내 옷장" count={wardrobeItems.length > 0 ? `${wardrobeItems.length}벌` : undefined} href="/closet" />
 
         {wardrobeItems.length === 0 ? (
           <p className="text-[13px] text-ink-soft">코디 속 사고 싶은 옷을 담아 봐.</p>
         ) : (
-          <>
-            <div className="grid grid-cols-4 gap-2">
-              {preview.map((item) => {
-                const mood = MOODS[item.moodKey];
-                return (
-                  <Link
-                    key={item.id}
-                    href={`/closet/item?id=${encodeURIComponent(item.id)}`}
-                    className="relative overflow-hidden rounded-xl"
-                    style={{ aspectRatio: "1" }}
-                  >
-                    <div
-                      className="absolute inset-0"
-                      style={
-                        item.photo || mood?.imageUrl
-                          ? { backgroundImage: `url(${item.photo ? photoUrl(item.photo) : mood.imageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
-                          : { background: mood?.gradient }
-                      }
-                    />
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent p-1.5 pt-4">
-                      <div className="truncate text-[10px] font-medium text-white">{item.name}</div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-            {hasMore && (
-              <Link
-                href="/closet"
-                className="mt-3 flex items-center justify-center rounded-[10px] border border-line py-2.5 text-[13px] font-semibold text-ink-soft transition hover:bg-paper-2"
-              >
-                더보기
-              </Link>
-            )}
-          </>
+          <Shelf>
+            {[...wardrobeItems].reverse().map((item) => {
+              const mood = MOODS[item.moodKey];
+              const crop = item.photo && byPhoto?.get(item.photo)?.find((p) => p.id === item.id)?.imageUrl;
+              // 상품 조회 전에는 비워 둔다 — 코디 사진이 보였다가 크롭으로 바뀌지 않게
+              const image = crop || (item.photo ? (byPhoto ? photoUrl(item.photo) : undefined) : mood?.imageUrl);
+              const slug = item.photo?.split("/").pop()?.replace(/\.\w+$/, "");
+              return (
+                <ShelfCard
+                  key={item.id}
+                  square
+                  href={slug ? `/photo?slug=${encodeURIComponent(slug)}` : `/closet/item?id=${encodeURIComponent(item.id)}`}
+                  image={image}
+                  background={item.photo ? undefined : mood?.gradient}
+                  label={item.name}
+                />
+              );
+            })}
+          </Shelf>
         )}
       </div>
 
