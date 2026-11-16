@@ -17,7 +17,6 @@ import { useMoodStore } from "@/lib/store";
  */
 export default function PhotoCard({
   photo,
-  query,
   hint = false,
   size = "sm",
 }: {
@@ -87,7 +86,7 @@ export default function PhotoCard({
         onPointerUp={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
-          togglePhotoSave(photo.id, photo.mood_vector, query);
+          togglePhotoSave(photo.id, photo.mood_vector);
         }}
         aria-label="내 취향에 반영"
         aria-pressed={saved}

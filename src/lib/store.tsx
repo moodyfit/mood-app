@@ -65,7 +65,6 @@ const K_CARD = "mood.cardIssued.v1";
 const K_AFFINITY = "mood.affinity.v1"; // 7.6 프로필 무드 벡터
 const K_AFFINITY_TS = "mood.affinityUpdatedAt.v1"; // affinity 마지막 갱신 시각(ms) — 감쇠 계산용
 const K_SEARCH = "mood.searchCounts.v1"; // 7.8 검색 기억
-const K_SEARCH_LIKES = "mood.searchLikes.v1"; // 검색어별로 ♡ 누른 코디 id
 const K_OWNED = "mood.owned.v1"; // 1.5.2 '내 옷' 소유 결
 const K_SCAN = "mood.scanDone.v1"; // 스캔 1회 완료 — 이후 스캔 탭은 전시 기본, 원할 때만 재스캔
 const K_DOT = "mood.spaceDot.v1"; // B5 카드 발급 dot (나의 공간 미확인 신호)
@@ -96,13 +95,12 @@ interface MoodStore {
   isSaved: (key: MoodKey) => boolean;
   toggleSave: (key: MoodKey, query?: string) => void;
   isPhotoSaved: (id: string) => boolean;
-  togglePhotoSave: (id: string, moodVector?: MoodKey | Affinity, query?: string) => void;
+  togglePhotoSave: (id: string, moodVector?: MoodKey | Affinity) => void;
   recordView: (input: MoodKey | Affinity) => void;
   recordScanLike: (key: MoodKey) => void;
   recordSearch: (query: string) => void;
   recordProductClick: (moodKey: MoodKey, name: string) => void;
   searchCount: (query: string) => number;
-  searchLikedPhotoIds: (query: string) => string[];
   wardrobeItems: OwnedItem[];
   isOwned: (id: string) => boolean;
   toggleOwned: (item: OwnedItem) => void;
@@ -148,7 +146,6 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [likedPhotoIds, setLikedPhotoIds] = useState<string[]>([]);
   const [affinity, setAffinity] = useState<Affinity>({});
   const [searchCounts, setSearchCounts] = useState<Record<string, number>>({});
-  const [searchLikes, setSearchLikes] = useState<Record<string, string[]>>({});
   const [wardrobeItems, setWardrobeItems] = useState<OwnedItem[]>([]);
   const [cardEverIssued, setCardEverIssued] = useState(false);
   const [cardOpen, setCardOpen] = useState(false);
@@ -187,8 +184,6 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       }
       const q = localStorage.getItem(K_SEARCH);
       if (q) setSearchCounts(JSON.parse(q));
-      const sl = localStorage.getItem(K_SEARCH_LIKES);
-      if (sl) setSearchLikes(JSON.parse(sl));
       const o = localStorage.getItem(K_OWNED);
       if (o) setWardrobeItems(JSON.parse(o));
       setCardEverIssued(localStorage.getItem(K_CARD) === "1");
@@ -305,13 +300,12 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(K_SAVED_PHOTOS, JSON.stringify(likedPhotoIds));
       localStorage.setItem(K_AFFINITY, JSON.stringify(affinity));
       localStorage.setItem(K_SEARCH, JSON.stringify(searchCounts));
-      localStorage.setItem(K_SEARCH_LIKES, JSON.stringify(searchLikes));
       localStorage.setItem(K_OWNED, JSON.stringify(wardrobeItems));
       localStorage.setItem(K_DISC, JSON.stringify(discovered));
     } catch {
       /* ignore */
     }
-  }, [likedMoods, likedPhotoIds, affinity, searchCounts, searchLikes, wardrobeItems, discovered, hydrated]);
+  }, [likedMoods, likedPhotoIds, affinity, searchCounts, wardrobeItems, discovered, hydrated]);
 
   const bump = useCallback((key: MoodKey, w: number) => {
     // 다축 곱셈(FEAT-001)의 소수 오차 정리 + 음수(취소 시 되돌리기, BUG-001) 0 하한 방어.
@@ -394,16 +388,10 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   // 사진별 저장(전시 하트). 다축 mood_vector면 축별 값에 비례해 affinity 반영(FEAT-001). 취향카드 발급도 사진 저장 수 기준.
   // BUG-001: 취소 시 그때 올렸던 만큼(다축 전체) 대칭으로 되돌림 — 저장/취소 반복해도 무한 누적 안 됨.
   const togglePhotoSave = useCallback(
-    (id: string, moodInput?: MoodKey | Affinity, query?: string) => {
+    (id: string, moodInput?: MoodKey | Affinity) => {
       const domKey = moodInput == null ? undefined : typeof moodInput === "string" ? moodInput : (dominantMood(moodInput) as MoodKey);
       const exists0 = likedPhotoIds.includes(id);
       trackEvent(userIdRef.current, exists0 ? "unsave" : "save", { photo_id: id, mood_key: domKey });
-      const q = query ? normalizeQuery(query) : "";
-      if (exists0) {
-        setSearchLikes((m) => Object.fromEntries(Object.entries(m).map(([k, ids]) => [k, ids.filter((x) => x !== id)]).filter(([, ids]) => ids.length > 0)));
-      } else if (q) {
-        setSearchLikes((m) => ((m[q] ?? []).includes(id) ? m : { ...m, [q]: [...(m[q] ?? []), id] }));
-      }
       setLikedPhotoIds((prev) => {
         if (prev.includes(id)) {
           if (moodInput != null) bumpInput(moodInput, -getConfig().wSave);
@@ -536,11 +524,6 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     [searchCounts]
   );
 
-  const searchLikedPhotoIds = useCallback(
-    (query: string) => (searchLikes[normalizeQuery(query)] ?? []).filter((id) => likedPhotoIds.includes(id)),
-    [searchLikes, likedPhotoIds]
-  );
-
   const isOwned = useCallback(
     (id: string) => wardrobeItems.some((o) => o.id === id),
     [wardrobeItems]
@@ -596,7 +579,6 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       recordSearch,
       recordProductClick,
       searchCount,
-      searchLikedPhotoIds,
       wardrobeItems,
       isOwned,
       toggleOwned,
@@ -636,7 +618,6 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       recordSearch,
       recordProductClick,
       searchCount,
-      searchLikedPhotoIds,
       wardrobeItems,
       isOwned,
       toggleOwned,

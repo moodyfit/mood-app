@@ -6,7 +6,6 @@ import { useMoodStore } from "@/lib/store";
 import { rankPersonalized, personalizationStrength, HERO_MIN_STRENGTH } from "@/lib/rank";
 import { useScrollRestore } from "@/lib/hooks/useScrollRestore";
 import PhotoCard from "./PhotoCard";
-import SearchMemory from "./SearchMemory";
 
 // 성능: 한 번에 90장(≈23MB) 로드 대신 12장씩 끊어서 — 초기 이미지 로드 급감
 const INITIAL_VISIBLE = 12;
@@ -79,7 +78,6 @@ export default function PhotoGrid({
       <h2 className="mb-4 text-[20px] font-bold tracking-[-0.4px]">
         {you ? "네 취향으로 골라봤어" : `‘${query}’`}
       </h2>
-      {!you && <SearchMemory query={query} photos={photos} />}
 
       {/* 개인화 전용 히어로: 개인화 결과에서만 최상위 매치를 전면폭으로 = 크기로 적합도를 말한다 */}
       {hero && (
