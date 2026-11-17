@@ -80,7 +80,12 @@ export default function PhotoCard({
       onPointerCancel={cancelPress}
       onContextMenu={(e) => e.preventDefault()}
       onKeyDown={(e) => slug && e.key === "Enter" && router.push(`/photo?slug=${encodeURIComponent(slug)}`)}
-      style={{ aspectRatio: String(ratio) }}
+      // BUG-016(2차): hero 카드가 Safari에서 간헐적으로 검정 화면 — border-radius+overflow:hidden
+      // 요소에 transform(이 카드의 active:scale-[0.98], 부모 .animate-rise 등장 애니메이션)이 겹치면
+      // Safari가 배경 레이어 합성을 깨뜨리는 오래된 WebKit 버그(bugs.webkit.org/show_bug.cgi?id=77572).
+      // will-change:transform으로 합성 레이어를 미리 고정해두면 재현되지 않는다. 작은 카드는 최대
+      // 216장까지 떠 있을 수 있어(FEAT-010) 전부에 레이어를 강제하면 메모리 부담이라 hero 1장만.
+      style={{ aspectRatio: String(ratio), willChange: hero ? "transform" : undefined }}
       className="group relative block w-full cursor-pointer select-none overflow-hidden rounded-2xl transition active:scale-[0.98]"
     >
       <div
