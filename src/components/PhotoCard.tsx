@@ -46,9 +46,13 @@ export default function PhotoCard({
       setCaption(true);
     }, 380);
   }
-  function up() {
+  // BUG-016: 타이머·캡션 정리를 up()에서 분리 — pointercancel에서도 같은 정리가 필요하다.
+  function cancelPress() {
     if (longTimer.current) clearTimeout(longTimer.current);
     setCaption(false);
+  }
+  function up() {
+    cancelPress();
     if (longPressed.current) {
       longPressed.current = false;
       return;
@@ -67,10 +71,13 @@ export default function PhotoCard({
       tabIndex={0}
       onPointerDown={down}
       onPointerUp={up}
-      onPointerLeave={() => {
-        if (longTimer.current) clearTimeout(longTimer.current);
-        setCaption(false);
-      }}
+      onPointerLeave={cancelPress}
+      // BUG-016(사파리에서 간헐적 "검정 화면"): 터치가 스크롤로 판정되면 브라우저가 pointerup
+      // 대신 pointercancel을 보낸다 — 이게 안 잡히면 롱프레스 타이머가 끝난 뒤 caption=true가
+      // 영원히 안 풀려서, 전면을 덮는 rgba(26,26,26,0.72) 해설 오버레이가 화면에 그대로 남는다
+      // (히어로 카드는 전면폭이라 "검정 화면"처럼 보임). pointerleave만으론 안 되는 이유 —
+      // 포인터가 같은 자리에서 들려서 leave가 안 일어나는 경우가 있다.
+      onPointerCancel={cancelPress}
       onContextMenu={(e) => e.preventDefault()}
       onKeyDown={(e) => slug && e.key === "Enter" && router.push(`/photo?slug=${encodeURIComponent(slug)}`)}
       style={{ aspectRatio: String(ratio) }}
