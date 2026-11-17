@@ -10,6 +10,7 @@ import { readImage, uploadPhotoFile, requestTagging, type Gender, type PhotoType
 const DESCRIPTION_MAX = 120;
 
 // 여성 사진은 6축 루브릭이 남성 기준이라 정확도가 낮다(FEAT-011 리뷰) — 루브릭 티켓 전까지 닫아둔다.
+// FEAT-030: 몇 달간 남자만 타겟이라 선택 UI 자체를 숨김(이 플래그·Gender 타입은 재활성화 대비 유지).
 const FEMALE_OPEN = false;
 
 type Phase = "idle" | "uploading" | "scoring";
@@ -21,7 +22,8 @@ export default function UploadForm() {
   const [previewUrl, setPreviewUrl] = useState("");
   const [ratio, setRatio] = useState<number | null>(null);
   const [description, setDescription] = useState("");
-  const [gender, setGender] = useState<Gender>("male");
+  // FEAT-030: 선택 UI를 없애서 항상 "male" 고정(위 FEMALE_OPEN 참고).
+  const gender: Gender = "male";
   const [photoType, setPhotoType] = useState<PhotoType>("real");
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -92,18 +94,6 @@ export default function UploadForm() {
         maxLength={DESCRIPTION_MAX}
         placeholder="어디가 좋았는지 한 줄로 남겨줘 (선택)"
         disabled={busy}
-      />
-
-      <OptionPicker
-        label="누구 옷차림이야?"
-        value={gender}
-        onChange={setGender}
-        disabled={busy}
-        note={FEMALE_OPEN ? undefined : "여자 사진은 무드 읽는 눈을 더 다듬고 나서 열어줄게."}
-        options={[
-          { value: "male", text: "남자" },
-          { value: "female", text: "여자", disabled: !FEMALE_OPEN },
-        ]}
       />
 
       <OptionPicker

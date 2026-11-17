@@ -152,7 +152,9 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const [spaceDot, setSpaceDot] = useState(false);
   const [discovered, setDiscovered] = useState<DiscoveredItem[]>([]);
   const [bodyProfile, setBodyProfileState] = useState<BodyProfile>({});
-  const [genderFilter, setGenderFilterState] = useState<GenderFilter>("all");
+  // FEAT-030: 몇 달간 남자만 타겟 — 토글 UI는 없앴지만 타입·필터·DB는 그대로 둬서 나중에
+  // 되돌리기 쉽게 한다. 기본값을 "male"로 고정.
+  const [genderFilter, setGenderFilterState] = useState<GenderFilter>("male");
   const [toast, setToast] = useState<ToastState | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -192,8 +194,9 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       if (d) setDiscovered((JSON.parse(d) as DiscoveredItem[]).filter((x) => isKnownMood(x.moodKey)));
       const bp = localStorage.getItem(K_BODY);
       if (bp) setBodyProfileState(JSON.parse(bp));
-      const gf = localStorage.getItem(K_GENDER_FILTER);
-      if (gf === "male" || gf === "female") setGenderFilterState(gf);
+      // FEAT-030: 토글 UI를 없애면서 복원도 멈춘다 — 안 멈추면 예전에 "여자"/"전체"를
+      // 선택했던 적 있는 기존 유저는 토글이 없어져도 그 값을 계속 복원해서 여자 사진이
+      // 새어 나간다. genderFilter는 항상 위 초기값("male")으로 고정.
     } catch {
       /* ignore */
     }
