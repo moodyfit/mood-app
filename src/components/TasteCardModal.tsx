@@ -23,7 +23,7 @@ export default function TasteCardModal() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-[11px] font-semibold tracking-[2px] opacity-70">
-          나의 추구미
+          나의 취향
         </div>
         <div className="mt-2.5 text-[25px] font-extrabold leading-[1.24] tracking-[-0.6px]">
           {alias || title}
@@ -49,7 +49,7 @@ export default function TasteCardModal() {
           }}
           className="mt-5 w-full rounded-[10px] bg-white py-3.5 text-sm font-bold text-ink"
         >
-          내 취향 코디 보기
+          취향 맞춤 추천 보기
         </button>
       </div>
     </div>

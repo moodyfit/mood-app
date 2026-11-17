@@ -4,12 +4,7 @@ import Link from "next/link";
 import { useMoodStore } from "@/lib/store";
 
 export default function Toast() {
-  const { toast: raw } = useMoodStore();
-  // 링크가 가리키는 화면에 이미 있으면 띄우지 않는다(결과 페이지는 "새로 정렬" 버튼이 대신 알린다)
-  const toast =
-    raw?.link && typeof window !== "undefined" && raw.link.href === location.pathname + location.search
-      ? null
-      : raw;
+  const { toast } = useMoodStore();
   const link = toast?.link;
   return (
     <div

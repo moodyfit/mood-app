@@ -119,7 +119,7 @@ export default function ProductRow({
                   : "border-line text-ink-soft hover:border-accent"
               }`}
             >
-              {owned ? "✓ 담음" : "담기"}
+              {owned ? "✓ 담음" : "내 옷장에 담기"}
             </button>
           )}
         </div>
@@ -135,7 +135,7 @@ export default function ProductRow({
           }}
           className="mt-2 w-full rounded-[8px] border border-accent bg-accent/10 py-2 text-[12.5px] font-semibold text-accent"
         >
-          옷장에 담기
+          내 옷장에 담기
         </button>
       )}
     </div>
