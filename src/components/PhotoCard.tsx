@@ -21,7 +21,6 @@ export default function PhotoCard({
   size = "sm",
 }: {
   photo: Photo;
-  query?: string;
   hint?: boolean;
   size?: "hero" | "sm";
 }) {

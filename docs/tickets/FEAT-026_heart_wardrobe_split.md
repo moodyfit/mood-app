@@ -201,5 +201,4 @@
 1. FEAT-027 — 내 옷장 가로 줄·1:1 크롭 썸네일, `/closet` 코디 상세 링크
 2. 취향 카드 정리 — "이 무드를 가진 사람, 전체의 N%"는 `rarityFor`가 타입 이름으로 만든 숫자다. 카드·공유 문구·발급 모달에서 삭제
 3. `/closet` 빈 상태 문구를 나의 공간과 맞추기
-4. #43 머지 후 `PhotoCard` 호출부의 `query` 정리
-5. `GLOSSARY.md`·`FEATURES.md` 용어 갱신과 팀 공유 여부
+4. `GLOSSARY.md`·`FEATURES.md` 용어 갱신과 팀 공유 여부

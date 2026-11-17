@@ -82,7 +82,7 @@ export default function PhotoGrid({
       {/* 개인화 전용 히어로: 개인화 결과에서만 최상위 매치를 전면폭으로 = 크기로 적합도를 말한다 */}
       {hero && (
         <div className="mb-3 animate-rise">
-          <PhotoCard photo={hero} query={query} size="hero" />
+          <PhotoCard photo={hero} size="hero" />
         </div>
       )}
 
@@ -98,7 +98,7 @@ export default function PhotoGrid({
               .filter(({ i }) => i % 2 === col)
               .map(({ p, i }) => (
                 <div key={p.id} className="animate-rise">
-                  <PhotoCard photo={p} query={query} hint={!hero && i === 0} />
+                  <PhotoCard photo={p} hint={!hero && i === 0} />
                 </div>
               ))}
           </div>
