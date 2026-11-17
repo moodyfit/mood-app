@@ -108,6 +108,26 @@ export function useScrollRestore(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [skip, storageKey]);
 
+  // BUG-014: 위 scroll 리스너는 y<=0을 저장하지 않는다(router.push 직후 일시적 리셋 오탐 방지).
+  // 그런데 사용자가 실제로 맨 위까지 스크롤한 뒤 새로고침하면, sessionStorage에 그 전의 scrollY가
+  // 그대로 남아있어서 엉뚱하게 그 위치로 복원돼 버렸다(재현: 스크롤 내림 → 맨 위로 올림 → 새로고침
+  // → 아래로 다시 내려감). pagehide는 실제 문서 언로드(새로고침·탭 닫기)에서만 발생하고 Next.js
+  // App Router의 클라이언트 사이드 네비게이션(router.push)에서는 발생하지 않는다 — 그래서 여기서는
+  // y===0도 그대로 반영해 저장해도 기존 레이스를 다시 불러오지 않는다.
+  useEffect(() => {
+    if (skip) return;
+    const onPageHide = () => {
+      if (!restoredRef.current) return;
+      writeScrollState(storageKey, {
+        visible: readScrollState(storageKey)?.visible ?? visible,
+        scrollY: window.scrollY,
+      });
+    };
+    window.addEventListener("pagehide", onPageHide);
+    return () => window.removeEventListener("pagehide", onPageHide);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [skip, storageKey]);
+
   // storageKey가 바뀌거나, skip이 false가 될 때(최초 마운트 또는 검색 해제 등 "복귀") 저장된
   // 스크롤 위치로 복원. skip이 true가 되는 전환(검색 진입)은 여기서 바로 return — 복원은
   // "세션 유지 대상으로 돌아올 때"만 의미가 있고, 검색 중엔 scrollTo를 아예 시도하지 않는다.
