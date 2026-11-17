@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 
 /**
  * 뒤로가기 시 "로드된 카드 수 + 스크롤 위치"를 복원하는 훅(BUG-004 HomeGallery, BUG-008 PhotoGrid).
@@ -50,6 +51,13 @@ export function useScrollRestore(
   // 위치로 튐). ref로 "지금 skip인지"만 읽고, "skip이 바뀌었다는 사실" 자체엔 반응하지 않는다.
   const skipRef = useRef(skip);
   skipRef.current = skip;
+  // BUG-014/015 코드리뷰로 드러난 문제: "scrollY===0은 저장 안 함"으로는 네비게이션이 만든
+  // 리셋(0)과 사용자가 진짜로 맨 위까지 스크롤한 경우(역시 0)를 구분할 수 없었다 — 후자를
+  // 막아버리면 "맨 위로 올린 뒤 새로고침/클릭→뒤로가기" 시 예전 위치로 복원되는 버그가 생긴다.
+  // pathname이 바뀌는 건 "진짜 다른 페이지로 이동 중"이라는 더 정확한 신호라 이걸로 대체한다.
+  const pathname = usePathname();
+  const pathnameRef = useRef(pathname);
+  pathnameRef.current = pathname;
 
   // resetKey가 실제로 바뀌면 처음부터 다시 — 단, skip 쪽(예: 검색 모드 진입)으로 바뀔 때만이다.
   // skip=false로 돌아오는 전환(예: 검색 해제 → 홈 복귀)은 "처음부터"가 아니라 "저장된 값으로
@@ -73,11 +81,17 @@ export function useScrollRestore(
   }, [visible, storageKey]);
 
   // 스크롤 위치도 저장(skip·복원 진행 중 제외), 200ms 디바운스로 쓰기 빈도를 줄인다.
-  // scrollY===0인 이벤트는 저장하지 않는다 — 카드 클릭→router.push로 페이지를 떠날 때 Next가
-  // 네비게이션 시작과 함께 스크롤을 0으로 되돌리는데, 새 페이지 데이터가 준비될 때까지 이전
-  // 페이지가 계속 마운트 상태로 남아있어서(App Router 특성) 그 리셋 이벤트가 디바운스 타이머보다
-  // 먼저 끝나버려 실제 위치를 0으로 덮어쓰는 경합이 있었다. 0은 저장 안 해도 "복원할 값 없음"과
-  // 결과가 같으므로, 사용자가 실제로 맨 위로 스크롤한 경우를 놓쳐도 안전하다.
+  //
+  // BUG-011/014/015: 카드 클릭→router.push로 페이지를 떠날 때 Next가 네비게이션 시작과 함께
+  // 스크롤을 0으로 되돌리는데, 새 페이지 데이터가 준비될 때까지 이전 페이지가 계속 마운트
+  // 상태로 남아있어서(App Router 특성) 그 리셋 이벤트가 디바운스 타이머보다 먼저 끝나버려
+  // 실제 위치를 0으로 덮어쓰는 경합이 있었다(BUG-011). 처음엔 "scrollY===0은 저장 안 함"으로
+  // 막았는데, 이러면 사용자가 진짜로 맨 위까지 스크롤한 경우도 똑같이 막혀서 — 새로고침하거나
+  // (BUG-014) 맨 위 카드를 클릭하고 뒤로가기하면(BUG-015 QA에서 추가 재현) 예전(아래) 위치로
+  // 복원돼 버렸다. 진짜 신호는 "스크롤 값이 0인지"가 아니라 "그 사이에 다른 페이지로 정말
+  // 이동했는지"라 pathname으로 판단한다 — 타이머를 스케줄링한 시점의 pathname과 실제 발화
+  // 시점의 pathname이 다르면(= 네비게이션이 진행 중) 저장을 버리고, 같으면(진짜 유휴 상태,
+  // 0이어도) 그대로 저장한다.
   //
   // 디바운스 콜백 안에서 restoredRef를 재확인하는 이유(BUG-011 코드리뷰 P2-1): 이벤트 발생 시점엔
   // restoredRef가 true였어도(= 이 인스턴스가 복원을 마친 상태), 그 뒤 실제 unmount(라우트 전환,
@@ -86,18 +100,21 @@ export function useScrollRestore(
   // 전에 타이머가 먼저 발화해 scrollY(네비게이션이 만든 애매한 값)를 그대로 써버릴 수 있다. 이
   // cleanup-vs-타이머 경합은 네트워크/렌더 속도에 좌우되는 비결정적 레이스라 고정된 재현 순서는
   // 없다(로컬에서 서버 콜드스타트 직후엔 재현, 워밍업 후엔 거의 안 남 — Playwright 반복 실측).
-  // 가드 자체는 걸릴 때만 막는 안전망이라 평소엔 아무 영향이 없다.
+  // pathname 가드가 바로 이 경합도 함께 막아준다(네비게이션 중이면 pathname이 이미 바뀌어 있음).
   useEffect(() => {
     if (skip) return;
     let timer = 0;
     const onScroll = () => {
       if (!restoredRef.current) return;
+      const scheduledPathname = pathnameRef.current;
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
         if (!restoredRef.current) return;
-        const y = window.scrollY;
-        if (y <= 0) return;
-        writeScrollState(storageKey, { visible: readScrollState(storageKey)?.visible ?? visible, scrollY: y });
+        if (pathnameRef.current !== scheduledPathname) return; // 그 사이 다른 페이지로 이동 중
+        writeScrollState(storageKey, {
+          visible: readScrollState(storageKey)?.visible ?? visible,
+          scrollY: window.scrollY,
+        });
       }, 200);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -108,12 +125,9 @@ export function useScrollRestore(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [skip, storageKey]);
 
-  // BUG-014: 위 scroll 리스너는 y<=0을 저장하지 않는다(router.push 직후 일시적 리셋 오탐 방지).
-  // 그런데 사용자가 실제로 맨 위까지 스크롤한 뒤 새로고침하면, sessionStorage에 그 전의 scrollY가
-  // 그대로 남아있어서 엉뚱하게 그 위치로 복원돼 버렸다(재현: 스크롤 내림 → 맨 위로 올림 → 새로고침
-  // → 아래로 다시 내려감). pagehide는 실제 문서 언로드(새로고침·탭 닫기)에서만 발생하고 Next.js
-  // App Router의 클라이언트 사이드 네비게이션(router.push)에서는 발생하지 않는다 — 그래서 여기서는
-  // y===0도 그대로 반영해 저장해도 기존 레이스를 다시 불러오지 않는다.
+  // pagehide(실제 문서 언로드 — 새로고침·탭 닫기에서만 발생, SPA 네비게이션에선 미발생)에서도
+  // 현재 scrollY를 저장한다. 위 디바운스(200ms)가 아직 안 끝난 채로 새로고침하는 극단적인
+  // 케이스에 대한 안전망 — 평소엔 onScroll 저장이 이미 끝나 있어서 중복 저장일 뿐이다.
   useEffect(() => {
     if (skip) return;
     const onPageHide = () => {
