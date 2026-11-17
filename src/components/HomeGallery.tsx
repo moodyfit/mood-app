@@ -30,6 +30,30 @@ const EXPLORE_BATCH = 3;
 // 실사용 상한을 둔다 — rest 90장 기준 약 2.5바퀴. 이미지 볼륨이 늘면 이 상수를 올리거나 윈도잉으로 전환.
 const MAX_VISIBLE = 216;
 
+const ORDER_KEY = "moodfit:home-order";
+
+/** BUG-015: 사진 클릭(상세 열기)이 취향 점수(affinity)를 갱신해서, 그 직후 뒤로가기로
+ * 돌아오면 같은 스크롤 위치인데 카드 배열 자체가 바뀌어 보이던 문제. 한 번 보여준 순서를
+ * sessionStorage에 남겨뒀다가, 같은 탭 세션 안에서는 그 순서를 그대로 써서 "방금 본 피드"가
+ * 유지되게 한다 — 취향 반영은 다음 세션(새 탭/새로고침으로 sessionStorage가 비는 시점)부터. */
+function readOrderSnapshot(): string[] | null {
+  try {
+    const raw = sessionStorage.getItem(ORDER_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeOrderSnapshot(ids: string[]) {
+  try {
+    sessionStorage.setItem(ORDER_KEY, JSON.stringify(ids));
+  } catch {
+    /* 무시 — 스냅샷 실패해도 기능엔 지장 없음(그냥 매번 새로 랭킹됨) */
+  }
+}
+
 /** personalOrder·exploreOrder를 7:3 블록 단위로 번갈아 뽑아 하나로 합침(중복 스킵). */
 function blendFeed(personalOrder: Photo[], exploreOrder: Photo[]): Photo[] {
   const used = new Set<string>();
@@ -92,7 +116,7 @@ export default function HomeGallery({
   const strength = personalizationStrength(affinity);
   // rankPersonalized는 O(n²) greedy MMR을 2회 호출 → visible 바뀔 때마다(스크롤 배치) 재계산되면 안 됨.
   // visible은 deps에서 제외(잘라내기는 아래 shown에서). photos/affinity/검색어가 바뀔 때만 다시 랭킹.
-  const ordered = useMemo(
+  const freshOrdered = useMemo(
     () =>
       searching
         ? rankPhotos(photos, moodKeys ?? [])
@@ -102,6 +126,24 @@ export default function HomeGallery({
           ),
     [photos, affinity, searching, moodKeys]
   );
+
+  // BUG-015: 검색 모드가 아니면, 같은 탭 세션에서 이미 본 적 있는 순서(스냅샷)를 그대로 쓴다.
+  // 새로 추가된 사진(스냅샷에 없는 id)은 뒤에 덧붙이고, 삭제된 사진(photos에 없는 id)은 건너뛴다.
+  const ordered = useMemo(() => {
+    if (searching) return freshOrdered;
+    const snapshot = readOrderSnapshot();
+    if (!snapshot) return freshOrdered;
+    const byId = new Map(photos.map((p) => [p.id, p]));
+    const fromSnapshot = snapshot.map((id) => byId.get(id)).filter((p): p is Photo => !!p);
+    const seen = new Set(fromSnapshot.map((p) => p.id));
+    return [...fromSnapshot, ...freshOrdered.filter((p) => !seen.has(p.id))];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [freshOrdered, searching, photos]);
+
+  useEffect(() => {
+    if (searching || ordered.length === 0) return;
+    writeOrderSnapshot(ordered.map((p) => p.id));
+  }, [ordered, searching]);
 
   // 히어로(크기=적합도)는 검색 아니고 개인화가 유의미해진 뒤에만(랭킹 중립 원칙 — 검색 결과엔 히어로 없음)
   const heroPhoto = !searching && strength >= HERO_MIN_STRENGTH && ordered.length > 3 ? ordered[0] : null;
