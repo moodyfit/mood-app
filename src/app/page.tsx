@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
-import OptionPicker from "@/components/ui/OptionPicker";
 import { usePhotos } from "@/lib/hooks/usePhotos";
 import { filterByGender } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
@@ -15,8 +14,8 @@ export default function HomePage() {
   const { photos, loading } = usePhotos();
   const [query, setQuery] = useState("");
   const [moodKeys, setMoodKeys] = useState<string[]>([]);
-  // 회의록(2026-10-08) 남/녀 토글 — v3(#20) 이후 남녀 코디가 피드에 섞여 나오던 문제.
-  const { genderFilter, setGenderFilter } = useMoodStore();
+  // FEAT-030: 남/녀 토글 제거 — genderFilter는 store에서 "male"로 고정돼 있음(향후 재활성화 대비 유지).
+  const { genderFilter } = useMoodStore();
   const filteredPhotos = useMemo(
     () => filterByGender(photos, genderFilter),
     [photos, genderFilter]
@@ -55,19 +54,6 @@ export default function HomePage() {
       </div>
 
       <HomeCloset />
-
-      <div className="px-5 pt-5">
-        <OptionPicker
-          label="성별"
-          value={genderFilter}
-          onChange={setGenderFilter}
-          options={[
-            { value: "all", text: "전체" },
-            { value: "male", text: "남자" },
-            { value: "female", text: "여자" },
-          ]}
-        />
-      </div>
 
       <div className="pt-3">
         <HomeGallery photos={filteredPhotos} loading={loading} moodKeys={moodKeys} query={query} />
