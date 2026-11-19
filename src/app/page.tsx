@@ -6,14 +6,21 @@ import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
 import { usePhotos } from "@/lib/hooks/usePhotos";
 import { filterByGender } from "@/lib/photos";
-import { resolveMoods } from "@/lib/moods";
 import { useMoodStore } from "@/lib/store";
 
-// FEAT-032: 회의록 "무드 카테고리 보여주기(힙함, 댄디 등)" — QUERY_MAP의 밈/스타일 키워드
-// 묶음 중 축 조합이 뚜렷이 구분되는 것만 추려서 카테고리로 노출. 각 키워드는 QUERY_MAP에
-// 이미 정확히 매칭되는 항목이라 resolveMoods가 결정적으로 같은 조합을 돌려준다(AI 번역 왕복
-// 불필요 — "테토남"/"느좋" 같은 캐릭터형 어휘는 PromiseMode 쪽 칩과 겹쳐서 제외).
-const CATEGORY_CHIPS = ["힙하게", "댄디하게", "올드머니", "시크하게"];
+// FEAT-032: 회의록 "무드 카테고리 보여주기(힙함, 댄디 등)". 처음엔 QUERY_MAP의 밈/스타일
+// 키워드(힙하게·댄디하게 등, 2~3축 조합)로 했는데, 조합끼리 축이 겹쳐서 결과가 비슷해
+// 보이는 문제(댄디하게/올드머니)와 "카테고리를 봐도 어떤 옷이 나올지 예상이 안 된다"는
+// 피드백이 있었다. 캐논 6축에 1:1로 매칭해서 — 서로 다른 축 = 서로 다른 사진이라 겹칠 수
+// 없고, 패션 지식 없어도 라벨 자체가 옷차림을 가리켜서 예측 가능하다.
+const CATEGORIES: { label: string; mood: string }[] = [
+  { label: "미니멀", mood: "clean" },
+  { label: "캐주얼", mood: "cityboy" },
+  { label: "스트릿", mood: "street" },
+  { label: "빈티지", mood: "amekaji" },
+  { label: "댄디", mood: "classic" },
+  { label: "소프트", mood: "soft" },
+];
 
 // 홈 = 약속 모드 진입 카드 + 종합 취향 상시 메이슨리 전시. 검색은 /search 페이지로 분리.
 // HomeGallery는 moodKeys/query를 받아 인플레이스 필터링 지원 (FEAT-006).
@@ -44,16 +51,18 @@ export default function HomePage() {
     }
   }, []);
 
-  // 카테고리 칩은 QUERY_MAP 정확 매칭이라 AI 왕복 없이 바로 반영 — 같은 칩 다시 누르면 해제.
-  function selectCategory(label: string) {
-    if (query === label) {
-      setQuery("");
-      setMoodKeys([]);
-      return;
-    }
-    recordSearch(label);
-    setQuery(label);
-    setMoodKeys(resolveMoods(label));
+  // 코드리뷰: "같은 칩 다시 눌러서 해제"가 안 와닿는다는 피드백 — "전체" 탭을 라디오처럼
+  // 항상 하나는 활성인 구조로 바꿔서, 되돌아가는 동작 자체를 명시적인 선택지로 만든다.
+  // moodKeys는 단일 축만 — 조합(resolveMoods)을 쓰면 카테고리끼리 축이 겹쳐 결과가 비슷해진다.
+  function selectCategory(cat: { label: string; mood: string }) {
+    recordSearch(cat.label);
+    setQuery(cat.label);
+    setMoodKeys([cat.mood]);
+  }
+
+  function clearCategory() {
+    setQuery("");
+    setMoodKeys([]);
   }
 
   return (
@@ -74,19 +83,39 @@ export default function HomePage() {
 
       <HomeCloset />
 
-      <div className="flex flex-wrap gap-2 px-5 pt-5">
-        {CATEGORY_CHIPS.map((label) => (
+      {/* 밑줄 텍스트탭 — 알약 버튼(테두리+배경 전부 같은 모양)은 피함(frontend-design 스킬:
+          "SaaS 카드 키트" 패턴이 AI 생성 티가 나는 대표 사례). 가로 스크롤은 ShelfCard.tsx와
+          동일 컨벤션([scrollbar-width:none] 등 스크롤바 숨김). */}
+      <div
+        className="flex gap-5 overflow-x-auto px-5 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        role="tablist"
+        aria-label="무드 카테고리"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={!query}
+          onClick={clearCategory}
+          className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-[14px] transition ${
+            !query ? "border-ink font-semibold text-ink" : "border-transparent text-ink-faint"
+          }`}
+        >
+          전체
+        </button>
+        {CATEGORIES.map((cat) => (
           <button
-            key={label}
+            key={cat.mood}
             type="button"
-            onClick={() => selectCategory(label)}
-            className={`rounded-full border px-3.5 py-1.5 text-[13px] transition ${
-              query === label
-                ? "border-accent bg-accent text-white"
-                : "border-line text-ink-soft hover:border-accent"
+            role="tab"
+            aria-selected={query === cat.label}
+            onClick={() => selectCategory(cat)}
+            className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-[14px] transition ${
+              query === cat.label
+                ? "border-ink font-semibold text-ink"
+                : "border-transparent text-ink-faint"
             }`}
           >
-            {label}
+            {cat.label}
           </button>
         ))}
       </div>
