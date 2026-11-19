@@ -9,7 +9,7 @@
 | Key | Value |
 |-----|-------|
 | Type | FEAT |
-| Status | In Progress |
+| Status | Done |
 | 우선순위 | P1 |
 | Layer | Component |
 | Related | FEAT-017, FEAT-026 |
