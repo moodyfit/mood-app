@@ -69,6 +69,8 @@ korean-privacy-terms 스킬로 이용약관과 개인정보처리방침 초안�
 
 - MDX 대신 TSX로 옮긴다. 두 페이지 때문에 `@next/mdx`와 설정을 더하지 않는다. 정적 페이지라 `build:cap`에도 그대로 포함된다
 - 스킬이 설치 명령을 제안하면 거절한다. 생성된 컴포넌트 중 `ConsentModal`은 가입 동의 티켓(후속)에서 참고만 한다
+- 스킬의 Pretendard CDN 삽입(`layout.tsx`)은 따르지 않는다. 폰트는 CAP-004의 로컬 번들을 쓴다
+- 스킬의 흑백 테마 변수 주입(`globals.css`)은 따르지 않는다. 페이지는 기존 디자인 토큰으로 꾸민다
 - 14세 미만은 이용 불가로 둔다. 법정대리인 동의 절차를 만들지 않고, 가입 시 만 14세 이상 확인으로 막는다(가입 동의 티켓, 후속)
 
 ---
@@ -102,9 +104,9 @@ korean-privacy-terms 스킬로 이용약관과 개인정보처리방침 초안�
 
 ## Verification
 
-1. `tsc --noEmit`: (대기)
-2. `npm run build` · `npm run build:cap`: (대기)
-3. 로컬 브라우저 `/terms` · `/privacy`: (대기)
+1. `tsc --noEmit`: 통과
+2. `npm run build` · `npm run build:cap`: 통과 — 두 빌드 모두 `/privacy` · `/terms` 정적 생성(`out/privacy.html` · `out/terms.html`)
+3. 로컬 브라우저 `/terms` · `/privacy`: 정적 export 확인 — 320px 폭에서 scrollWidth = clientWidth(305), 가로 스크롤 없음
 
 ---
 
