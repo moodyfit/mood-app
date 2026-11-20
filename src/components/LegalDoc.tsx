@@ -1,6 +1,6 @@
 import BackButton from "@/components/BackButton";
 
-/** 약관·처리방침 공용 틀 — 헤더 + 법률 검토 표시 + 시행일 */
+/** 약관·처리방침 공용 틀 — 헤더 + 시행일 */
 export function LegalDoc({ title, meta, children }: { title: string; meta: React.ReactNode; children: React.ReactNode }) {
   return (
     <article className="animate-fade px-5 pb-12 text-[13.5px] leading-[1.7] text-ink [overflow-wrap:anywhere]">
@@ -8,10 +8,7 @@ export function LegalDoc({ title, meta, children }: { title: string; meta: React
         <BackButton spacing="py-3" />
         <h1 className="text-[17px] font-bold">{title}</h1>
       </div>
-      <p className="rounded border border-line bg-paper-2 px-3.5 py-3 text-[12.5px] leading-[1.55] text-ink-soft">
-        <b className="font-bold text-ink">참고용 초안이에요.</b> 법률 검토 전 문서로, 내용이 바뀔 수 있어요.
-      </p>
-      <p className="mb-2 mt-3.5 text-xs text-ink-soft">{meta}</p>
+      <p className="mb-2 mt-1 text-xs text-ink-soft">{meta}</p>
       {children}
     </article>
   );
