@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
 import { usePhotos } from "@/lib/hooks/usePhotos";
-import { filterByGender } from "@/lib/photos";
+import { filterByGender, dominantMood } from "@/lib/photos";
 import { useMoodStore } from "@/lib/store";
 
 // FEAT-032: 회의록 "무드 카테고리 보여주기(힙함, 댄디 등)". 처음엔 QUERY_MAP의 밈/스타일
@@ -23,16 +24,33 @@ const CATEGORIES: { label: string; mood: string }[] = [
 ];
 
 // 홈 = 약속 모드 진입 카드 + 종합 취향 상시 메이슨리 전시. 검색은 /search 페이지로 분리.
-// HomeGallery는 moodKeys/query를 받아 인플레이스 필터링 지원 (FEAT-006).
-export default function HomePage() {
+function HomeContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  // 코드리뷰 P1-2: 카테고리를 고른 채 상세 → 뒤로가기하면 "전체"로 리셋되던 문제 — 선택
+  // 상태를 컴포넌트 state가 아니라 URL(`?mood=`)에 둬서, 뒤로가기해도 같은 URL로 돌아오며
+  // 자연스럽게 유지되게 한다(정적 export/Capacitor에서도 클라이언트에서 그대로 읽힘).
+  const activeMood = searchParams.get("mood");
+  const activeCategory = CATEGORIES.find((c) => c.mood === activeMood) ?? null;
+
   const { photos, loading } = usePhotos();
   const [query, setQuery] = useState("");
   const [moodKeys, setMoodKeys] = useState<string[]>([]);
   // FEAT-030: 남/녀 토글 제거 — genderFilter는 store에서 "male"로 고정돼 있음(향후 재활성화 대비 유지).
-  const { genderFilter, recordSearch } = useMoodStore();
-  const filteredPhotos = useMemo(
+  const { genderFilter, recordView } = useMoodStore();
+  const genderedPhotos = useMemo(
     () => filterByGender(photos, genderFilter),
     [photos, genderFilter]
+  );
+  // 코드리뷰 Q-1: 처음엔 rankPhotos로 "정렬"만 해서 스크롤을 내리면 다른 무드 사진도 섞여
+  // 나왔다 — 카테고리는 검색이 아니라 "이 느낌만 보기"라 실제로 걸러내는 게 맞다(그래야
+  // 애초에 축을 1:1로 나눈 의미가 산다). dominantMood 기준 필터.
+  const categoryPhotos = useMemo(
+    () =>
+      activeCategory
+        ? genderedPhotos.filter((p) => dominantMood(p.mood_vector) === activeCategory.mood)
+        : genderedPhotos,
+    [genderedPhotos, activeCategory]
   );
 
   // 빈 문자열 = 검색 해제(기본 피드 복귀). AI 실패해도 API가 폴백을 함께 반환해서 항상 결과 있음.
@@ -51,18 +69,19 @@ export default function HomePage() {
     }
   }, []);
 
-  // 코드리뷰: "같은 칩 다시 눌러서 해제"가 안 와닿는다는 피드백 — "전체" 탭을 라디오처럼
-  // 항상 하나는 활성인 구조로 바꿔서, 되돌아가는 동작 자체를 명시적인 선택지로 만든다.
-  // moodKeys는 단일 축만 — 조합(resolveMoods)을 쓰면 카테고리끼리 축이 겹쳐 결과가 비슷해진다.
+  // 소피 코드리뷰: recordSearch(cat.label)로 기록했더니 엉뚱한 축(주로 amekaji) 취향 점수가
+  // 올라감 — recordSearch는 내부적으로 resolveMoods(query)로 텍스트를 "추측"해서 반영하는데,
+  // "미니멀"/"캐주얼" 같은 라벨은 QUERY_MAP에 없어서 fallbackMoods(글자수 기반 해시 회전)로
+  // 떨어져 실제 선택한 축과 무관한 결과가 나왔다. 이미 축을 정확히 알고 있는 상황(추측이 필요
+  // 없음)이라 recordView(moodKey)로 바꿔서 그 축을 직접 반영한다 — recordView는 사진 클릭
+  // 때도 쓰는, 텍스트 추측 없이 정확한 축 하나를 받는 함수.
   function selectCategory(cat: { label: string; mood: string }) {
-    recordSearch(cat.label);
-    setQuery(cat.label);
-    setMoodKeys([cat.mood]);
+    recordView(cat.mood);
+    router.replace(`/?mood=${cat.mood}`, { scroll: false });
   }
 
   function clearCategory() {
-    setQuery("");
-    setMoodKeys([]);
+    router.replace("/", { scroll: false });
   }
 
   return (
@@ -83,21 +102,16 @@ export default function HomePage() {
 
       <HomeCloset />
 
-      {/* 밑줄 텍스트탭 — 알약 버튼(테두리+배경 전부 같은 모양)은 피함(frontend-design 스킬:
-          "SaaS 카드 키트" 패턴이 AI 생성 티가 나는 대표 사례). 가로 스크롤은 ShelfCard.tsx와
-          동일 컨벤션([scrollbar-width:none] 등 스크롤바 숨김). */}
-      <div
-        className="flex gap-5 overflow-x-auto px-5 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        role="tablist"
-        aria-label="무드 카테고리"
-      >
+      {/* 밑줄 텍스트탭처럼 생겼지만 실제로는 단일 선택 버튼 묶음 — 코드리뷰 P2-1: role="tab"은
+          aria-controls로 연결된 tabpanel과 좌우 화살표 이동이 따라와야 완성되는 패턴인데
+          둘 다 없어서, 그 기대에 안 맞는 role 대신 aria-pressed 버튼 묶음으로 뺐다. */}
+      <div className="flex gap-5 overflow-x-auto px-5 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <button
           type="button"
-          role="tab"
-          aria-selected={!query}
+          aria-pressed={!activeCategory}
           onClick={clearCategory}
           className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-[14px] transition ${
-            !query ? "border-ink font-semibold text-ink" : "border-transparent text-ink-faint"
+            !activeCategory ? "border-ink font-semibold text-ink" : "border-transparent text-ink-faint"
           }`}
         >
           전체
@@ -106,11 +120,10 @@ export default function HomePage() {
           <button
             key={cat.mood}
             type="button"
-            role="tab"
-            aria-selected={query === cat.label}
+            aria-pressed={activeCategory?.mood === cat.mood}
             onClick={() => selectCategory(cat)}
             className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-[14px] transition ${
-              query === cat.label
+              activeCategory?.mood === cat.mood
                 ? "border-ink font-semibold text-ink"
                 : "border-transparent text-ink-faint"
             }`}
@@ -121,8 +134,16 @@ export default function HomePage() {
       </div>
 
       <div className="pt-3">
-        <HomeGallery photos={filteredPhotos} loading={loading} moodKeys={moodKeys} query={query} />
+        <HomeGallery photos={categoryPhotos} loading={loading} moodKeys={moodKeys} query={query} />
       </div>
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense>
+      <HomeContent />
+    </Suspense>
   );
 }

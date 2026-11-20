@@ -53,16 +53,33 @@ FEAT-021(검색을 제품 검색 전용으로 단순화)에서 통째로 빠졌�
 
 ## Scope(구현, 최종)
 
-- `src/app/page.tsx`: `CATEGORIES`(라벨+무드축 쌍) 6개 + "전체" 탭을 홈 상단(성별 토글 빠진
-  자리)에 밑줄 텍스트 탭(`role="tablist"`/`role="tab"`, 가로 스크롤)으로 추가. 클릭 시
-  `moodKeys`를 그 축 하나(`[cat.mood]`)로 결정적으로 세팅 — 조합(resolveMoods)을 안 써서
-  카테고리끼리 겹치지 않는다. "전체" 탭이 해제 역할.
+- `src/app/page.tsx`: `CATEGORIES`(라벨+무드축 쌍) 6개 + "전체" 버튼을 홈 상단(성별 토글 빠진
+  자리)에 밑줄 텍스트 탭 모양(가로 스크롤)으로 추가.
 - `src/components/HomeGallery.tsx`: 검색/카테고리 모드일 때 헤더(`'{query}'`) 생략 — 탭의
   밑줄이 이미 선택 상태를 보여줘서 중복.
+
+### 소피 코드리뷰 반영(2026-11-20)
+
+- **P0-1**: `recordSearch(라벨)` → `recordView(cat.mood)`. `recordSearch`가 내부적으로
+  `resolveMoods`로 라벨을 다시 해석하는데, "미니멀"/"캐주얼" 등은 `QUERY_MAP`에 없어서
+  글자수 기반 폴백으로 떨어져 엉뚱한 축(주로 amekaji)에 점수가 올랐었다. 축을 이미 정확히
+  아는 상황이라 추측 없이 그 축 하나를 직접 반영.
+- **P1-2**: 카테고리 선택 상태를 `useState`가 아니라 URL(`?mood=`)에 둬서, 상세 → 뒤로가기
+  해도 선택이 유지되게 함(`router.replace`, 히스토리는 안 늘림).
+- **Q-1**: "필터 vs 정렬" — 필터가 맞는 의도라 `rankPhotos` 정렬 방식에서
+  `dominantMood(p.mood_vector) === cat.mood` 기준 실제 필터링으로 변경. 스크롤을 내려도 다른
+  무드가 안 섞임.
+- **P2-1**: `role="tab"`은 `aria-controls`/`tabpanel`/화살표 키 이동이 따라와야 완성되는데
+  없어서, 일반 버튼 묶음(`aria-pressed`)으로 변경.
 
 ## Verification (Playwright 실측)
 
 - 탭 7개(전체+6개) 홈 상단 노출, 가로 스크롤 동작.
+- "스트릿" 선택 → URL이 `/?mood=street`로 바뀌고 역할=link 카드 12장, 전부 스트릿 축.
+- 카드 클릭 → 상세 → 뒤로가기 → URL이 `/?mood=street`로 그대로, "스트릿" 버튼
+  `aria-pressed=true` 유지(수정 전엔 "전체"로 리셋됐음).
+- `localStorage['mood.affinity.v1']`에서 탭 6개 전부 클릭 시 각 축에 정확히 1씩만 반영(수정
+  전엔 amekaji 등으로 쏠렸음).
 - "스트릿"/"빈티지" 각각 클릭 → 서로 다른 축 사진으로 필터링, 겹침 12장 중 2장(기존 조합
   방식 대비 크게 감소) — 오버핏 후디·카고팬츠(스트릿) vs 데님재킷·워크부츠(빈티지)로 시각적
   구분됨.
