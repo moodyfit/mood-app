@@ -23,7 +23,7 @@
 | `src/lib/upload.ts` | `Gender` 타입, `UploadPayload.gender`, 업로드 API 호출 시 `gender` 전달 |
 | `src/app/api/photos/tag/route.ts` | 요청 바디 `gender`, DB insert `gender` 컬럼, `scoringPrompt`에 `genderHint`(`"m"\|"w"`) 전달 |
 | `src/lib/tagging-rubric.ts` | `scoringPrompt(axisHint, gender)`의 `gender` 파라미터 — 프롬프트에 "남성"/"여성" 호칭 삽입 |
-| `src/components/ui/OptionPicker.tsx` | 성별 토글 2곳(`page.tsx`, `UploadForm.tsx`)에서만 쓰는 제네릭 컴포넌트 — 둘 다 없어지면 소비자 0, 삭제 대상 후보(그 전에 다른 용도로 재사용 계획 있는지 확인 필요) |
+| `src/components/ui/OptionPicker.tsx` | 제네릭 컴포넌트. 성별 토글(`page.tsx`, `UploadForm.tsx`의 "누구 옷차림이야?")에 쓰이지만, `UploadForm.tsx`의 "어떤 사진이야?"(실제 사진/AI 생성) 선택에도 **같은 컴포넌트가 쓰임** — 성별 토글 2곳을 지워도 소비자가 0이 되지 않음(삭제 불가) |
 
 ### DB/데이터 (실측, 2026-11-17)
 
@@ -70,11 +70,14 @@
   항상 male) 위 1번 레이스를 막는다. `setGenderFilter`/저장 로직 자체는 코드에 남겨두되(향후
   재활성화용) 호출하는 UI가 없어지므로 자연히 안 쓰임.
 - `page.tsx`: 홈의 성별 토글(`OptionPicker`) 제거.
-- `UploadForm.tsx`: 성별 선택 `OptionPicker` 제거, `gender`는 항상 `"male"`로 고정 전송
-  (`FEMALE_OPEN` 플래그·`Gender` 타입은 유지).
+- `UploadForm.tsx`: 성별 선택 `OptionPicker`(누구 옷차림이야?) 제거, `gender`는 항상
+  `"male"`로 고정 전송(`FEMALE_OPEN` 플래그·`Gender` 타입은 유지). "어떤 사진이야?"(실제
+  사진/AI 생성) 선택용 `OptionPicker`는 성별과 무관하므로 그대로 유지.
 - `results/page.tsx`: "성별 0장이면 전체로 넓히기" 폴백 제거 — 지금은 고정 정책이라 넓힐
   "다른 성별"이라는 개념 자체가 없어짐. 0장이면 그냥 매칭 없음(기존 무드 검색 폴백)으로.
-- `OptionPicker.tsx`: 두 호출부 제거 후 소비자 0 — 다른 쓰임 없으면 삭제.
+- `OptionPicker.tsx`: 코드 수정 없음 — `UploadForm.tsx`의 "어떤 사진이야?" 선택이 여전히
+  쓰고 있어 소비자 0이 아님(소피 PR #52 코드리뷰 P2-1: "두 호출부 제거 후 소비자 0"이라는
+  위 서술이 틀렸음을 지적받아 정정).
 - `photos.gender`/`body_spec.gender` 컬럼, `scripts/`는 전부 유지(Q1/Q3 결정).
 
 ## Verification (완료, Playwright 실측)
