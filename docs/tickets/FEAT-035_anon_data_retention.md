@@ -9,7 +9,7 @@
 | Key | Value |
 |-----|-------|
 | Type | FEAT |
-| Status | Todo |
+| Status | Done |
 | 우선순위 | P1 |
 | Layer | DB |
 | Related | FEAT-033 |
@@ -60,21 +60,22 @@ user_id별 `events.created_at` 최댓값과 `user_taste.updated_at` 중 늦은 �
 
 ## 결정
 
-- (대기) `pg_cron` vs 외부 스케줄러(GitHub Actions). Free 플랜에서 `pg_cron` 사용 가능 여부 확인 후 정한다
+- `pg_cron`(Supabase Cron)으로 매일 03:00 KST 실행한다. Free 플랜에서 대시보드 Integrations로 켤 수 있고, DB 안에서 끝나 외부 키가 필요 없다
+- 삭제는 `security definer` 함수 `purge_stale_anon()`에 두고, anon·authenticated의 실행 권한을 막는다
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] 마지막 이용이 1년 넘은 비회원 행만 삭제되고, 회원 행과 1년 이내 비회원 행은 남는다
+- [x] 마지막 이용이 1년 넘은 비회원 행만 삭제되고, 회원 행과 1년 이내 비회원 행은 남는다
 - [ ] 스케줄이 매일 실행된다
 
 ---
 
 ## Verification
 
-1. 테스트 행(1년 전 비회원 · 최근 비회원 · 회원) 삭제 결과: (대기)
-2. 스케줄 실행 기록: (대기)
+1. 테스트 행(1년 전 비회원 · 최근 비회원 · 회원) 삭제 결과: 통과 — 400일 전 비회원(events 2 · user_taste 1) 삭제, 300일 전 비회원 유지, 회원 events 761행 유지, 반환값 1. anon 키 호출은 `permission denied`. 테스트 행 정리 후 events 3,390 · user_taste 398로 원복
+2. 스케줄 실행 기록: 잡 `purge-stale-anon` 등록 확인(`0 18 * * *`, 다음 실행 2026-11-21 03:00 KST). 첫 실행 기록 (대기)
 
 ---
 
