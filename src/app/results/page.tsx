@@ -40,7 +40,8 @@ function ResultsContent() {
   // 조회 끝나기 전엔 "모름" 상태로 둬서(코드리뷰 P1-2) 무드 검색 결과가 먼저 보이다 사라지는
   // 깜빡임을 없앤다.
   const [productPhotoUrls, setProductPhotoUrls] = useState<Set<string> | null | undefined>(undefined);
-  // 홈에서 고른 남/녀 필터를 검색 결과에도 그대로 적용(전역 설정, 회의록 2026-10-08).
+  // FEAT-030: genderFilter는 이제 사용자가 고르는 값이 아니라 store에 "male"로 고정된 앱
+  // 전체 정책 — 검색 결과에도 그대로 적용(여자 사진은 아예 안 보이게).
   const { genderFilter } = useMoodStore();
   const filteredPhotos = useMemo(
     () => filterByGender(photos, genderFilter),
@@ -105,21 +106,18 @@ function ResultsContent() {
     );
   }
 
-  // 성별 필터 적용 후 0장이면(P1-1) 전역 필터는 그대로 두고 이 화면에서만 전체 성별로 넓혀 보여준다 —
-  // 조용히 무드 검색으로 빠지면 찾던 상품과 무관한 코디가 나와서 검색이 틀린 것처럼 보인다.
+  // FEAT-030: 성별은 이제 사용자가 고르는 필터가 아니라 앱 전체 고정 정책(male)이라, "0장이면
+  // 다른 성별로 넓히기" 폴백은 없앴다 — 넓힐 "다른 성별"이라는 개념 자체가 없어짐(넓히면 그대로
+  // 노출 경로가 되어 고정 정책이 깨진다). 매칭이 있어도 성별 필터 후 0장이면 그냥 무드 검색으로 폴백.
   let ranked: typeof filteredPhotos;
-  let genderWidened = false;
   if (you) {
     ranked = filteredPhotos;
   } else if (productPhotoUrls) {
-    const matchedAll = photos.filter((p) => productPhotoUrls.has(p.image_url));
-    const matchedByGender = filterByGender(matchedAll, genderFilter);
-    if (matchedByGender.length === 0 && matchedAll.length > 0) {
-      ranked = matchedAll;
-      genderWidened = true;
-    } else {
-      ranked = matchedByGender;
-    }
+    const matched = filterByGender(
+      photos.filter((p) => productPhotoUrls.has(p.image_url)),
+      genderFilter
+    );
+    ranked = matched.length > 0 ? matched : rankPhotos(filteredPhotos, moodKeys);
   } else {
     ranked = rankPhotos(filteredPhotos, moodKeys);
   }
@@ -127,11 +125,6 @@ function ResultsContent() {
   return (
     <div className="animate-fade px-5 pb-12">
       <BackButton href="/" />
-      {genderWidened && (
-        <p className="mb-3 text-[12.5px] text-ink-soft">
-          {genderFilter === "female" ? "여자" : "남자"} 코디가 없어서 전체로 보여줄게
-        </p>
-      )}
       <PhotoGrid photos={ranked} query={q} you={you} />
     </div>
   );
