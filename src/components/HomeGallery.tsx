@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ALL_MOOD_KEYS, MOODS } from "@/lib/moods";
 import { personalizeOrder } from "@/lib/taste";
 import { rankPersonalized, personalizationStrength, HERO_MIN_STRENGTH } from "@/lib/rank";
@@ -33,12 +33,21 @@ const MAX_VISIBLE = 216;
 const ORDER_KEY = "moodfit:home-order";
 
 /** BUG-015: 사진 클릭(상세 열기)이 취향 점수(affinity)를 갱신해서, 그 직후 뒤로가기로
- * 돌아오면 같은 스크롤 위치인데 카드 배열 자체가 바뀌어 보이던 문제. 한 번 보여준 순서를
- * sessionStorage에 남겨뒀다가, 같은 탭 세션 안에서는 그 순서를 그대로 써서 "방금 본 피드"가
- * 유지되게 한다 — 취향 반영은 다음 세션(새 탭/새로고침으로 sessionStorage가 비는 시점)부터. */
-function readOrderSnapshot(): string[] | null {
+ * 돌아오면 같은 스크롤 위치인데 카드 배열 자체가 바뀌어 보이던 문제. "이 페이지를 떠나는
+ * 순간"의 피드 순서를 sessionStorage에 한 번 남겨두고, 돌아왔을 때(리마운트) 딱 한 번만
+ * 꺼내 쓰고 지운다 — 떠났다 돌아오는 한 번의 왕복에서만 "방금 본 피드"를 유지하고, 그
+ * 왕복이 끝나면 다음 클릭부터는 최신 affinity로 다시 랭킹된다(소피 PR #49 코드리뷰 P1-2:
+ * 이전엔 ordered가 바뀔 때마다 계속 다시 써서 세션 전체 동안 순서가 고정되는 문제가 있었음).
+ *
+ * 쓰는 시점도 "클릭 이후 affinity가 바뀐 뒤"가 아니라 pointerup 캡처 단계(BUG-014와 동일
+ * 기법) — PhotoCard의 onPointerUp이 recordView(affinity 갱신)와 router.push를 부르기
+ * 전에 먼저 실행되므로, 클릭 "직전"(아직 취향이 안 바뀐) 상태의 순서를 그대로 저장한다.
+ * 덕분에 affinity 서버 동기화(hydrateTaste)가 아직 안 끝난 상태에서 써버리는 경합도
+ * 자연히 피해진다 — 애초에 affinity 값 자체를 안 쓰고 "지금 보이는 순서"만 기록하기 때문. */
+function readAndClearOrderSnapshot(): string[] | null {
   try {
     const raw = sessionStorage.getItem(ORDER_KEY);
+    sessionStorage.removeItem(ORDER_KEY);
     const parsed = raw ? JSON.parse(raw) : null;
     return Array.isArray(parsed) ? parsed : null;
   } catch {
@@ -47,6 +56,7 @@ function readOrderSnapshot(): string[] | null {
 }
 
 function writeOrderSnapshot(ids: string[]) {
+  if (ids.length === 0) return;
   try {
     sessionStorage.setItem(ORDER_KEY, JSON.stringify(ids));
   } catch {
@@ -127,23 +137,30 @@ export default function HomeGallery({
     [photos, affinity, searching, moodKeys]
   );
 
-  // BUG-015: 검색 모드가 아니면, 같은 탭 세션에서 이미 본 적 있는 순서(스냅샷)를 그대로 쓴다.
-  // 새로 추가된 사진(스냅샷에 없는 id)은 뒤에 덧붙이고, 삭제된 사진(photos에 없는 id)은 건너뛴다.
+  // 마운트 시 딱 한 번만 스냅샷을 꺼내 쓰고 지운다(= 지난 방문에서 떠나기 직전 저장된 순서를
+  // "이번 왕복"에서만 소비). 이 state는 마운트 동안 바뀌지 않으므로, 이번 방문 중 affinity가
+  // 갱신돼도(예: 저장 토글) 피드가 눈앞에서 다시 섞이지 않는다 — 다음 방문의 순서는 이번에
+  // 떠날 때 다시 캡처된다.
+  const [pinnedOrderIds] = useState<string[] | null>(() => (searching ? null : readAndClearOrderSnapshot()));
+
   const ordered = useMemo(() => {
-    if (searching) return freshOrdered;
-    const snapshot = readOrderSnapshot();
-    if (!snapshot) return freshOrdered;
+    if (searching || !pinnedOrderIds) return freshOrdered;
     const byId = new Map(photos.map((p) => [p.id, p]));
-    const fromSnapshot = snapshot.map((id) => byId.get(id)).filter((p): p is Photo => !!p);
+    const fromSnapshot = pinnedOrderIds.map((id) => byId.get(id)).filter((p): p is Photo => !!p);
     const seen = new Set(fromSnapshot.map((p) => p.id));
     return [...fromSnapshot, ...freshOrdered.filter((p) => !seen.has(p.id))];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [freshOrdered, searching, photos]);
+  }, [freshOrdered, searching, photos, pinnedOrderIds]);
 
+  // pointerup 캡처 단계에서 "지금 보이는 순서"를 저장(BUG-014와 동일 기법) — PhotoCard의
+  // onPointerUp(recordView + router.push)보다 먼저 실행되므로 affinity가 바뀌기 전 순서를 그대로 캡처.
+  const orderedRef = useRef(ordered);
+  orderedRef.current = ordered;
   useEffect(() => {
-    if (searching || ordered.length === 0) return;
-    writeOrderSnapshot(ordered.map((p) => p.id));
-  }, [ordered, searching]);
+    if (searching) return;
+    const onPointerUpCapture = () => writeOrderSnapshot(orderedRef.current.map((p) => p.id));
+    window.addEventListener("pointerup", onPointerUpCapture, { capture: true });
+    return () => window.removeEventListener("pointerup", onPointerUpCapture, { capture: true });
+  }, [searching]);
 
   // 히어로(크기=적합도)는 검색 아니고 개인화가 유의미해진 뒤에만(랭킹 중립 원칙 — 검색 결과엔 히어로 없음)
   const heroPhoto = !searching && strength >= HERO_MIN_STRENGTH && ordered.length > 3 ? ordered[0] : null;
