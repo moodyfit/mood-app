@@ -26,6 +26,23 @@ interface AuthResult {
   error: string | null;
   needsConfirm?: boolean;
 }
+const NO_SERVER = "서버에 연결할 수 없어요.";
+const AUTH_ERRORS: Record<string, string> = {
+  invalid_credentials: "이메일 또는 비밀번호가 맞지 않아요.",
+  user_already_exists: "이미 가입된 이메일이에요.",
+  email_exists: "이미 가입된 이메일이에요.",
+  email_not_confirmed: "메일 인증을 먼저 완료해 주세요.",
+  email_address_invalid: "이메일 주소를 다시 확인해 주세요.",
+  weak_password: "더 안전한 비밀번호를 입력해 주세요.",
+  same_password: "지금 쓰는 비밀번호와 다른 비밀번호를 입력해 주세요.",
+  over_email_send_rate_limit: "요청이 너무 잦아요. 잠시 후 다시 요청해 주세요.",
+  over_request_rate_limit: "요청이 너무 잦아요. 잠시 후 다시 요청해 주세요.",
+};
+/** Supabase Auth 오류를 화면용 한국어로. 모르는 코드는 원문 대신 일반 안내를 보여 준다. */
+function authError(e: { code?: string } | null): string | null {
+  if (!e) return null;
+  return AUTH_ERRORS[e.code ?? ""] ?? "문제가 생겼어요. 잠시 후 다시 시도해 주세요.";
+}
 /** 두 취향 벡터 병합 — 축별 최댓값(익명+계정 continuity). */
 function mergeAffinity(a: Affinity, b: Affinity): Affinity {
   const out: Affinity = { ...a };
@@ -68,6 +85,7 @@ const K_SEARCH = "mood.searchCounts.v1"; // 7.8 검색 기억
 const K_OWNED = "mood.owned.v1"; // 1.5.2 '내 옷' 소유 결
 const K_SCAN = "mood.scanDone.v1"; // 스캔 1회 완료 — 이후 스캔 탭은 전시 기본, 원할 때만 재스캔
 const K_DOT = "mood.spaceDot.v1"; // B5 카드 발급 dot (나의 공간 미확인 신호)
+export const K_LOGIN_EMAIL = "mood.loginEmail.v1"; // 재설정 후 로그인 칸 미리 채우기(sessionStorage, 1회용)
 const K_DISC = "mood.discovered.v1"; // C7 '발견' 결 (스크린샷 입주)
 const K_BODY = "mood.bodyProfile.v1"; // 영상(룩북) 탭 — 신체 프로필(고정 검색축·락인)
 const K_UID = "mood.uid.v1"; // 익명 기기 신원(개인화 서버 적재 키. 로그인 도입 시 병합)
@@ -124,6 +142,8 @@ interface MoodStore {
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<AuthResult>;
+  updatePassword: (password: string) => Promise<AuthResult>;
   toast: ToastState | null;
   showToast: (msg: string, link?: ToastLink) => void;
 }
@@ -485,23 +505,43 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = useCallback(async (email: string, password: string): Promise<AuthResult> => {
     const sb = getSupabase();
-    if (!sb) return { error: "서버 연결이 안 돼 있어" };
+    if (!sb) return { error: NO_SERVER };
     const { data, error } = await sb.auth.signUp({ email, password });
-    if (error) return { error: error.message };
+    if (error) return { error: authError(error) };
     trackEvent(userIdRef.current, "profile_set", { meta: { auth: "signup" } });
     return { error: null, needsConfirm: !data.session };
   }, []);
 
   const signIn = useCallback(async (email: string, password: string): Promise<AuthResult> => {
     const sb = getSupabase();
-    if (!sb) return { error: "서버 연결이 안 돼 있어" };
+    if (!sb) return { error: NO_SERVER };
     const { error } = await sb.auth.signInWithPassword({ email, password });
-    return { error: error?.message ?? null };
+    return { error: authError(error) };
   }, []);
 
   const signOut = useCallback(async () => {
     const sb = getSupabase();
     if (sb) await sb.auth.signOut();
+  }, []);
+
+  // 미가입 이메일도 Supabase가 성공으로 응답한다 — 오류는 발송 제한 등만 온다.
+  const requestPasswordReset = useCallback(async (email: string): Promise<AuthResult> => {
+    const sb = getSupabase();
+    if (!sb) return { error: NO_SERVER };
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    return { error: authError(error) };
+  }, []);
+
+  // 메일 링크로 들어오면 Supabase가 복구 세션을 만든다. 세션이 없으면 링크가 만료된 것.
+  const updatePassword = useCallback(async (password: string): Promise<AuthResult> => {
+    const sb = getSupabase();
+    if (!sb) return { error: NO_SERVER };
+    const { data } = await sb.auth.getSession();
+    if (!data.session) return { error: "링크가 만료됐어요. 다시 요청해 주세요." };
+    const { error } = await sb.auth.updateUser({ password });
+    return { error: authError(error) };
   }, []);
 
   const recordSearch = useCallback(
@@ -605,6 +645,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signIn,
       signOut,
+      requestPasswordReset,
+      updatePassword,
       toast,
       showToast,
     }),
@@ -642,6 +684,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signIn,
       signOut,
+      requestPasswordReset,
+      updatePassword,
       toast,
       showToast,
     ]
