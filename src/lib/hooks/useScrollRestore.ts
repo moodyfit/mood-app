@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
 
 /**
  * 뒤로가기 시 "로드된 카드 수 + 스크롤 위치"를 복원하는 훅(BUG-004 HomeGallery, BUG-008 PhotoGrid).
@@ -51,13 +50,11 @@ export function useScrollRestore(
   // 위치로 튐). ref로 "지금 skip인지"만 읽고, "skip이 바뀌었다는 사실" 자체엔 반응하지 않는다.
   const skipRef = useRef(skip);
   skipRef.current = skip;
-  // BUG-014/015 코드리뷰로 드러난 문제: "scrollY===0은 저장 안 함"으로는 네비게이션이 만든
-  // 리셋(0)과 사용자가 진짜로 맨 위까지 스크롤한 경우(역시 0)를 구분할 수 없었다 — 후자를
-  // 막아버리면 "맨 위로 올린 뒤 새로고침/클릭→뒤로가기" 시 예전 위치로 복원되는 버그가 생긴다.
-  // pathname이 바뀌는 건 "진짜 다른 페이지로 이동 중"이라는 더 정확한 신호라 이걸로 대체한다.
-  const pathname = usePathname();
-  const pathnameRef = useRef(pathname);
-  pathnameRef.current = pathname;
+  // BUG-014 2차 수정(소피 코드리뷰 P1-1): pathname으로 "네비게이션 중"을 구분하려 했으나,
+  // 클릭→router.push 전환 중엔 이 훅의 컴포넌트가 리렌더가 아니라 unmount되기 때문에
+  // pathnameRef가 끝까지 옛 값으로 남아 가드가 실제로는 발화하지 않았다(=BUG-011 경합 재발).
+  // 대신 클릭 시점에 scrollY를 동기로 캡처해 두면, 그 뒤 네비게이션이 만드는 0도 디바운스
+  // 가드(아래)로 걸러진다 — 자세한 이유는 아래 두 effect의 주석 참고.
 
   // resetKey가 실제로 바뀌면 처음부터 다시 — 단, skip 쪽(예: 검색 모드 진입)으로 바뀔 때만이다.
   // skip=false로 돌아오는 전환(예: 검색 해제 → 홈 복귀)은 "처음부터"가 아니라 "저장된 값으로
@@ -80,37 +77,45 @@ export function useScrollRestore(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, storageKey]);
 
+  // pointerup 캡처 단계에서 scrollY를 동기로 저장(BUG-014 2차, 소피 #48 P1-1 제안). PhotoCard는
+  // "click"이 아니라 onPointerUp에서 바로 router.push를 부른다 — click 이벤트는 pointerup보다
+  // 늦게 발생해서 "click" 리스너로는 이미 네비게이션이 시작된 뒤라 늦는다. capture 단계(window →
+  // 하위로 내려가는 단계)는 target의 bubble 단계 핸들러(= router.push를 부르는 onPointerUp)보다
+  // 항상 먼저 실행되므로, 리셋이 일어나기 전 "그 순간"의 진짜 위치를 기록할 수 있다. 네비게이션이
+  // 없는 pointerup(하트 버튼 등)에도 똑같이 쓰지만 현재 위치를 쓰는 것뿐이라 무해하다.
+  useEffect(() => {
+    if (skip) return;
+    const onPointerUpCapture = () => {
+      if (!restoredRef.current) return;
+      writeScrollState(storageKey, {
+        visible: readScrollState(storageKey)?.visible ?? visible,
+        scrollY: window.scrollY,
+      });
+    };
+    window.addEventListener("pointerup", onPointerUpCapture, { capture: true });
+    return () => window.removeEventListener("pointerup", onPointerUpCapture, { capture: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [skip, storageKey]);
+
   // 스크롤 위치도 저장(skip·복원 진행 중 제외), 200ms 디바운스로 쓰기 빈도를 줄인다.
   //
-  // BUG-011/014/015: 카드 클릭→router.push로 페이지를 떠날 때 Next가 네비게이션 시작과 함께
-  // 스크롤을 0으로 되돌리는데, 새 페이지 데이터가 준비될 때까지 이전 페이지가 계속 마운트
-  // 상태로 남아있어서(App Router 특성) 그 리셋 이벤트가 디바운스 타이머보다 먼저 끝나버려
-  // 실제 위치를 0으로 덮어쓰는 경합이 있었다(BUG-011). 처음엔 "scrollY===0은 저장 안 함"으로
-  // 막았는데, 이러면 사용자가 진짜로 맨 위까지 스크롤한 경우도 똑같이 막혀서 — 새로고침하거나
-  // (BUG-014) 맨 위 카드를 클릭하고 뒤로가기하면(BUG-015 QA에서 추가 재현) 예전(아래) 위치로
-  // 복원돼 버렸다. 진짜 신호는 "스크롤 값이 0인지"가 아니라 "그 사이에 다른 페이지로 정말
-  // 이동했는지"라 pathname으로 판단한다 — 타이머를 스케줄링한 시점의 pathname과 실제 발화
-  // 시점의 pathname이 다르면(= 네비게이션이 진행 중) 저장을 버리고, 같으면(진짜 유휴 상태,
-  // 0이어도) 그대로 저장한다.
-  //
-  // 디바운스 콜백 안에서 restoredRef를 재확인하는 이유(BUG-011 코드리뷰 P2-1): 이벤트 발생 시점엔
-  // restoredRef가 true였어도(= 이 인스턴스가 복원을 마친 상태), 그 뒤 실제 unmount(라우트 전환,
-  // 클릭→router.push로 다음 페이지 데이터가 준비되는 동안 이 인스턴스가 잠깐 더 떠있는 App Router
-  // 특성)가 200ms 디바운스보다 늦게 끝나면, 이미 죽은 인스턴스의 effect cleanup이 clearTimeout하기
-  // 전에 타이머가 먼저 발화해 scrollY(네비게이션이 만든 애매한 값)를 그대로 써버릴 수 있다. 이
-  // cleanup-vs-타이머 경합은 네트워크/렌더 속도에 좌우되는 비결정적 레이스라 고정된 재현 순서는
-  // 없다(로컬에서 서버 콜드스타트 직후엔 재현, 워밍업 후엔 거의 안 남 — Playwright 반복 실측).
-  // pathname 가드가 바로 이 경합도 함께 막아준다(네비게이션 중이면 pathname이 이미 바뀌어 있음).
+  // BUG-011: 카드 클릭→router.push로 페이지를 떠날 때 Next가 네비게이션 시작과 함께 스크롤을
+  // 0으로 되돌리는데, 새 페이지 데이터가 준비될 때까지 이전 페이지가 계속 마운트 상태로
+  // 남아있어서(App Router 특성) 그 리셋 이벤트가 디바운스 타이머보다 먼저 끝나버려 실제 위치를
+  // 0으로 덮어쓰는 경합이 있었다 — "scrollY===0이면 저장 안 함"으로 막는다. 이 가드만으로는
+  // "사용자가 진짜로 맨 위까지 스크롤한 뒤 클릭→뒤로가기" 하는 경우(BUG-014/015)도 막혀서
+  // 예전(아래) 위치로 복원되는 문제가 있었는데, 그 케이스는 위 pointerup 캡처 effect가
+  // 리셋 전 scrollY를 이미 정확히 써 두므로, 여기서 네비게이션이 만든 0을 걸러내도 안전하다.
+  // 새로고침·탭 닫기로 맨 위에서 저장이 필요한 경우는 pagehide(아래)가 가드 없이 처리한다.
   useEffect(() => {
     if (skip) return;
     let timer = 0;
     const onScroll = () => {
       if (!restoredRef.current) return;
-      const scheduledPathname = pathnameRef.current;
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
         if (!restoredRef.current) return;
-        if (pathnameRef.current !== scheduledPathname) return; // 그 사이 다른 페이지로 이동 중
+        if (window.scrollY <= 0) return; // 네비게이션 리셋 가능성 — pointerup 캡처가 이미 처리함
         writeScrollState(storageKey, {
           visible: readScrollState(storageKey)?.visible ?? visible,
           scrollY: window.scrollY,
