@@ -54,10 +54,11 @@
 1. Kakao Developers · Supabase 설정 (서영 · 대시보드)
 2. `src/lib/store.tsx` — `signInWithKakao()`, 오류 코드 한국어 매핑 추가
 3. `src/app/login/page.tsx` — 로그인 · 회원가입 모드에 카카오 버튼
+4. `src/app/login/page.tsx` — 앱(Capacitor)에서는 카카오 버튼 · "또는" 구분선 숨김(코드리뷰 P1-1)
 
 ### 제외
 
-- 앱(Capacitor) 로그인 — WebView 밖 브라우저 · 딥링크 콜백이 필요하다 → 후속 티켓
+- 앱 카카오 로그인 — RN 전환 여부를 정한 뒤 방식을 정한다(RN: 카카오 네이티브 SDK + 토큰 로그인, Capacitor 유지: 딥링크 콜백)
 - 가입 동의 체크 — 가입 동의 티켓(후속). 그 전까지 카카오 가입자는 동의 기록이 없다
 - 기존 이메일 계정과 카카오 계정 연결
 
@@ -133,7 +134,7 @@
 
 ### 앱(Capacitor)
 
-앱에서 카카오 버튼을 누르면 외부 브라우저에서 로그인되고 앱으로 돌아오지 못한다. 앱 URL 스킴, `@capacitor/app`의 `appUrlOpen`, Redirect URLs의 앱 주소 등록이 필요해 후속 티켓으로 둔다.
+앱에서 카카오 버튼을 누르면 외부 브라우저에서 로그인되고 앱으로 돌아오지 못한다. 앱 URL 스킴, `@capacitor/app`의 `appUrlOpen`, Redirect URLs의 앱 주소 등록이 필요하다. RN 전환을 검토 중이라 앱 로그인 구현은 보류하고, 그 전까지 앱 빌드에서는 카카오 버튼을 뺀다. `next.config`의 `env`로 `BUILD_TARGET`을 넘겨 빌드 시점에 정하므로 앱 HTML에 버튼이 없다(실행 중 `Capacitor.isNativePlatform()`으로 숨기면 정적 HTML에 남아 앱에서 잠깐 보인다).
 
 ### 처리방침
 

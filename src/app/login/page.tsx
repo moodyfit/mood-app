@@ -12,6 +12,9 @@ const COPY = {
   reset: { title: "비밀번호 재설정", desc: "가입한 이메일로 재설정 링크를 보내줄게.", cta: "재설정 메일 보내기", toggle: "로그인으로 돌아가기" },
 } as const;
 
+// 앱 빌드에서는 카카오 버튼을 뺀다 — 카카오 웹 리다이렉트가 앱으로 돌아오지 못한다
+const APP_BUILD = process.env.BUILD_TARGET === "capacitor";
+
 // 로그인/회원가입 — 이메일+비밀번호(Supabase Auth). 로그인 순간 익명 취향이 계정으로 병합됨.
 export default function LoginPage() {
   const router = useRouter();
@@ -198,7 +201,7 @@ export default function LoginPage() {
         </button>
       )}
 
-      {mode !== "reset" && (
+      {mode !== "reset" && !APP_BUILD && (
         <>
           <div className="mt-6 flex items-center gap-3 text-[12px] text-ink-soft">
             <span className="h-px flex-1 bg-line" />
