@@ -526,7 +526,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     const { data, error } = await sb.auth.signUp({
       email,
       password,
-      options: { data: { consent: consentRecord() }, emailRedirectTo: `${window.location.origin}/login` },
+      options: { data: { consent: consentRecord() }, emailRedirectTo: `${window.location.origin}/space` },
     });
     if (error) return { error: authError(error) };
     trackEvent(userIdRef.current, "profile_set", { meta: { auth: "signup" } });

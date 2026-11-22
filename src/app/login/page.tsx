@@ -143,7 +143,7 @@ export default function LoginPage() {
       return;
     }
     if (res.needsConfirm) {
-      setMsg("확인 메일을 보냈어. 메일에서 인증하면 로그인돼.");
+      setMsg("확인 메일을 보냈어. 메일의 링크를 누르면 가입이 끝나. 받은편지함에 없으면 스팸함을 확인해줘.");
       return;
     }
     router.push("/space");
