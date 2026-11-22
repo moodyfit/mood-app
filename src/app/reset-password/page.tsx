@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PasswordInput from "@/components/ui/PasswordInput";
-import { EXPIRED_LINK, K_LOGIN_EMAIL, useMoodStore } from "@/lib/store";
+import { EXPIRED_LINK, K_LOGIN_EMAIL, K_RECOVERY, useMoodStore } from "@/lib/store";
 
 // 재설정 메일 링크로 들어오는 화면. 만료된 링크는 Supabase가 #error=...를 붙여 보낸다.
 export default function ResetPasswordPage() {
@@ -12,12 +12,32 @@ export default function ResetPasswordPage() {
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
   const [busy, setBusy] = useState(false);
-  const [state, setState] = useState<"form" | "done" | "expired">("form");
+  const [state, setState] = useState<"check" | "form" | "done" | "expired">("check");
   const [msg, setMsg] = useState<string | null>(null);
 
+  // 메일 링크는 #...type=recovery를 붙여 연다. Supabase가 해시를 지우기 전에 이 화면의 첫 effect가 먼저 돈다.
+  // 링크로 들어온 탭은 표시를 남겨 새로고침해도 이어지고, 그 외(직접 입력 · 만료 링크)는 바로 만료 화면.
   useEffect(() => {
-    if (window.location.hash.includes("error")) setState("expired");
+    let fromLink = false;
+    try {
+      if (window.location.hash.includes("type=recovery")) sessionStorage.setItem(K_RECOVERY, "1");
+      fromLink = sessionStorage.getItem(K_RECOVERY) === "1";
+    } catch {
+      /* 저장소 접근 불가 — 만료 화면 */
+    }
+    setState(fromLink && !window.location.hash.includes("error") ? "form" : "expired");
   }, []);
+
+  // 끝나면(완료 · 만료) 표시를 지운다. 만료면 링크가 남긴 세션도 끊어 "이미 로그인됨"이 뜨지 않게 한다.
+  useEffect(() => {
+    if (state !== "done" && state !== "expired") return;
+    try {
+      sessionStorage.removeItem(K_RECOVERY);
+    } catch {
+      /* 무시 */
+    }
+    if (state === "expired") signOut().catch(() => {});
+  }, [state, signOut]);
 
   const valid = pw.length >= 6 && pw === pw2;
 
@@ -44,6 +64,7 @@ export default function ResetPasswordPage() {
     else setMsg(res.error);
   }
 
+  if (state === "check") return null;
   if (state !== "form") {
     const done = state === "done";
     return (
