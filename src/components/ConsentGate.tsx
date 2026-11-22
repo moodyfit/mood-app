@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import SignupConsent from "@/components/SignupConsent";
-import { useMoodStore } from "@/lib/store";
+import { SIGNUP_DONE, useMoodStore } from "@/lib/store";
 
 // 문서를 읽거나 재설정 링크로 들어온 화면은 덮지 않는다
 const SKIP = ["/terms", "/privacy", "/reset-password"];
@@ -12,7 +12,7 @@ const SKIP = ["/terms", "/privacy", "/reset-password"];
 export default function ConsentGate() {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, recordConsent, signOut } = useMoodStore();
+  const { user, recordConsent, signOut, showToast } = useMoodStore();
   const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -28,6 +28,7 @@ export default function ConsentGate() {
     const res = await recordConsent();
     setBusy(false);
     if (res.error) setMsg(res.error);
+    else if (kakao) showToast(SIGNUP_DONE);
   }
 
   async function leave() {

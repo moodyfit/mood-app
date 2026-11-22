@@ -104,6 +104,7 @@ const K_DOT = "mood.spaceDot.v1"; // B5 카드 발급 dot (나의 공간 미확�
 export const K_KAKAO_PENDING = "mood.kakaoPending.v1"; // 카카오로 떠났다가 /login으로 돌아왔는지(sessionStorage)
 export const K_LOGIN_EMAIL = "mood.loginEmail.v1"; // 재설정 후 로그인 칸 미리 채우기(sessionStorage, 1회용)
 export const EXPIRED_LINK = "링크가 만료됐어요. 다시 요청해 주세요.";
+export const SIGNUP_DONE = "가입이 끝났어. 환영해!";
 export const K_RECOVERY = "mood.recovery.v1"; // 재설정 메일 링크로 들어온 탭 표시(sessionStorage, 새로고침에도 유지)
 const K_DISC = "mood.discovered.v1"; // C7 '발견' 결 (스크린샷 입주)
 const K_BODY = "mood.bodyProfile.v1"; // 영상(룩북) 탭 — 신체 프로필(고정 검색축·락인)
@@ -274,6 +275,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
+    // 확인 메일 링크는 #…type=signup으로 열린다. Supabase가 해시를 지우기 전에 읽어 둔다.
+    let fromSignupLink = window.location.hash.includes("type=signup");
     // 인증(로그인) — 세션 있으면 신원=auth id. 로그인 순간 익명 취향 ↔ 계정 취향 병합(크로스기기).
     const sb = getSupabase();
     if (!sb) return;
@@ -291,6 +294,11 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       if (u) {
         userIdRef.current = u.id;
         setUser(toAuthUser(u));
+        if (event === "SIGNED_IN" && fromSignupLink) {
+          fromSignupLink = false;
+          showToast(SIGNUP_DONE);
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
         if (event === "SIGNED_IN") {
           // 병합: 계정 서버 취향 ∪ 현재(익명) 로컬 취향 → 로컬 반영 + 계정으로 저장
           void (async () => {
