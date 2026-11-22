@@ -39,7 +39,8 @@ export default function LoginPage() {
   // 카카오에서 취소 · 실패로 돌아오면 주소에 error가 붙는다(쿼리 또는 해시).
   useEffect(() => {
     const params = new URLSearchParams(window.location.search + "&" + window.location.hash.slice(1));
-    const code = params.get("error_code") || params.get("error");
+    const err = params.get("error");
+    const code = err === "access_denied" ? err : params.get("error_code") || err; // 취소는 Supabase가 붙인 error_code보다 먼저 본다
     if (!code) return;
     setMsg(authError({ code }));
     setKakaoReturn(false);
