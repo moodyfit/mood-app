@@ -4,6 +4,7 @@ import { MoodProvider } from "@/lib/store";
 import TopBar from "@/components/TopBar";
 import TabBar from "@/components/TabBar";
 import Toast from "@/components/Toast";
+import ConsentGate from "@/components/ConsentGate";
 import TasteCardModal from "@/components/TasteCardModal";
 import CapacitorInit from "@/components/CapacitorInit";
 
@@ -49,6 +50,7 @@ export default function RootLayout({
           </div>
           <Toast />
           <TasteCardModal />
+          <ConsentGate />
           <CapacitorInit />
         </MoodProvider>
       </body>

@@ -22,13 +22,20 @@ export interface AuthUser {
   id: string;
   email: string | null;
   consented: boolean; // 가입 동의 기록(user_metadata.consent) 유무
+  provider: string | null; // 가입 방법(email · kakao)
 }
 export const TERMS_VERSION = "2026-11";
 const consentRecord = () => ({ at: new Date().toISOString(), terms_version: TERMS_VERSION, age14: true });
-const toAuthUser = (u: { id: string; email?: string; user_metadata?: Record<string, unknown> }): AuthUser => ({
+const toAuthUser = (u: {
+  id: string;
+  email?: string;
+  user_metadata?: Record<string, unknown>;
+  app_metadata?: { provider?: string };
+}): AuthUser => ({
   id: u.id,
   email: u.email ?? null,
   consented: Boolean(u.user_metadata?.consent),
+  provider: u.app_metadata?.provider ?? null,
 });
 interface AuthResult {
   error: string | null;
