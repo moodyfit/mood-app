@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import BackButton from "@/components/BackButton";
 import PasswordInput from "@/components/ui/PasswordInput";
+import SignupConsent from "@/components/SignupConsent";
 import { K_KAKAO_PENDING, K_LOGIN_EMAIL, authError, useMoodStore } from "@/lib/store";
 
 const COPY = {
@@ -22,9 +23,11 @@ export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [kakaoReturn, setKakaoReturn] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
     try {
@@ -123,6 +126,14 @@ export default function LoginPage() {
       setMsg("비밀번호는 6자 이상이어야 해.");
       return;
     }
+    if (mode === "signup" && pw !== pw2) {
+      setMsg("두 비밀번호가 달라.");
+      return;
+    }
+    if (mode === "signup" && !agreed) {
+      setMsg("필수 항목에 동의해줘.");
+      return;
+    }
     setBusy(true);
     setMsg(null);
     const res = mode === "login" ? await signIn(em, pw) : await signUp(em, pw);
@@ -175,13 +186,26 @@ export default function LoginPage() {
               placeholder="비밀번호 (6자 이상)"
             />
           )}
+          {mode === "signup" && (
+            <PasswordInput
+              name="password-confirm"
+              autoComplete="new-password"
+              value={pw2}
+              onChange={(e) => setPw2(e.target.value)}
+              placeholder="비밀번호 확인"
+            />
+          )}
         </div>
+
+        {mode === "signup" && pw2 && pw !== pw2 && <p className="mt-3 text-[13px] text-accent">두 비밀번호가 달라.</p>}
+
+        {mode === "signup" && <SignupConsent onChange={setAgreed} />}
 
         {msg && <p className="mt-3 text-[13px] text-accent">{msg}</p>}
 
         <button
           type="submit"
-          disabled={busy}
+          disabled={busy || (mode === "signup" && (!agreed || pw.length < 6 || pw !== pw2))}
           className="mt-5 w-full rounded-[12px] bg-ink py-3.5 text-[15px] font-semibold text-white transition active:scale-[0.99] disabled:opacity-50"
         >
           {busy ? "처리 중…" : COPY[mode].cta}
@@ -195,6 +219,8 @@ export default function LoginPage() {
             setMode("reset");
             setMsg(null);
             setPw("");
+          setPw2("");
+            setPw2("");
           }}
           className="mt-3 w-full text-center text-[13px] text-ink-soft"
         >
@@ -228,6 +254,8 @@ export default function LoginPage() {
           setMode(mode === "login" ? "signup" : "login");
           setMsg(null);
           setPw("");
+          setPw2("");
+          setAgreed(false);
         }}
         className="mt-4 w-full text-center text-[13.5px] text-ink-soft"
       >
