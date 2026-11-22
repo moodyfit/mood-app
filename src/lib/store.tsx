@@ -86,6 +86,7 @@ const K_OWNED = "mood.owned.v1"; // 1.5.2 '내 옷' 소유 결
 const K_SCAN = "mood.scanDone.v1"; // 스캔 1회 완료 — 이후 스캔 탭은 전시 기본, 원할 때만 재스캔
 const K_DOT = "mood.spaceDot.v1"; // B5 카드 발급 dot (나의 공간 미확인 신호)
 export const K_LOGIN_EMAIL = "mood.loginEmail.v1"; // 재설정 후 로그인 칸 미리 채우기(sessionStorage, 1회용)
+export const EXPIRED_LINK = "링크가 만료됐어요. 다시 요청해 주세요.";
 const K_DISC = "mood.discovered.v1"; // C7 '발견' 결 (스크린샷 입주)
 const K_BODY = "mood.bodyProfile.v1"; // 영상(룩북) 탭 — 신체 프로필(고정 검색축·락인)
 const K_UID = "mood.uid.v1"; // 익명 기기 신원(개인화 서버 적재 키. 로그인 도입 시 병합)
@@ -536,7 +537,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     const sb = getSupabase();
     if (!sb) return { error: NO_SERVER };
     const { data } = await sb.auth.getSession();
-    if (!data.session) return { error: "링크가 만료됐어요. 다시 요청해 주세요." };
+    if (!data.session) return { error: EXPIRED_LINK };
     const { error } = await sb.auth.updateUser({ password });
     return { error: authError(error) };
   }, []);

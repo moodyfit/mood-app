@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PasswordInput from "@/components/ui/PasswordInput";
-import { K_LOGIN_EMAIL, useMoodStore } from "@/lib/store";
+import { EXPIRED_LINK, K_LOGIN_EMAIL, useMoodStore } from "@/lib/store";
 
 // 재설정 메일 링크로 들어오는 화면. 만료된 링크는 Supabase가 #error=...를 붙여 보낸다.
 export default function ResetPasswordPage() {
@@ -32,11 +32,15 @@ export default function ResetPasswordPage() {
       } catch {
         /* 미리 채우기만 빠진다 */
       }
-      await signOut(); // 복구 세션으로 로그인된 상태를 끊고 새 비밀번호로 로그인하게 한다
+      try {
+        await signOut(); // 복구 세션으로 로그인된 상태를 끊고 새 비밀번호로 로그인하게 한다
+      } catch {
+        /* 비밀번호는 이미 바뀌었다 — 완료 화면으로 넘어간다 */
+      }
     }
     setBusy(false);
     if (!res.error) setState("done");
-    else if (res.error.startsWith("링크가 만료")) setState("expired");
+    else if (res.error === EXPIRED_LINK) setState("expired");
     else setMsg(res.error);
   }
 
