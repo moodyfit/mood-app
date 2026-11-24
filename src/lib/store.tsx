@@ -14,7 +14,7 @@ import { TASTE_CARD_THRESHOLD } from "./taste";
 import { MOODS, resolveMoods } from "./moods";
 import { dominantMood } from "./photos";
 import { haptic } from "./haptic";
-import { trackEvent, syncTaste, fetchTaste } from "./track";
+import { trackEvent, syncTaste, fetchTaste, type EventType } from "./track";
 import { getSupabase } from "./supabase";
 import { getConfig, fetchConfig } from "./config";
 
@@ -96,7 +96,7 @@ interface MoodStore {
   toggleSave: (key: MoodKey, query?: string) => void;
   isPhotoSaved: (id: string) => boolean;
   togglePhotoSave: (id: string, moodVector?: MoodKey | Affinity) => void;
-  recordView: (input: MoodKey | Affinity) => void;
+  recordView: (input: MoodKey | Affinity, eventType?: EventType) => void;
   recordScanLike: (key: MoodKey) => void;
   recordSearch: (query: string) => void;
   recordProductClick: (moodKey: MoodKey, name: string) => void;
@@ -421,10 +421,12 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   );
 
   // 다축 mood_vector(사진) 또는 단일 MoodKey(무드 상세) 둘 다 수용 — 축별 값에 비례해 affinity 반영(FEAT-001).
+  // FEAT-032 코드리뷰 Q-2: 기본은 "view"지만, 사진을 본 게 아닌 신호(카테고리 탭 클릭 등)는
+  // eventType으로 다른 이름을 넘겨 조회수 집계에 안 섞이게 한다 — affinity 가중치(wView)는 동일.
   const recordView = useCallback(
-    (input: MoodKey | Affinity) => {
+    (input: MoodKey | Affinity, eventType: EventType = "view") => {
       const domKey = typeof input === "string" ? input : (dominantMood(input) as MoodKey);
-      trackEvent(userIdRef.current, "view", { mood_key: domKey });
+      trackEvent(userIdRef.current, eventType, { mood_key: domKey });
       bumpInput(input, getConfig().wView);
     },
     [bumpInput]

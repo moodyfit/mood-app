@@ -81,7 +81,8 @@ function HomeContent() {
   // 없음)이라 recordView(moodKey)로 바꿔서 그 축을 직접 반영한다 — recordView는 사진 클릭
   // 때도 쓰는, 텍스트 추측 없이 정확한 축 하나를 받는 함수.
   function selectCategory(cat: { label: string; mood: string }) {
-    recordView(cat.mood);
+    // 소피 코드리뷰 Q-2: 탭 클릭은 "사진을 봤다"는 view와 달라 별도 이벤트로 분리(조회수 집계 보호).
+    recordView(cat.mood, "category_select");
     router.replace(`/?mood=${cat.mood}`, { scroll: false });
   }
 
