@@ -115,3 +115,15 @@ korean-privacy-terms 스킬로 이용약관과 개인정보처리방침 초안�
 ### 카카오 로그인 수집 항목
 
 FEAT-038(#57)에서 카카오 동의항목을 닉네임 · 이메일 필수, 프로필 사진 선택으로 정해 처리방침 제2조 · 제3조와 요약표에 반영했다. 카카오는 정보를 받는 곳이라 제3자 제공 · 위탁 · 국외 이전 표는 바꾸지 않았다.
+
+### 접속 기록 보관 기간 출처
+
+처리방침 제3조 "접속 기록(IP 주소 등) — Vercel 1시간, Supabase 1일"은 각 업체의 무료 플랜 로그 보관 기간이다(2026-11-24 확인, #54 리뷰 Q-1).
+
+| 업체 | 플랜 | 보관 기간 | 출처 |
+|---|---|---|---|
+| Vercel | Hobby | 런타임 로그 1시간 | [Vercel Changelog](https://vercel.com/changelog/enhanced-logs-ui-to-search-inspect-and-share-application-logs), [Limits and Pricing](https://vercel.com/docs/observability/limits-and-pricing) |
+| Supabase | Free | API · Database 로그 1일 | [Pricing](https://supabase.com/pricing), [Logs](https://supabase.com/docs/guides/observability/logs) |
+
+유료 플랜으로 바꾸거나 업체가 보관 기간을 바꾸면 처리방침 제3조를 먼저 고친다.
+
