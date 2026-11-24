@@ -52,6 +52,11 @@ function HomeContent() {
         : genderedPhotos,
     [genderedPhotos, activeCategory]
   );
+  // BUG(소피 코드리뷰): 카테고리를 걸러도 moodKeys를 안 넘겨서 HomeGallery의 searching이 계속
+  // false로 남아, 카테고리 화면에 홈 인사말 헤더+히어로 카드가 그대로 나오던 문제. 티켓 결정
+  // 그대로(Q3: FEAT-006 moodKeys/query 메커니즘 재사용) — 카테고리 선택 중엔 그 축 하나를
+  // moodKeys로 넘겨 검색 모드와 동일하게 헤더·히어로·순서스냅샷을 생략시킨다.
+  const galleryMoodKeys = activeCategory ? [activeCategory.mood] : moodKeys;
 
   // 빈 문자열 = 검색 해제(기본 피드 복귀). AI 실패해도 API가 폴백을 함께 반환해서 항상 결과 있음.
   const handleSearch = useCallback(async (q: string) => {
@@ -134,7 +139,7 @@ function HomeContent() {
       </div>
 
       <div className="pt-3">
-        <HomeGallery photos={categoryPhotos} loading={loading} moodKeys={moodKeys} query={query} />
+        <HomeGallery photos={categoryPhotos} loading={loading} moodKeys={galleryMoodKeys} query={query} />
       </div>
     </div>
   );

@@ -81,7 +81,7 @@ export default function HomeGallery({
   // (재현: photos fetch를 인위로 지연시키면 100% 재현). loading이 끝난 뒤에만 복원을 시작한다.
   const [visible, setVisible] = useScrollRestore(
     "moodfit:home-scroll",
-    `${searching}|${query}`,
+    `${searching}|${query}|${moodKeys?.join(",") ?? ""}`,
     INITIAL_VISIBLE,
     searching,
     !loading
