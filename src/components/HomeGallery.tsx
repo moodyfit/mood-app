@@ -44,21 +44,30 @@ const ORDER_KEY = "moodfit:home-order";
  * 전에 먼저 실행되므로, 클릭 "직전"(아직 취향이 안 바뀐) 상태의 순서를 그대로 저장한다.
  * 덕분에 affinity 서버 동기화(hydrateTaste)가 아직 안 끝난 상태에서 써버리는 경합도
  * 자연히 피해진다 — 애초에 affinity 값 자체를 안 쓰고 "지금 보이는 순서"만 기록하기 때문. */
-function readAndClearOrderSnapshot(): string[] | null {
+interface OrderSnapshot {
+  ids: string[];
+  /** FEAT-031(소피 PR #49 후속): 그 방문에서 히어로가 보이고 있었는지. 떠날 때와 돌아올 때
+   * 사이에 affinity가 히어로 임계값을 넘거나 밑돌면, 순서는 그대로인데 히어로 유무만 바뀌어
+   * 카드가 한 칸씩 밀린 것처럼 보이는 문제를 막는다. */
+  heroVisible: boolean;
+}
+
+function readAndClearOrderSnapshot(): OrderSnapshot | null {
   try {
     const raw = sessionStorage.getItem(ORDER_KEY);
     sessionStorage.removeItem(ORDER_KEY);
     const parsed = raw ? JSON.parse(raw) : null;
-    return Array.isArray(parsed) ? parsed : null;
+    if (parsed && Array.isArray(parsed.ids) && typeof parsed.heroVisible === "boolean") return parsed;
+    return null;
   } catch {
     return null;
   }
 }
 
-function writeOrderSnapshot(ids: string[]) {
+function writeOrderSnapshot(ids: string[], heroVisible: boolean) {
   if (ids.length === 0) return;
   try {
-    sessionStorage.setItem(ORDER_KEY, JSON.stringify(ids));
+    sessionStorage.setItem(ORDER_KEY, JSON.stringify({ ids, heroVisible }));
   } catch {
     /* 무시 — 스냅샷 실패해도 기능엔 지장 없음(그냥 매번 새로 랭킹됨) */
   }
@@ -141,7 +150,8 @@ export default function HomeGallery({
   // "이번 왕복"에서만 소비). 이 state는 마운트 동안 바뀌지 않으므로, 이번 방문 중 affinity가
   // 갱신돼도(예: 저장 토글) 피드가 눈앞에서 다시 섞이지 않는다 — 다음 방문의 순서는 이번에
   // 떠날 때 다시 캡처된다.
-  const [pinnedOrderIds] = useState<string[] | null>(() => (searching ? null : readAndClearOrderSnapshot()));
+  const [pinnedSnapshot] = useState<OrderSnapshot | null>(() => (searching ? null : readAndClearOrderSnapshot()));
+  const pinnedOrderIds = pinnedSnapshot?.ids ?? null;
 
   const ordered = useMemo(() => {
     if (searching || !pinnedOrderIds) return freshOrdered;
@@ -151,19 +161,25 @@ export default function HomeGallery({
     return [...fromSnapshot, ...freshOrdered.filter((p) => !seen.has(p.id))];
   }, [freshOrdered, searching, photos, pinnedOrderIds]);
 
-  // pointerup 캡처 단계에서 "지금 보이는 순서"를 저장(BUG-014와 동일 기법) — PhotoCard의
-  // onPointerUp(recordView + router.push)보다 먼저 실행되므로 affinity가 바뀌기 전 순서를 그대로 캡처.
+  // 히어로(크기=적합도)는 검색 아니고 개인화가 유의미해진 뒤에만(랭킹 중립 원칙 — 검색 결과엔 히어로 없음).
+  // FEAT-031: 스냅샷을 소비한 왕복(pinnedSnapshot 있음)에서는 그때 보여주던 heroVisible을 그대로
+  // 따른다 — 떠난 사이 strength가 임계값을 넘거나 밑돌아도 이번 복귀에서는 레이아웃이 안 바뀜.
+  const heroVisible = pinnedSnapshot ? pinnedSnapshot.heroVisible : strength >= HERO_MIN_STRENGTH;
+  const heroPhoto = !searching && heroVisible && ordered.length > 3 ? ordered[0] : null;
+
+  // pointerup 캡처 단계에서 "지금 보이는 순서 + 히어로 노출 여부"를 저장(BUG-014와 동일 기법) —
+  // PhotoCard의 onPointerUp(recordView + router.push)보다 먼저 실행되므로 affinity가 바뀌기 전 상태를 그대로 캡처.
   const orderedRef = useRef(ordered);
   orderedRef.current = ordered;
+  const heroVisibleRef = useRef(Boolean(heroPhoto));
+  heroVisibleRef.current = Boolean(heroPhoto);
   useEffect(() => {
     if (searching) return;
-    const onPointerUpCapture = () => writeOrderSnapshot(orderedRef.current.map((p) => p.id));
+    const onPointerUpCapture = () =>
+      writeOrderSnapshot(orderedRef.current.map((p) => p.id), heroVisibleRef.current);
     window.addEventListener("pointerup", onPointerUpCapture, { capture: true });
     return () => window.removeEventListener("pointerup", onPointerUpCapture, { capture: true });
   }, [searching]);
-
-  // 히어로(크기=적합도)는 검색 아니고 개인화가 유의미해진 뒤에만(랭킹 중립 원칙 — 검색 결과엔 히어로 없음)
-  const heroPhoto = !searching && strength >= HERO_MIN_STRENGTH && ordered.length > 3 ? ordered[0] : null;
   const rest = heroPhoto ? ordered.slice(1) : ordered;
   // FEAT-010: 무한 스크롤 — rest 다 보여주면 처음부터 순환 재생(이미지 볼륨 늘어날 때까지 임시).
   // MAX_VISIBLE에서 잘라 DOM 누적 상한을 건다.

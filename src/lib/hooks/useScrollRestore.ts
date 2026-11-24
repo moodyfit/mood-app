@@ -2,6 +2,30 @@
 
 import { useEffect, useRef, useState } from "react";
 
+/** FEAT-031(소피 피드백, PWA 실기기): "뒤로가기(POP)로 들어왔는지"를 추적하는 모듈 전역 신호.
+ * Next.js App Router엔 "이 마운트가 POP인지 PUSH인지" 알려주는 공식 API가 없다 — 대신 브라우저
+ * 네이티브 `popstate`(뒤로/앞으로가기에서만 발생, `router.push`/`<Link>` 클릭에서는 미발생)를
+ * 직접 리스닝해서 신호를 만든다. 모듈 스코프라 이 파일이 처음 로드될 때 단 한 번만 등록된다.
+ * 복원 effect가 마운트마다 `consumePopNavigationFlag()`로 1회성 소비(읽는 즉시 false로 리셋) —
+ * 그래야 바로 다음 PUSH 네비게이션(popstate 미발생)이 false로 남는다. */
+let wasPopNavigation = false;
+if (typeof window !== "undefined") {
+  window.addEventListener("popstate", () => {
+    wasPopNavigation = true;
+  });
+  // 브라우저 네이티브 스크롤 복원(history.scrollRestoration 기본값 "auto")이 새로고침·뒤로가기에서
+  // 우리 sessionStorage 로직과 따로 자기 식으로 scrollY를 되돌려버려서 섞인다(실측: 이 설정 없이는
+  // "새로고침 → 맨 위" 요구사항이 브라우저 자동 복원값으로 덮인다) — 복원을 전부 이 훅에 맡기고 끈다.
+  if ("scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
+  }
+}
+function consumePopNavigationFlag(): boolean {
+  const was = wasPopNavigation;
+  wasPopNavigation = false;
+  return was;
+}
+
 /**
  * 뒤로가기 시 "로드된 카드 수 + 스크롤 위치"를 복원하는 훅(BUG-004 HomeGallery, BUG-008 PhotoGrid).
  * 사진 클릭→상세→뒤로가기 시 무한스크롤 컴포넌트가 리마운트되며 visible/스크롤이 초기화돼
@@ -167,7 +191,12 @@ export function useScrollRestore(
     // 검색 해제처럼 storageKey는 그대로인 복귀에서도 visible을 저장값으로 맞춘다 — resetKey
     // effect는 skip=true로 갈 때만 리셋하므로, 여기서 안 하면 복귀 시 visible이 안 맞는다.
     setVisible(saved.visible);
-    if (saved.scrollY <= 0) {
+    // FEAT-031: 저장값이 있어도 "뒤로가기(POP)"로 들어왔을 때만 scrollTo를 시도한다. 하단 탭
+    // 이동(PUSH)·새로고침(리로드, popstate 자체가 없음)은 둘 다 isPop=false라서 여기서 걸러져
+    // 맨 위에서 시작한다 — BUG-014(새로고침 스크롤 복원 버그)가 "제대로 복원"이 아니라 "애초에
+    // 복원 시도를 안 함"으로 더 근본적으로 흡수됨.
+    const isPop = consumePopNavigationFlag();
+    if (saved.scrollY <= 0 || !isPop) {
       restoredRef.current = true;
       return;
     }
