@@ -66,6 +66,7 @@ Auth 사용자 삭제는 service role이 필요하다. API Route는 `build:cap`�
 ## Acceptance Criteria
 
 - [ ] 탈퇴 후 같은 이메일로 로그인되지 않는다
+- [ ] 탈퇴 즉시 그 user_id의 `events` · `user_taste` 행이 남지 않는다(1년 파기 크론이 비회원으로 다루지 않도록)
 - [ ] 탈퇴한 회원의 사진이 홈 · 검색에 나오지 않는다
 - [ ] 웹과 앱 빌드에서 모두 동작한다
 
