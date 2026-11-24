@@ -68,15 +68,30 @@ user_id별 `events.created_at` 최댓값과 `user_taste.updated_at` 중 늦은 �
 ## Acceptance Criteria
 
 - [x] 마지막 이용이 1년 넘은 비회원 행만 삭제되고, 회원 행과 1년 이내 비회원 행은 남는다
-- [ ] 스케줄이 매일 실행된다
+- [x] 스케줄이 매일 실행된다
 
 ---
 
 ## Verification
 
 1. 테스트 행(1년 전 비회원 · 최근 비회원 · 회원) 삭제 결과: 통과 — 400일 전 비회원(events 2 · user_taste 1) 삭제, 300일 전 비회원 유지, 회원 events 761행 유지, 반환값 1. anon 키 호출은 `permission denied`. 테스트 행 정리 후 events 3,390 · user_taste 398로 원복
-2. 스케줄 실행 기록: 잡 `purge-stale-anon` 등록 확인(`0 18 * * *`, 다음 실행 2026-11-21 03:00 KST). 첫 실행 기록 (대기)
+2. 스케줄 실행 기록: 잡 `purge-stale-anon` 등록 확인(`0 18 * * *`, 다음 실행 2026-11-21 03:00 KST). `cron.job_run_details` 2026-11-21 ~ 11-24 03:00 KST 4회 모두 `succeeded`
 
 ---
 
 ## Implementation Notes
+
+### 운영 점검 — 크론 실패 감지
+
+1년 넘은 비회원이 없는 동안은 매일 삭제 0건이 정상이라, 잡이 멈춰도 반환값으로는 구분되지 않는다. 주 1회 아래 쿼리로 최근 실행 기록을 본다. 마지막 `start_time`이 하루 넘게 지났거나 `status`가 `failed`면 대시보드 Integrations > Cron에서 잡 상태를 확인한다.
+
+```sql
+select start_time, status, return_message
+from cron.job_run_details
+where jobid = (select jobid from cron.job where jobname = 'purge-stale-anon')
+order by start_time desc
+limit 7;
+```
+
+알림 자동화(실패 시 메일 등)는 1년 넘은 비회원 기록이 처음 생기기 전에 따로 정한다.
+
