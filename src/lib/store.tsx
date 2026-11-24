@@ -235,19 +235,15 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
 
     // 인증(로그인) — 세션 있으면 신원=auth id. 로그인 순간 익명 취향 ↔ 계정 취향 병합(크로스기기).
     const sb = getSupabase();
-    if (!sb) {
-      void hydrateTaste(uid);
-      return;
-    }
+    if (!sb) return;
     sb.auth.getSession().then(({ data }) => {
       const u = data.session?.user;
       if (u) {
         userIdRef.current = u.id;
         setUser({ id: u.id, email: u.email ?? null });
         void hydrateTaste(u.id);
-      } else {
-        void hydrateTaste(uid);
       }
+      // 비회원 취향은 서버에 두지 않는다(브라우저에만) — user_taste는 회원 행만 읽고 쓸 수 있다
     });
     const { data: sub } = sb.auth.onAuthStateChange((event, session) => {
       const u = session?.user;
@@ -281,7 +277,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
 
   // 취향 스냅샷 → 서버 upsert(영속·복구·로그인 병합 대비). 로컬 변경 시마다.
   useEffect(() => {
-    if (!hydrated || !userIdRef.current) return;
+    if (!hydrated || !userIdRef.current || userIdRef.current === anonIdRef.current) return; // 비회원은 저장하지 않음
     syncTaste(userIdRef.current, affinity, likedPhotoIds);
   }, [affinity, likedPhotoIds, hydrated]);
 
