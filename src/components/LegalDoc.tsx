@@ -1,7 +1,18 @@
+import Link from "next/link";
 import BackButton from "@/components/BackButton";
 
-/** 약관·처리방침 공용 틀 — 헤더 + 시행일 */
-export function LegalDoc({ title, meta, children }: { title: string; meta: React.ReactNode; children: React.ReactNode }) {
+/** 약관·처리방침 공용 틀 — 헤더 + 시행일 + 맨 아래 다른 문서 링크 */
+export function LegalDoc({
+  title,
+  meta,
+  related,
+  children,
+}: {
+  title: string;
+  meta: React.ReactNode;
+  related: { href: string; label: string };
+  children: React.ReactNode;
+}) {
   return (
     <article className="animate-fade px-5 pb-12 text-[13.5px] leading-[1.7] text-ink [overflow-wrap:anywhere]">
       <div className="flex items-center gap-1.5">
@@ -10,6 +21,11 @@ export function LegalDoc({ title, meta, children }: { title: string; meta: React
       </div>
       <p className="mb-2 mt-1 text-xs text-ink-soft">{meta}</p>
       {children}
+      <p className="mt-8 border-t border-line pt-4 text-xs text-ink-soft">
+        <Link href={related.href} className="underline underline-offset-2">
+          {related.label} ›
+        </Link>
+      </p>
     </article>
   );
 }

@@ -22,6 +22,7 @@ export default function PrivacyPage() {
   return (
     <LegalDoc
       title="개인정보 처리방침"
+      related={{ href: "/terms", label: "이용약관" }}
       meta={
         <>
           시행일 <Ph>시행일</Ph> · 운영 무드핏 팀

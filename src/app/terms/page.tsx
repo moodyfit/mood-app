@@ -24,6 +24,7 @@ export default function TermsPage() {
   return (
     <LegalDoc
       title="이용약관"
+      related={{ href: "/privacy", label: "개인정보 처리방침" }}
       meta={
         <>
           시행일 <Ph>시행일</Ph>
