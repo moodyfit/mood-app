@@ -50,6 +50,7 @@ export default function FilterSheet({
   customDraft,
   onCustomChange,
   onApplyCustom,
+  onResetAll,
 }: {
   initialTab: Axis;
   options: Record<Axis, { key: string; label: string }[]>;
@@ -62,6 +63,9 @@ export default function FilterSheet({
   /** BUG 수정: 이 탭·다른 탭에서 아직 "적용" 안 한 draft(특히 TPO·무드)를 같이 넘겨받아야,
    * 슬라이더로 적용할 때 그 선택들이 날아가지 않는다(에린 리포트 — 간헐적 TPO/무드 초기화). */
   onApplyCustom: (restDraft: FilterSelections) => void;
+  /** 스타일·TPO·무드·커스텀 전부 한 번에 초기화(에린 피드백 — 탭별 초기화만 있으면 다른 탭에
+   * 남아있는 선택을 잊은 채 테스트하다가 "눌러도 안 바뀐다"고 느끼기 쉬움). 바로 적용까지 됨. */
+  onResetAll: () => void;
 }) {
   const [tab, setTab] = useState<Axis>(initialTab);
   const [draft, setDraft] = useState<FilterSelections>({
@@ -149,6 +153,15 @@ export default function FilterSheet({
             </button>
             {customExpanded && (
               <div className="flex flex-col gap-3 pb-3">
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => onCustomChange({})}
+                    className="text-[12px] text-ink-soft underline"
+                  >
+                    커스텀 필터 초기화
+                  </button>
+                </div>
                 {STYLE_OPTIONS.map((cat) => (
                   <div key={cat.mood}>
                     <div className="mb-1 flex items-center justify-between text-[13px]">
@@ -178,6 +191,13 @@ export default function FilterSheet({
             className="w-full rounded-[12px] bg-ink py-3.5 text-[15px] font-semibold text-white disabled:opacity-50"
           >
             {empty ? "조건에 맞는 사진이 없어요" : "적용"}
+          </button>
+          <button
+            type="button"
+            onClick={onResetAll}
+            className="mt-2.5 w-full text-center text-[13px] text-ink-soft underline"
+          >
+            전체 초기화
           </button>
         </div>
       </div>

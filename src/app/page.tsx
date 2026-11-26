@@ -87,6 +87,16 @@ function HomeContent() {
     setOpenAxis(null);
   }
 
+  // 에린 피드백 — 탭별 초기화만 있으면 다른 탭에 남은 선택을 잊은 채 테스트하다가 "몇 개를
+  // 눌러도 안 바뀐다"고 느끼기 쉬움(실제로는 다른 탭 필터와 계속 교집합되고 있었을 뿐). 전부
+  // 한 번에 비우고 바로 적용(기본 피드로 복귀).
+  function resetAll() {
+    setApplied(EMPTY_FILTERS);
+    setCustomDraft({});
+    setCustomApplied({});
+    setOpenAxis(null);
+  }
+
   const chipButtonClass = (active: boolean) =>
     `shrink-0 whitespace-nowrap inline-flex items-center gap-1 rounded-[8px] border px-2.5 py-1 text-[12px] transition ${
       active ? "border-ink bg-ink text-white" : "border-line text-ink-soft"
@@ -175,6 +185,7 @@ function HomeContent() {
           customDraft={customDraft}
           onCustomChange={setCustomDraft}
           onApplyCustom={applyCustom}
+          onResetAll={resetAll}
         />
       )}
     </div>
