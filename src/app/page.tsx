@@ -59,9 +59,20 @@ function HomeContent() {
   const [customDraft, setCustomDraft] = useState<Affinity>({});
   const [customApplied, setCustomApplied] = useState<Affinity>({});
   const customActive = Object.values(customApplied).some((v) => v > 0);
+  // 버그 수정(로직 설명 중 발견): 커스텀이 켜져도 TPO·무드는 계속 AND로 걸려야 하는데(규칙 3),
+  // genderedPhotos 전체를 그대로 랭킹해버려서 TPO·무드 칩에 숫자가 남아있어도 실제로는 적용
+  // 안 되고 있었다 — 먼저 TPO·무드로 거르고(스타일은 커스텀이 대체하므로 비움) 그 안에서만
+  // 커스텀 비율로 순위를 매긴다.
+  const tpoVibeFiltered = useMemo(
+    () =>
+      tpoMoods.size > 0 || vibeMoods.size > 0
+        ? genderedPhotos.filter((p) => matchesFilters(p, { style: new Set(), tpo: applied.tpo, vibe: applied.vibe }))
+        : genderedPhotos,
+    [genderedPhotos, tpoMoods, vibeMoods, applied.tpo, applied.vibe]
+  );
   const displayPhotos = useMemo(
-    () => (customActive ? rankByVector(genderedPhotos, customApplied) : filteredPhotos),
-    [customActive, customApplied, genderedPhotos, filteredPhotos]
+    () => (customActive ? rankByVector(tpoVibeFiltered, customApplied) : filteredPhotos),
+    [customActive, customApplied, tpoVibeFiltered, filteredPhotos]
   );
   // 체크박스 필터 중 하나라도 걸려 있으면 검색 모드와 동일하게 헤더·히어로·순서스냅샷 생략
   // (FEAT-032 Q3 결정 재사용) — 축 라벨들을 그대로 moodKeys로 넘긴다.
