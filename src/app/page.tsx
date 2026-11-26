@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
 import FilterSheet, { Chevron } from "@/components/FilterSheet";
@@ -26,8 +27,46 @@ const AXIS_OPTIONS: Record<Axis, { key: string; label: string }[]> = {
   vibe: VIBE_CHIPS.map((v) => ({ key: v, label: v })),
 };
 
+// 뒤로가기 시 필터가 풀리던 문제(에린 리포트) — 상세 페이지 갔다 오면 컴포넌트가 다시
+// 마운트되는데 state로만 들고 있으면 초기화된다. URL 쿼리에 그대로 실어서, 마운트 시
+// 쿼리에서 복원한다(FEAT-008 /results의 ?q= 패턴과 동일한 발상).
+function parseFiltersFromParams(params: URLSearchParams): FilterSelections {
+  return {
+    style: new Set(params.get("style")?.split(",").filter(Boolean) ?? []),
+    tpo: new Set(params.get("tpo")?.split(",").filter(Boolean) ?? []),
+    vibe: new Set(params.get("vibe")?.split(",").filter(Boolean) ?? []),
+  };
+}
+
+function parseCustomFromParams(params: URLSearchParams): Affinity {
+  const raw = params.get("custom");
+  if (!raw) return {};
+  const out: Affinity = {};
+  for (const pair of raw.split(",")) {
+    const [key, val] = pair.split(":");
+    const n = Number(val);
+    if (key && Number.isFinite(n) && n > 0) out[key] = n;
+  }
+  return out;
+}
+
+function buildFilterParams(applied: FilterSelections, customApplied: Affinity): URLSearchParams {
+  const params = new URLSearchParams();
+  if (applied.style.size) params.set("style", [...applied.style].join(","));
+  if (applied.tpo.size) params.set("tpo", [...applied.tpo].join(","));
+  if (applied.vibe.size) params.set("vibe", [...applied.vibe].join(","));
+  const customPairs = Object.entries(customApplied).filter(([, v]) => v > 0);
+  if (customPairs.length) {
+    params.set("custom", customPairs.map(([key, v]) => `${key}:${v}`).join(","));
+  }
+  return params;
+}
+
 // 홈 = 약속 모드 진입 카드 + 종합 취향 상시 메이슨리 전시. 검색은 /search 페이지로 분리.
 function HomeContent() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { photos, loading } = usePhotos();
   const [query] = useState("");
   const [moodKeys] = useState<string[]>([]);
@@ -42,7 +81,7 @@ function HomeContent() {
   // 각자 자기 패널을 연다(탭 전환 없음). 탭 안 다중선택은 OR, 세 축 사이는 AND — 데이터가 적어
   // 교집합이 0이 될 수 있는데, 정확한 장 수는 안 보여주고(에린 피드백) 0일 때만 적용 버튼을 막는다.
   const [openAxis, setOpenAxis] = useState<Axis | null>(null);
-  const [applied, setApplied] = useState<FilterSelections>(EMPTY_FILTERS);
+  const [applied, setApplied] = useState<FilterSelections>(() => parseFiltersFromParams(searchParams));
   const styleMoods = applied.style; // 스타일은 이미 캐논 축이라 라벨=축
   const tpoMoods = useMemo(() => toMoodSet(applied.tpo), [applied.tpo]);
   const vibeMoods = useMemo(() => toMoodSet(applied.vibe), [applied.vibe]);
@@ -55,9 +94,14 @@ function HomeContent() {
   // "비율로 직접 정하기"(스타일 패널 안 슬라이더 모드): 체크박스는 필터(걸러내기)지만 이건
   // 랭킹(순서 매기기)이라 0장이 될 일이 없다 — rankByVector로 genderedPhotos 전부를 가까운
   // 순으로 재배열만 한다. 체크박스로 고른 스타일과는 서로 대체(동시에 안 켜짐).
-  const [customDraft, setCustomDraft] = useState<Affinity>({});
-  const [customApplied, setCustomApplied] = useState<Affinity>({});
+  const [customDraft, setCustomDraft] = useState<Affinity>(() => parseCustomFromParams(searchParams));
+  const [customApplied, setCustomApplied] = useState<Affinity>(() => parseCustomFromParams(searchParams));
   const customActive = Object.values(customApplied).some((v) => v > 0);
+
+  useEffect(() => {
+    const qs = buildFilterParams(applied, customApplied).toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [applied, customApplied, pathname, router]);
   // 버그 수정(로직 설명 중 발견): 커스텀이 켜져도 TPO·무드는 계속 AND로 걸려야 하는데(규칙 3),
   // genderedPhotos 전체를 그대로 랭킹해버려서 TPO·무드 칩에 숫자가 남아있어도 실제로는 적용
   // 안 되고 있었다 — 먼저 TPO·무드로 거르고(스타일은 커스텀이 대체하므로 비움) 그 안에서만
@@ -194,5 +238,9 @@ function HomeContent() {
 }
 
 export default function HomePage() {
-  return <HomeContent />;
+  return (
+    <Suspense>
+      <HomeContent />
+    </Suspense>
+  );
 }
