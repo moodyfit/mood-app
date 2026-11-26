@@ -9,7 +9,7 @@
 | Key | Value |
 |-----|-------|
 | Type | BUG (보안) |
-| Status | In Progress |
+| Status | Done |
 | 우선순위 | P0 |
 | Layer | Supabase RLS / Lib |
 | Related | FEAT-035(#56 리뷰 P1-1), FEAT-033, FEAT-036 |
@@ -69,8 +69,8 @@
 - [x] 공개 키로 `user_taste` 조회 시 0행(회원 행 포함)
 - [x] `pg_policies`에 `user_taste` 정책은 `taste_auth_all` 하나
 - [x] 기존 비회원 행은 남되 anon 키로 읽을 수 없다
-- [ ] 비회원 상태에서 `user_taste` 요청(조회 · 저장)이 나가지 않는다
-- [ ] 회원 로그인 시 취향 복구 · 병합 · 저장이 지금처럼 된다
+- [x] 비회원 상태에서 `user_taste` 요청(조회 · 저장)이 나가지 않는다
+- [x] 회원 로그인 시 취향 복구 · 병합 · 저장이 지금처럼 된다
 
 ---
 
@@ -79,7 +79,9 @@
 1. 2026-11-23 정책 삭제 전: 공개 키 `GET /rest/v1/user_taste` → 429행, 회원(카카오) 행 1행 조회
 2. 정책 삭제 후: 전체 0행, 회원 행 0행, PATCH(존재하지 않는 id) 0행. `pg_policies` → `taste_auth_all`(authenticated, ALL)만
 3. 기존 비회원 행: 삭제하지 않음(에린 결정). 2번 확인으로 anon 조회 0행
-4. (대기) 코드 — 비회원 네트워크 요청 · 회원 병합
+4. 비회원: 홈 열기 · ♡ 2번 → `user_taste` 요청 0건(`events` 저장 2건만). 취향 점수는 localStorage에 쌓임
+5. 회원 로그인 순간: `GET user_taste` 200(복구) 1건 + `POST` 200(병합 저장) 2건. 회원으로 ♡ 2번 → `POST` 200
+6. `npm run build` · `npm run build:cap` 통과. 관리자 집계(`/api/admin/insights`)는 서비스 키로 읽어 정책 삭제 영향 없음
 
 ---
 
