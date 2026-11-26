@@ -58,7 +58,7 @@ Auth 사용자 삭제는 service role이 필요하다. API Route는 `build:cap`�
 
 ## 결정
 
-- (대기) 삭제 실행 위치: Supabase Edge Function vs `security definer` RPC. 앱 빌드에서도 동작해야 한다
+- 삭제 실행 위치: `security definer` DB 함수(RPC). 앱 빌드에는 API Route가 없어 서버 대신 DB 함수가 본인 행만 지운다. FEAT-035와 같은 방식(서영이 대시보드에서 실행 · 티켓에 기록). BE(NestJS) 착수 후 탈퇴 API로 옮긴다
 - (대기) 화면 구성 — 구현 전 md 도식으로 확인
 
 ---
