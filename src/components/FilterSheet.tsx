@@ -13,11 +13,32 @@ const TABS: { key: Axis; label: string }[] = [
   { key: "vibe", label: "무드" },
 ];
 
+export function Chevron({ open }: { open?: boolean }) {
+  return (
+    <svg
+      width="11"
+      height="11"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
+}
+
 /**
  * FEAT-041 프로토타입 — 무신사 스냅 필터 바텀시트 참고. 탭(스타일/TPO/무드)을 안 닫고 자유롭게
- * 넘나들며 고르고, 바닥의 적용 버튼 하나로 한 번에 반영한다(에린 피드백 — 축 버튼마다 따로
- * 닫히는 패널이 아니라 무신사처럼 하나의 시트 안에서 탭만 바꾸는 구조로 되돌림). 정확한 결과
- * 수는 안 보여주고(이전 피드백), 0장일 때만 적용 버튼을 막는다.
+ * 넘나들며 고르고, 바닥의 적용 버튼 하나로 한 번에 반영한다. 정확한 결과 수는 안 보여주고,
+ * 0장일 때만 적용 버튼을 막는다.
+ *
+ * 스타일 탭 안 "커스텀 필터"는 체크박스 목록 아래 접어둔 아코디언(평소 접힘, 눌러야 슬라이더가
+ * 보임) — 체크박스는 그대로 두고 그 아래에서만 펼쳐진다. 슬라이더에 값이 하나라도 있으면
+ * 체크박스 대신 그 비율로 랭킹한다(둘 다 차 있으면 슬라이더 우선).
  */
 export default function FilterSheet({
   initialTab,
@@ -38,7 +59,9 @@ export default function FilterSheet({
   onClose: () => void;
   customDraft: Affinity;
   onCustomChange: (next: Affinity) => void;
-  onApplyCustom: () => void;
+  /** BUG 수정: 이 탭·다른 탭에서 아직 "적용" 안 한 draft(특히 TPO·무드)를 같이 넘겨받아야,
+   * 슬라이더로 적용할 때 그 선택들이 날아가지 않는다(에린 리포트 — 간헐적 TPO/무드 초기화). */
+  onApplyCustom: (restDraft: FilterSelections) => void;
 }) {
   const [tab, setTab] = useState<Axis>(initialTab);
   const [draft, setDraft] = useState<FilterSelections>({
@@ -46,7 +69,7 @@ export default function FilterSheet({
     tpo: new Set(initial.tpo),
     vibe: new Set(initial.vibe),
   });
-  const [mode, setMode] = useState<"list" | "custom">("list");
+  const [customExpanded, setCustomExpanded] = useState(false);
 
   function toggle(key: string) {
     setDraft((prev) => {
@@ -61,8 +84,10 @@ export default function FilterSheet({
     setDraft((prev) => ({ ...prev, [tab]: new Set() }));
   }
 
-  const count = countMatches(genderedPhotos, draft);
-  const empty = mode === "list" && count === 0;
+  const customHasWeight = Object.values(customDraft).some((v) => v > 0);
+  const countDraft = customHasWeight ? { ...draft, style: new Set<string>() } : draft;
+  const count = countMatches(genderedPhotos, countDraft);
+  const empty = !customHasWeight && count === 0;
 
   return (
     <div className="fixed inset-0 z-[90] flex flex-col justify-end bg-black/40" role="dialog" aria-modal="true">
@@ -90,64 +115,65 @@ export default function FilterSheet({
           ))}
         </div>
 
-        <div className="flex items-center justify-between px-5 pt-3 text-[12px]">
-          {tab === "style" ? (
-            <button
-              type="button"
-              onClick={() => setMode((m) => (m === "list" ? "custom" : "list"))}
-              className="text-ink-soft underline"
-            >
-              {mode === "list" ? "비율로 직접 정하기" : "목록에서 고르기"}
-            </button>
-          ) : (
-            <span />
-          )}
-          {mode === "list" && (
-            <button type="button" onClick={resetTab} className="text-ink-soft underline">
-              초기화
-            </button>
-          )}
+        <div className="flex items-center justify-end px-5 pt-3 text-[12px]">
+          <button type="button" onClick={resetTab} className="text-ink-soft underline">
+            초기화
+          </button>
         </div>
 
-        {mode === "list" || tab !== "style" ? (
-          <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 px-5 py-4">
-            {options[tab].map((opt) => (
-              <label key={opt.key} className="flex items-center gap-2 text-[14px]">
-                <input
-                  type="checkbox"
-                  checked={draft[tab].has(opt.key)}
-                  onChange={() => toggle(opt.key)}
-                  className="h-4 w-4"
-                />
-                {opt.label}
-              </label>
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col gap-3 px-5 py-4">
-            {STYLE_OPTIONS.map((cat) => (
-              <div key={cat.mood}>
-                <div className="mb-1 flex items-center justify-between text-[13px]">
-                  <span>{cat.label}</span>
-                  <span className="text-ink-faint">{customDraft[cat.mood] ?? 0}%</span>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  value={customDraft[cat.mood] ?? 0}
-                  onChange={(e) => onCustomChange({ ...customDraft, [cat.mood]: Number(e.target.value) })}
-                  className="w-full"
-                />
+        <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 px-5 py-4">
+          {options[tab].map((opt) => (
+            <label key={opt.key} className="flex items-center gap-2 text-[14px]">
+              <input
+                type="checkbox"
+                checked={draft[tab].has(opt.key)}
+                onChange={() => toggle(opt.key)}
+                className="h-4 w-4"
+              />
+              {opt.label}
+            </label>
+          ))}
+        </div>
+
+        {tab === "style" && (
+          <div className="px-5 pb-2">
+            <button
+              type="button"
+              onClick={() => setCustomExpanded((v) => !v)}
+              className="flex w-full items-center justify-between border-t border-line py-3 text-[13px] text-ink-soft"
+            >
+              <span className="inline-flex items-center gap-1">
+                커스텀 필터{customHasWeight ? " · 적용 중" : ""}
+              </span>
+              <Chevron open={customExpanded} />
+            </button>
+            {customExpanded && (
+              <div className="flex flex-col gap-3 pb-3">
+                {STYLE_OPTIONS.map((cat) => (
+                  <div key={cat.mood}>
+                    <div className="mb-1 flex items-center justify-between text-[13px]">
+                      <span>{cat.label}</span>
+                      <span className="text-ink-faint">{customDraft[cat.mood] ?? 0}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      value={customDraft[cat.mood] ?? 0}
+                      onChange={(e) => onCustomChange({ ...customDraft, [cat.mood]: Number(e.target.value) })}
+                      className="w-full"
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         )}
 
         <div className="sticky bottom-0 bg-paper px-5 pb-6 pt-2">
           <button
             type="button"
-            onClick={() => (mode === "custom" && tab === "style" ? onApplyCustom() : onApply(draft))}
+            onClick={() => (customHasWeight ? onApplyCustom(draft) : onApply(draft))}
             disabled={empty}
             className="w-full rounded-[12px] bg-ink py-3.5 text-[15px] font-semibold text-white disabled:opacity-50"
           >

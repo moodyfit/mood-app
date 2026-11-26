@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
-import FilterSheet from "@/components/FilterSheet";
+import FilterSheet, { Chevron } from "@/components/FilterSheet";
 import { usePhotos } from "@/lib/hooks/usePhotos";
 import { filterByGender } from "@/lib/photos";
 import { rankByVector } from "@/lib/rank";
@@ -76,14 +76,19 @@ function HomeContent() {
     if (firstMood) recordView(firstMood, "category_select");
   }
 
-  function applyCustom() {
+  // BUG 수정(에린 리포트 — 간헐적 TPO/무드 초기화): 시트를 연 채로 TPO·무드를 먼저 고르고
+  // 스타일 탭의 슬라이더로 적용하면, 그 선택들은 아직 page.tsx의 applied에 안 올라가고 시트
+  // 안 draft에만 있는 상태였다 — 그런데 applyCustom이 draft가 아니라 기존 applied(prev)만
+  // 기준으로 style만 비웠어서, 같은 세션에서 고른 TPO·무드가 반영되지 않고 날아갔다. 이제
+  // 시트가 넘겨주는 draft 전체를 기준으로 style만 비우고 적용한다.
+  function applyCustom(restDraft: FilterSelections) {
     setCustomApplied(customDraft);
-    setApplied((prev) => ({ ...prev, style: new Set() })); // 슬라이더로 고르면 체크박스 선택은 해제
+    setApplied({ ...restDraft, style: new Set() }); // 슬라이더로 고르면 체크박스 선택은 해제
     setOpenAxis(null);
   }
 
   const chipButtonClass = (active: boolean) =>
-    `shrink-0 whitespace-nowrap rounded-[8px] border px-2.5 py-1 text-[12px] transition ${
+    `shrink-0 whitespace-nowrap inline-flex items-center gap-1 rounded-[8px] border px-2.5 py-1 text-[12px] transition ${
       active ? "border-ink bg-ink text-white" : "border-line text-ink-soft"
     }`;
 
@@ -128,21 +133,24 @@ function HomeContent() {
           onClick={() => setOpenAxis("style")}
           className={chipButtonClass(styleMoods.size > 0 || customActive)}
         >
-          스타일{styleMoods.size > 0 ? ` · ${styleMoods.size}` : customActive ? " · 커스텀" : ""} ⌄
+          <span>스타일{styleMoods.size > 0 ? ` · ${styleMoods.size}` : customActive ? " · 커스텀" : ""}</span>
+          <Chevron />
         </button>
         <button
           type="button"
           onClick={() => setOpenAxis("tpo")}
           className={chipButtonClass(applied.tpo.size > 0)}
         >
-          TPO{applied.tpo.size > 0 ? ` · ${applied.tpo.size}` : ""} ⌄
+          <span>TPO{applied.tpo.size > 0 ? ` · ${applied.tpo.size}` : ""}</span>
+          <Chevron />
         </button>
         <button
           type="button"
           onClick={() => setOpenAxis("vibe")}
           className={chipButtonClass(applied.vibe.size > 0)}
         >
-          무드{applied.vibe.size > 0 ? ` · ${applied.vibe.size}` : ""} ⌄
+          <span>무드{applied.vibe.size > 0 ? ` · ${applied.vibe.size}` : ""}</span>
+          <Chevron />
         </button>
       </div>
 
