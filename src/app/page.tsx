@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
 import FilterSheet, { Chevron } from "@/components/FilterSheet";
@@ -115,19 +114,10 @@ function HomeContent() {
 
   return (
     <div className="animate-fade">
-      {/* 홈의 유일한 카드형 진입점 — 약속 모드 */}
-      <div className="px-5 pt-4">
-        <Link
-          href="/promise"
-          className="flex items-center justify-between rounded-2xl bg-ink px-4 py-3.5 text-white"
-        >
-          <div className="min-w-0">
-            <div className="text-[14px] font-bold">약속 잡혔어? 3분 안에 결정 끝</div>
-            <div className="mt-0.5 text-[12px] text-white/70">자리·예산만 고르면 완성 조합을 골라줄게</div>
-          </div>
-          <span className="ml-2 text-lg">›</span>
-        </Link>
-      </div>
+      {/* FEAT-041: 약속 모드 진입 카드 숨김 — 필터 칩(TPO·무드)이 상황별 추천을 대체하고,
+       * 예산 입력은 가격 데이터 신뢰도 문제로 이미 빠져서 "약속"만의 의미가 옅어졌다는
+       * 판단(에린, 2026-11-26). 라우트(/promise)·PromiseMode.tsx는 그대로 둬서 나중에
+       * 이 진입점만 다시 붙이면 복원 가능. */}
 
       <HomeCloset />
 
