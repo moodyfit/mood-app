@@ -1,127 +1,86 @@
 "use client";
 
-import { Suspense, useCallback, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
+import FilterSheet from "@/components/FilterSheet";
 import { usePhotos } from "@/lib/hooks/usePhotos";
-import { filterByGender, dominantMood } from "@/lib/photos";
+import { filterByGender } from "@/lib/photos";
 import { rankByVector } from "@/lib/rank";
+import {
+  EMPTY_FILTERS,
+  matchesFilters,
+  toMoodSet,
+  STYLE_OPTIONS,
+  type FilterSelections,
+} from "@/lib/filters";
 import { useMoodStore } from "@/lib/store";
 import type { Affinity } from "@/lib/types";
 
-// FEAT-032: 회의록 "무드 카테고리 보여주기(힙함, 댄디 등)". 처음엔 QUERY_MAP의 밈/스타일
-// 키워드(힙하게·댄디하게 등, 2~3축 조합)로 했는데, 조합끼리 축이 겹쳐서 결과가 비슷해
-// 보이는 문제(댄디하게/올드머니)와 "카테고리를 봐도 어떤 옷이 나올지 예상이 안 된다"는
-// 피드백이 있었다. 캐논 6축에 1:1로 매칭해서 — 서로 다른 축 = 서로 다른 사진이라 겹칠 수
-// 없고, 패션 지식 없어도 라벨 자체가 옷차림을 가리켜서 예측 가능하다.
-const CATEGORIES: { label: string; mood: string }[] = [
-  { label: "미니멀", mood: "clean" },
-  { label: "캐주얼", mood: "cityboy" },
-  { label: "스트릿", mood: "street" },
-  { label: "빈티지", mood: "amekaji" },
-  { label: "댄디", mood: "classic" },
-  { label: "소프트", mood: "soft" },
-];
-
 // 홈 = 약속 모드 진입 카드 + 종합 취향 상시 메이슨리 전시. 검색은 /search 페이지로 분리.
 function HomeContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  // 코드리뷰 P1-2: 카테고리를 고른 채 상세 → 뒤로가기하면 "전체"로 리셋되던 문제 — 선택
-  // 상태를 컴포넌트 state가 아니라 URL(`?mood=`)에 둬서, 뒤로가기해도 같은 URL로 돌아오며
-  // 자연스럽게 유지되게 한다(정적 export/Capacitor에서도 클라이언트에서 그대로 읽힘).
-  const activeMood = searchParams.get("mood");
-  const activeCategory = CATEGORIES.find((c) => c.mood === activeMood) ?? null;
-
   const { photos, loading } = usePhotos();
-  const [query, setQuery] = useState("");
-  const [moodKeys, setMoodKeys] = useState<string[]>([]);
+  const [query] = useState("");
+  const [moodKeys] = useState<string[]>([]);
   // FEAT-030: 남/녀 토글 제거 — genderFilter는 store에서 "male"로 고정돼 있음(향후 재활성화 대비 유지).
   const { genderFilter, recordView } = useMoodStore();
   const genderedPhotos = useMemo(
     () => filterByGender(photos, genderFilter),
     [photos, genderFilter]
   );
-  // 코드리뷰 Q-1: 처음엔 rankPhotos로 "정렬"만 해서 스크롤을 내리면 다른 무드 사진도 섞여
-  // 나왔다 — 카테고리는 검색이 아니라 "이 느낌만 보기"라 실제로 걸러내는 게 맞다(그래야
-  // 애초에 축을 1:1로 나눈 의미가 산다). dominantMood 기준 필터.
-  const categoryPhotos = useMemo(
-    () =>
-      activeCategory
-        ? genderedPhotos.filter((p) => dominantMood(p.mood_vector) === activeCategory.mood)
-        : genderedPhotos,
-    [genderedPhotos, activeCategory]
-  );
-  // BUG(소피 코드리뷰): 카테고리를 걸러도 moodKeys를 안 넘겨서 HomeGallery의 searching이 계속
-  // false로 남아, 카테고리 화면에 홈 인사말 헤더+히어로 카드가 그대로 나오던 문제. 티켓 결정
-  // 그대로(Q3: FEAT-006 moodKeys/query 메커니즘 재사용) — 카테고리 선택 중엔 그 축 하나를
-  // moodKeys로 넘겨 검색 모드와 동일하게 헤더·히어로·순서스냅샷을 생략시킨다.
-  const galleryMoodKeys = activeCategory ? [activeCategory.mood] : moodKeys;
 
-  // FEAT-041 프로토타입("커스텀 필터" — 슬라이더로 축별 가중치 지정): 칩은 필터(걸러내기)지만
-  // 이건 랭킹(순서 매기기)이라 0장이 될 일이 없다. rankByVector로 genderedPhotos 전부를
-  // 가까운 순으로 재배열만 한다. 칩 선택과 동시에 켜질 일 없게 서로 리셋한다(프로토타입 — 실
-  // 구현 시 정리).
-  // draft(슬라이더 중 드래그 중인 값) vs applied(실제로 피드에 반영된 값) 분리 — "적용" 눌러야
-  // 반영. 슬라이더 onChange마다 랭킹을 다시 계산해 바로 보여주면 드래그 중에 계속 사진이
-  // 바뀌어서 오히려 뭘 보고 있는지 알기 어렵다는 피드백.
+  // FEAT-041 프로토타입 — 무신사 스냅 필터 시트 참고(성별/스타일/TPO 등 축마다 탭 + 체크박스 +
+  // 선택 즉시 결과 수 미리보기). 탭 안에서는 OR(여러 개 고르면 합집합), 탭 사이는 AND — 데이터가
+  // 적어도 "0개 보기"가 미리 보이니 교집합이 비어도 사용자가 직접 보고 빼면 된다(무신사 참고로
+  // 방향 전환 — 축 1개씩만 고르게 한 이전 결정 대체).
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [applied, setApplied] = useState<FilterSelections>(EMPTY_FILTERS);
+  const styleMoods = applied.style; // 스타일은 이미 캐논 축이라 라벨=축
+  const tpoMoods = useMemo(() => toMoodSet(applied.tpo), [applied.tpo]);
+  const vibeMoods = useMemo(() => toMoodSet(applied.vibe), [applied.vibe]);
+  const hasAnyFilter = styleMoods.size > 0 || tpoMoods.size > 0 || vibeMoods.size > 0;
+  const filteredPhotos = useMemo(
+    () => (hasAnyFilter ? genderedPhotos.filter((p) => matchesFilters(p, applied)) : genderedPhotos),
+    [genderedPhotos, hasAnyFilter, applied]
+  );
+
+  // "커스텀 필터"(슬라이더로 축별 가중치 지정): 칩은 필터(걸러내기)지만 이건 랭킹(순서
+  // 매기기)이라 0장이 될 일이 없다 — rankByVector로 genderedPhotos 전부를 가까운 순으로
+  // 재배열만 한다. 체크박스 필터 시트와는 서로 리셋(동시에 안 켜짐).
+  const [customOpen, setCustomOpen] = useState(false);
   const [customDraft, setCustomDraft] = useState<Affinity>({});
   const [customApplied, setCustomApplied] = useState<Affinity>({});
   const hasAppliedWeight = Object.values(customApplied).some((v) => v > 0);
   const customActive = hasAppliedWeight;
   const displayPhotos = useMemo(
-    () => (customActive ? rankByVector(genderedPhotos, customApplied) : categoryPhotos),
-    [customActive, customApplied, genderedPhotos, categoryPhotos]
+    () => (customActive ? rankByVector(genderedPhotos, customApplied) : filteredPhotos),
+    [customActive, customApplied, genderedPhotos, filteredPhotos]
   );
-  // Musinsa 스타일처럼 필터 버튼을 눌러야 그 축의 선택 패널이 펼쳐지는 구조 — 한 번에 하나만 열림.
-  const [openPanel, setOpenPanel] = useState<"style" | "custom" | null>(null);
+  // 체크박스 필터 중 하나라도 걸려 있으면 검색 모드와 동일하게 헤더·히어로·순서스냅샷 생략
+  // (FEAT-032 Q3 결정 재사용) — 축 라벨들을 그대로 moodKeys로 넘긴다.
+  const galleryMoodKeys = hasAnyFilter ? [...styleMoods, ...tpoMoods, ...vibeMoods] : moodKeys;
 
-  // 빈 문자열 = 검색 해제(기본 피드 복귀). AI 실패해도 API가 폴백을 함께 반환해서 항상 결과 있음.
-  const handleSearch = useCallback(async (q: string) => {
-    setQuery(q);
-    if (!q) {
-      setMoodKeys([]);
-      return;
-    }
-    try {
-      const res = await fetch(`/api/search/translate?q=${encodeURIComponent(q)}`);
-      const data = (await res.json()) as { moodKeys?: string[] };
-      setMoodKeys(data.moodKeys ?? []);
-    } catch {
-      setMoodKeys([]); // 요청 자체가 실패(네트워크 등)하면 조용히 기본 피드로(에러 화면 대신)
-    }
-  }, []);
-
-  // 소피 코드리뷰: recordSearch(cat.label)로 기록했더니 엉뚱한 축(주로 amekaji) 취향 점수가
-  // 올라감 — recordSearch는 내부적으로 resolveMoods(query)로 텍스트를 "추측"해서 반영하는데,
-  // "미니멀"/"캐주얼" 같은 라벨은 QUERY_MAP에 없어서 fallbackMoods(글자수 기반 해시 회전)로
-  // 떨어져 실제 선택한 축과 무관한 결과가 나왔다. 이미 축을 정확히 알고 있는 상황(추측이 필요
-  // 없음)이라 recordView(moodKey)로 바꿔서 그 축을 직접 반영한다 — recordView는 사진 클릭
-  // 때도 쓰는, 텍스트 추측 없이 정확한 축 하나를 받는 함수.
-  function selectCategory(cat: { label: string; mood: string }) {
-    // 소피 코드리뷰 Q-2: 탭 클릭은 "사진을 봤다"는 view와 달라 별도 이벤트로 분리(조회수 집계 보호).
-    recordView(cat.mood, "category_select");
+  function applyFilters(next: FilterSelections) {
+    setApplied(next);
+    setSheetOpen(false);
+    setCustomOpen(false);
     setCustomDraft({});
     setCustomApplied({});
-    setOpenPanel(null);
-    router.replace(`/?mood=${cat.mood}`, { scroll: false });
+    // 코드리뷰 Q-2와 동일 원칙 — 칩 선택은 view가 아니라 별도 이벤트로(첫 선택 축 하나만 대표로 기록).
+    const firstMood = [...next.style][0] ?? [...toMoodSet(next.tpo)][0] ?? [...toMoodSet(next.vibe)][0];
+    if (firstMood) recordView(firstMood, "category_select");
   }
 
-  function clearCategory() {
-    setOpenPanel(null);
-    router.replace("/", { scroll: false });
+  function toggleCustom() {
+    setCustomOpen((v) => !v);
+    setSheetOpen(false);
   }
 
   function applyCustom() {
     setCustomApplied(customDraft);
-    clearCategory();
-    setOpenPanel(null);
-  }
-
-  function togglePanel(panel: "style" | "custom") {
-    setOpenPanel((p) => (p === panel ? null : panel));
+    setCustomOpen(false);
+    setApplied(EMPTY_FILTERS);
   }
 
   return (
@@ -142,66 +101,32 @@ function HomeContent() {
 
       <HomeCloset />
 
-      {/* 무신사 스냅처럼 축마다 필터 버튼 — 누르면 그 축의 선택 패널이 펼쳐짐(한 번에 하나만). */}
       <div className="flex gap-2 overflow-x-auto px-5 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <button
           type="button"
-          aria-expanded={openPanel === "style"}
-          onClick={() => togglePanel("style")}
+          onClick={() => setSheetOpen(true)}
           className={`shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[13px] transition ${
-            activeCategory || openPanel === "style"
-              ? "border-ink bg-ink text-white"
-              : "border-line text-ink-soft"
+            hasAnyFilter ? "border-ink bg-ink text-white" : "border-line text-ink-soft"
           }`}
         >
-          스타일{activeCategory ? ` · ${activeCategory.label}` : ""} ▾
+          필터{hasAnyFilter ? ` · ${styleMoods.size + applied.tpo.size + applied.vibe.size}` : ""} ▾
         </button>
         <button
           type="button"
-          aria-expanded={openPanel === "custom"}
-          onClick={() => togglePanel("custom")}
+          aria-expanded={customOpen}
+          onClick={toggleCustom}
           className={`shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[13px] transition ${
-            customActive || openPanel === "custom" ? "border-ink bg-ink text-white" : "border-line text-ink-soft"
+            customActive || customOpen ? "border-ink bg-ink text-white" : "border-line text-ink-soft"
           }`}
         >
           커스텀 ▾
         </button>
       </div>
 
-      {openPanel === "style" && (
-        <div className="flex flex-wrap gap-2 px-5 pt-3">
-          <button
-            type="button"
-            aria-pressed={!activeCategory}
-            onClick={clearCategory}
-            className={`rounded-full border px-3.5 py-1.5 text-[13px] transition ${
-              !activeCategory ? "border-accent bg-accent text-white" : "border-line text-ink-soft"
-            }`}
-          >
-            전체
-          </button>
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.mood}
-              type="button"
-              aria-pressed={activeCategory?.mood === cat.mood}
-              onClick={() => selectCategory(cat)}
-              className={`rounded-full border px-3.5 py-1.5 text-[13px] transition ${
-                activeCategory?.mood === cat.mood
-                  ? "border-accent bg-accent text-white"
-                  : "border-line text-ink-soft"
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-      )}
-
       {/* FEAT-041 프로토타입 — 축별 가중치 슬라이더. 결과 품질·UI 느낌 확인용, 디자인 다듬기 전. */}
-      {openPanel === "custom" && (
+      {customOpen && (
         <div className="flex flex-col gap-3 px-5 pt-3">
-          {CATEGORIES.map((cat) => (
+          {STYLE_OPTIONS.map((cat) => (
             <div key={cat.mood}>
               <div className="mb-1 flex items-center justify-between text-[13px]">
                 <span>{cat.label}</span>
@@ -238,14 +163,19 @@ function HomeContent() {
           preRanked={customActive}
         />
       </div>
+
+      {sheetOpen && (
+        <FilterSheet
+          initial={applied}
+          genderedPhotos={genderedPhotos}
+          onApply={applyFilters}
+          onClose={() => setSheetOpen(false)}
+        />
+      )}
     </div>
   );
 }
 
 export default function HomePage() {
-  return (
-    <Suspense>
-      <HomeContent />
-    </Suspense>
-  );
+  return <HomeContent />;
 }

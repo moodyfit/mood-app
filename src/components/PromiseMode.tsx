@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import BackButton from "./BackButton";
-import { MOODS, resolveMoods } from "@/lib/moods";
+import { MOODS, OCCASIONS, VIBE_CHIPS, resolveMoods } from "@/lib/moods";
 import type { Mood } from "@/lib/types";
 import { formatMan, primaryPrice } from "@/lib/products";
 import { useMoodLooks } from "@/lib/hooks/usePhotos";
@@ -16,14 +16,12 @@ import { useMoodStore } from "@/lib/store";
  * 10/28 회의록 "약속 기능 중복제거(검색창으로 통일)" — "언제"·"예산" 단계 삭제, 자유 입력을
  * 룰베이스(resolveMoods)가 아니라 검색(/search)과 같은 AI 번역 파이프라인으로 통일했다.
  */
-// 약속 모드 = 마감 있는 결정용. '동네 산책'은 마감이 없어 제외, '갑자기 모임' 추가.
-const OCCASIONS = ["첫 소개팅", "퇴근 후 술약속", "친구 결혼식", "주말 카페", "면접 가는 날", "갑자기 모임"];
+// OCCASIONS/VIBE_CHIPS는 FEAT-041에서 src/lib/moods.ts로 옮겨 공용화(홈 필터 칩에서도 재사용).
 // #39에서 /search 상황별·밈 칩을 걷어내면서, OCCASIONS에 대응 문구가 없는 것만 옮겼다(코드리뷰
 // P1-2). '오늘의 추천'(날짜 기반 로테이션)은 대응 칩도 없고 별도 로직이라 이번엔 옮기지 않음.
 // '남들이 아는 그 느낌'은 QUERY_MAP에 매칭 키워드가 없어 AI 번역이 안 닿을 때(앱 빌드·API
 // 실패) 글자 수 기반 폴백으로 떨어져 뜻과 무관한 결과가 나오고, AI가 닿아도 다른 칩과 결과가
 // 겹쳐서 뺐다(코드리뷰 P2-5 — 실측 확인).
-const VIBE_CHIPS = ["꾸안꾸 그거 뭐냐", "테토남 그 느낌", "느좋 그 자체", "남친룩"];
 
 function cover(mood: Mood) {
   return mood.imageUrl
