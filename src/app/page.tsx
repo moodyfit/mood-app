@@ -7,7 +7,9 @@ import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
 import { usePhotos } from "@/lib/hooks/usePhotos";
 import { filterByGender, dominantMood } from "@/lib/photos";
+import { rankByVector } from "@/lib/rank";
 import { useMoodStore } from "@/lib/store";
+import type { Affinity } from "@/lib/types";
 
 // FEAT-032: 회의록 "무드 카테고리 보여주기(힙함, 댄디 등)". 처음엔 QUERY_MAP의 밈/스타일
 // 키워드(힙하게·댄디하게 등, 2~3축 조합)로 했는데, 조합끼리 축이 겹쳐서 결과가 비슷해
@@ -58,6 +60,18 @@ function HomeContent() {
   // moodKeys로 넘겨 검색 모드와 동일하게 헤더·히어로·순서스냅샷을 생략시킨다.
   const galleryMoodKeys = activeCategory ? [activeCategory.mood] : moodKeys;
 
+  // FEAT-041 프로토타입("커스텀 필터" — 슬라이더로 축별 가중치 지정): 칩은 필터(걸러내기)지만
+  // 이건 랭킹(순서 매기기)이라 0장이 될 일이 없다. rankByVector로 genderedPhotos 전부를
+  // 가까운 순으로 재배열만 한다. 칩 선택과 동시에 켜질 일 없게 서로 리셋한다(프로토타입 — 실
+  // 구현 시 정리).
+  const [customOpen, setCustomOpen] = useState(false);
+  const [customVector, setCustomVector] = useState<Affinity>({});
+  const hasCustomWeight = Object.values(customVector).some((v) => v > 0);
+  const displayPhotos = useMemo(
+    () => (customOpen && hasCustomWeight ? rankByVector(genderedPhotos, customVector) : categoryPhotos),
+    [customOpen, hasCustomWeight, customVector, genderedPhotos, categoryPhotos]
+  );
+
   // 빈 문자열 = 검색 해제(기본 피드 복귀). AI 실패해도 API가 폴백을 함께 반환해서 항상 결과 있음.
   const handleSearch = useCallback(async (q: string) => {
     setQuery(q);
@@ -83,11 +97,17 @@ function HomeContent() {
   function selectCategory(cat: { label: string; mood: string }) {
     // 소피 코드리뷰 Q-2: 탭 클릭은 "사진을 봤다"는 view와 달라 별도 이벤트로 분리(조회수 집계 보호).
     recordView(cat.mood, "category_select");
+    setCustomOpen(false);
     router.replace(`/?mood=${cat.mood}`, { scroll: false });
   }
 
   function clearCategory() {
     router.replace("/", { scroll: false });
+  }
+
+  function toggleCustom() {
+    setCustomOpen((v) => !v);
+    clearCategory();
   }
 
   return (
@@ -137,10 +157,44 @@ function HomeContent() {
             {cat.label}
           </button>
         ))}
+        <button
+          type="button"
+          aria-pressed={customOpen}
+          onClick={toggleCustom}
+          className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-[14px] transition ${
+            customOpen ? "border-ink font-semibold text-ink" : "border-transparent text-ink-faint"
+          }`}
+        >
+          커스텀
+        </button>
       </div>
 
+      {/* FEAT-041 프로토타입 — 축별 가중치 슬라이더. 결과 품질·UI 느낌 확인용, 디자인 다듬기 전. */}
+      {customOpen && (
+        <div className="flex flex-col gap-3 px-5 pt-4">
+          {CATEGORIES.map((cat) => (
+            <div key={cat.mood}>
+              <div className="mb-1 flex items-center justify-between text-[13px]">
+                <span>{cat.label}</span>
+                <span className="text-ink-faint">{customVector[cat.mood] ?? 0}%</span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={customVector[cat.mood] ?? 0}
+                onChange={(e) =>
+                  setCustomVector((prev) => ({ ...prev, [cat.mood]: Number(e.target.value) }))
+                }
+                className="w-full"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="pt-3">
-        <HomeGallery photos={categoryPhotos} loading={loading} moodKeys={galleryMoodKeys} query={query} />
+        <HomeGallery photos={displayPhotos} loading={loading} moodKeys={galleryMoodKeys} query={query} />
       </div>
     </div>
   );
