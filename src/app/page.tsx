@@ -64,13 +64,19 @@ function HomeContent() {
   // 이건 랭킹(순서 매기기)이라 0장이 될 일이 없다. rankByVector로 genderedPhotos 전부를
   // 가까운 순으로 재배열만 한다. 칩 선택과 동시에 켜질 일 없게 서로 리셋한다(프로토타입 — 실
   // 구현 시 정리).
-  const [customOpen, setCustomOpen] = useState(false);
-  const [customVector, setCustomVector] = useState<Affinity>({});
-  const hasCustomWeight = Object.values(customVector).some((v) => v > 0);
+  // draft(슬라이더 중 드래그 중인 값) vs applied(실제로 피드에 반영된 값) 분리 — "적용" 눌러야
+  // 반영. 슬라이더 onChange마다 랭킹을 다시 계산해 바로 보여주면 드래그 중에 계속 사진이
+  // 바뀌어서 오히려 뭘 보고 있는지 알기 어렵다는 피드백.
+  const [customDraft, setCustomDraft] = useState<Affinity>({});
+  const [customApplied, setCustomApplied] = useState<Affinity>({});
+  const hasAppliedWeight = Object.values(customApplied).some((v) => v > 0);
+  const customActive = hasAppliedWeight;
   const displayPhotos = useMemo(
-    () => (customOpen && hasCustomWeight ? rankByVector(genderedPhotos, customVector) : categoryPhotos),
-    [customOpen, hasCustomWeight, customVector, genderedPhotos, categoryPhotos]
+    () => (customActive ? rankByVector(genderedPhotos, customApplied) : categoryPhotos),
+    [customActive, customApplied, genderedPhotos, categoryPhotos]
   );
+  // Musinsa 스타일처럼 필터 버튼을 눌러야 그 축의 선택 패널이 펼쳐지는 구조 — 한 번에 하나만 열림.
+  const [openPanel, setOpenPanel] = useState<"style" | "custom" | null>(null);
 
   // 빈 문자열 = 검색 해제(기본 피드 복귀). AI 실패해도 API가 폴백을 함께 반환해서 항상 결과 있음.
   const handleSearch = useCallback(async (q: string) => {
@@ -97,17 +103,25 @@ function HomeContent() {
   function selectCategory(cat: { label: string; mood: string }) {
     // 소피 코드리뷰 Q-2: 탭 클릭은 "사진을 봤다"는 view와 달라 별도 이벤트로 분리(조회수 집계 보호).
     recordView(cat.mood, "category_select");
-    setCustomOpen(false);
+    setCustomDraft({});
+    setCustomApplied({});
+    setOpenPanel(null);
     router.replace(`/?mood=${cat.mood}`, { scroll: false });
   }
 
   function clearCategory() {
+    setOpenPanel(null);
     router.replace("/", { scroll: false });
   }
 
-  function toggleCustom() {
-    setCustomOpen((v) => !v);
+  function applyCustom() {
+    setCustomApplied(customDraft);
     clearCategory();
+    setOpenPanel(null);
+  }
+
+  function togglePanel(panel: "style" | "custom") {
+    setOpenPanel((p) => (p === panel ? null : panel));
   }
 
   return (
@@ -128,73 +142,101 @@ function HomeContent() {
 
       <HomeCloset />
 
-      {/* 밑줄 텍스트탭처럼 생겼지만 실제로는 단일 선택 버튼 묶음 — 코드리뷰 P2-1: role="tab"은
-          aria-controls로 연결된 tabpanel과 좌우 화살표 이동이 따라와야 완성되는 패턴인데
-          둘 다 없어서, 그 기대에 안 맞는 role 대신 aria-pressed 버튼 묶음으로 뺐다. */}
-      <div className="flex gap-5 overflow-x-auto px-5 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* 무신사 스냅처럼 축마다 필터 버튼 — 누르면 그 축의 선택 패널이 펼쳐짐(한 번에 하나만). */}
+      <div className="flex gap-2 overflow-x-auto px-5 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <button
           type="button"
-          aria-pressed={!activeCategory}
-          onClick={clearCategory}
-          className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-[14px] transition ${
-            !activeCategory ? "border-ink font-semibold text-ink" : "border-transparent text-ink-faint"
+          aria-expanded={openPanel === "style"}
+          onClick={() => togglePanel("style")}
+          className={`shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[13px] transition ${
+            activeCategory || openPanel === "style"
+              ? "border-ink bg-ink text-white"
+              : "border-line text-ink-soft"
           }`}
         >
-          전체
+          스타일{activeCategory ? ` · ${activeCategory.label}` : ""} ▾
         </button>
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat.mood}
-            type="button"
-            aria-pressed={activeCategory?.mood === cat.mood}
-            onClick={() => selectCategory(cat)}
-            className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-[14px] transition ${
-              activeCategory?.mood === cat.mood
-                ? "border-ink font-semibold text-ink"
-                : "border-transparent text-ink-faint"
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
         <button
           type="button"
-          aria-pressed={customOpen}
-          onClick={toggleCustom}
-          className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-[14px] transition ${
-            customOpen ? "border-ink font-semibold text-ink" : "border-transparent text-ink-faint"
+          aria-expanded={openPanel === "custom"}
+          onClick={() => togglePanel("custom")}
+          className={`shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[13px] transition ${
+            customActive || openPanel === "custom" ? "border-ink bg-ink text-white" : "border-line text-ink-soft"
           }`}
         >
-          커스텀
+          커스텀 ▾
         </button>
       </div>
 
+      {openPanel === "style" && (
+        <div className="flex flex-wrap gap-2 px-5 pt-3">
+          <button
+            type="button"
+            aria-pressed={!activeCategory}
+            onClick={clearCategory}
+            className={`rounded-full border px-3.5 py-1.5 text-[13px] transition ${
+              !activeCategory ? "border-accent bg-accent text-white" : "border-line text-ink-soft"
+            }`}
+          >
+            전체
+          </button>
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.mood}
+              type="button"
+              aria-pressed={activeCategory?.mood === cat.mood}
+              onClick={() => selectCategory(cat)}
+              className={`rounded-full border px-3.5 py-1.5 text-[13px] transition ${
+                activeCategory?.mood === cat.mood
+                  ? "border-accent bg-accent text-white"
+                  : "border-line text-ink-soft"
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* FEAT-041 프로토타입 — 축별 가중치 슬라이더. 결과 품질·UI 느낌 확인용, 디자인 다듬기 전. */}
-      {customOpen && (
-        <div className="flex flex-col gap-3 px-5 pt-4">
+      {openPanel === "custom" && (
+        <div className="flex flex-col gap-3 px-5 pt-3">
           {CATEGORIES.map((cat) => (
             <div key={cat.mood}>
               <div className="mb-1 flex items-center justify-between text-[13px]">
                 <span>{cat.label}</span>
-                <span className="text-ink-faint">{customVector[cat.mood] ?? 0}%</span>
+                <span className="text-ink-faint">{customDraft[cat.mood] ?? 0}%</span>
               </div>
               <input
                 type="range"
                 min={0}
                 max={100}
-                value={customVector[cat.mood] ?? 0}
+                value={customDraft[cat.mood] ?? 0}
                 onChange={(e) =>
-                  setCustomVector((prev) => ({ ...prev, [cat.mood]: Number(e.target.value) }))
+                  setCustomDraft((prev) => ({ ...prev, [cat.mood]: Number(e.target.value) }))
                 }
                 className="w-full"
               />
             </div>
           ))}
+          <button
+            type="button"
+            onClick={applyCustom}
+            className="mt-1 w-full rounded-[10px] bg-ink py-3 text-[14px] font-semibold text-white"
+          >
+            적용
+          </button>
         </div>
       )}
 
       <div className="pt-3">
-        <HomeGallery photos={displayPhotos} loading={loading} moodKeys={galleryMoodKeys} query={query} />
+        <HomeGallery
+          photos={displayPhotos}
+          loading={loading}
+          moodKeys={galleryMoodKeys}
+          query={query}
+          preRanked={customActive}
+        />
       </div>
     </div>
   );
