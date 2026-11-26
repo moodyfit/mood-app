@@ -13,7 +13,6 @@ import {
   EMPTY_FILTERS,
   matchesFilters,
   toMoodSet,
-  countMatches,
   STYLE_OPTIONS,
   type FilterSelections,
 } from "@/lib/filters";
@@ -68,16 +67,12 @@ function HomeContent() {
   // (FEAT-032 Q3 결정 재사용) — 축 라벨들을 그대로 moodKeys로 넘긴다.
   const galleryMoodKeys = hasAnyFilter ? [...styleMoods, ...tpoMoods, ...vibeMoods] : moodKeys;
 
-  function countIfApplied(axis: Axis, selected: Set<string>): number {
-    return countMatches(genderedPhotos, { ...applied, [axis]: selected });
-  }
-
-  function applyAxis(axis: Axis, next: Set<string>) {
-    setApplied((prev) => ({ ...prev, [axis]: next }));
-    if (axis === "style") setCustomApplied({}); // 체크박스로 고르면 슬라이더 지정은 해제
+  function applyAll(next: FilterSelections) {
+    setApplied(next);
+    setCustomApplied({}); // 체크박스로 고르면 슬라이더 지정은 해제
     setOpenAxis(null);
-    // 코드리뷰 Q-2와 동일 원칙 — 칩 선택은 view가 아니라 별도 이벤트로.
-    const firstMood = axis === "style" ? [...next][0] : [...toMoodSet(next)][0];
+    // 코드리뷰 Q-2와 동일 원칙 — 칩 선택은 view가 아니라 별도 이벤트로(대표로 1개만 기록).
+    const firstMood = [...next.style][0] ?? [...toMoodSet(next.tpo)][0] ?? [...toMoodSet(next.vibe)][0];
     if (firstMood) recordView(firstMood, "category_select");
   }
 
@@ -88,7 +83,7 @@ function HomeContent() {
   }
 
   const chipButtonClass = (active: boolean) =>
-    `shrink-0 whitespace-nowrap rounded-[10px] border px-3.5 py-1.5 text-[13px] transition ${
+    `shrink-0 whitespace-nowrap rounded-[8px] border px-2.5 py-1 text-[12px] transition ${
       active ? "border-ink bg-ink text-white" : "border-line text-ink-soft"
     }`;
 
@@ -110,28 +105,44 @@ function HomeContent() {
 
       <HomeCloset />
 
-      {/* 무신사 스냅처럼 스타일/TPO/무드를 각자 모서리둥근 사각형 칩으로 — 눌러야 그 축 패널이 열림. */}
-      <div className="flex gap-2 overflow-x-auto px-5 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* 무신사 스냅처럼 맨 앞 아이콘 버튼(전체 필터) + 스타일/TPO/무드 칩 — 뭘 눌러도 같은
+          시트가 열리고, 시트 안에서 탭을 자유롭게 넘나들 수 있다(에린 피드백). */}
+      <div className="flex items-center gap-2 overflow-x-auto px-5 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <button
+          type="button"
+          onClick={() => setOpenAxis("style")}
+          aria-label="전체 필터"
+          className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[8px] border border-line text-ink-soft"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="4" y1="7" x2="20" y2="7" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="17" x2="20" y2="17" />
+            <circle cx="9" cy="7" r="1.8" fill="currentColor" stroke="none" />
+            <circle cx="16" cy="12" r="1.8" fill="currentColor" stroke="none" />
+            <circle cx="11" cy="17" r="1.8" fill="currentColor" stroke="none" />
+          </svg>
+        </button>
         <button
           type="button"
           onClick={() => setOpenAxis("style")}
           className={chipButtonClass(styleMoods.size > 0 || customActive)}
         >
-          스타일{styleMoods.size > 0 ? ` · ${styleMoods.size}` : customActive ? " · 커스텀" : ""}
+          스타일{styleMoods.size > 0 ? ` · ${styleMoods.size}` : customActive ? " · 커스텀" : ""} ⌄
         </button>
         <button
           type="button"
           onClick={() => setOpenAxis("tpo")}
           className={chipButtonClass(applied.tpo.size > 0)}
         >
-          TPO{applied.tpo.size > 0 ? ` · ${applied.tpo.size}` : ""}
+          TPO{applied.tpo.size > 0 ? ` · ${applied.tpo.size}` : ""} ⌄
         </button>
         <button
           type="button"
           onClick={() => setOpenAxis("vibe")}
           className={chipButtonClass(applied.vibe.size > 0)}
         >
-          무드{applied.vibe.size > 0 ? ` · ${applied.vibe.size}` : ""}
+          무드{applied.vibe.size > 0 ? ` · ${applied.vibe.size}` : ""} ⌄
         </button>
       </div>
 
@@ -147,15 +158,15 @@ function HomeContent() {
 
       {openAxis && (
         <FilterSheet
-          axis={openAxis}
-          options={AXIS_OPTIONS[openAxis]}
-          initialSelected={applied[openAxis]}
-          countIfApplied={(sel) => countIfApplied(openAxis, sel)}
-          onApply={(next) => applyAxis(openAxis, next)}
+          initialTab={openAxis}
+          options={AXIS_OPTIONS}
+          initial={applied}
+          genderedPhotos={genderedPhotos}
+          onApply={applyAll}
           onClose={() => setOpenAxis(null)}
-          customDraft={openAxis === "style" ? customDraft : undefined}
-          onCustomChange={openAxis === "style" ? setCustomDraft : undefined}
-          onApplyCustom={openAxis === "style" ? applyCustom : undefined}
+          customDraft={customDraft}
+          onCustomChange={setCustomDraft}
+          onApplyCustom={applyCustom}
         />
       )}
     </div>
