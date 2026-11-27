@@ -9,7 +9,7 @@
 | Key | Value |
 |-----|-------|
 | Type | FEAT |
-| Status | Todo |
+| Status | In Progress |
 | 우선순위 | P1 |
 | Layer | Page / DB |
 | Related | FEAT-033 |
