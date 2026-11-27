@@ -1,147 +1,238 @@
 "use client";
 
-import { Suspense, useCallback, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import HomeGallery from "@/components/HomeGallery";
 import HomeCloset from "@/components/HomeCloset";
+import FilterSheet, { Chevron } from "@/components/FilterSheet";
 import { usePhotos } from "@/lib/hooks/usePhotos";
-import { filterByGender, dominantMood } from "@/lib/photos";
+import { filterByGender } from "@/lib/photos";
+import { rankByVector } from "@/lib/rank";
+import { OCCASIONS, VIBE_CHIPS } from "@/lib/moods";
+import {
+  EMPTY_FILTERS,
+  matchesFilters,
+  toMoodSet,
+  STYLE_OPTIONS,
+  type FilterSelections,
+} from "@/lib/filters";
 import { useMoodStore } from "@/lib/store";
+import type { Affinity } from "@/lib/types";
 
-// FEAT-032: 회의록 "무드 카테고리 보여주기(힙함, 댄디 등)". 처음엔 QUERY_MAP의 밈/스타일
-// 키워드(힙하게·댄디하게 등, 2~3축 조합)로 했는데, 조합끼리 축이 겹쳐서 결과가 비슷해
-// 보이는 문제(댄디하게/올드머니)와 "카테고리를 봐도 어떤 옷이 나올지 예상이 안 된다"는
-// 피드백이 있었다. 캐논 6축에 1:1로 매칭해서 — 서로 다른 축 = 서로 다른 사진이라 겹칠 수
-// 없고, 패션 지식 없어도 라벨 자체가 옷차림을 가리켜서 예측 가능하다.
-const CATEGORIES: { label: string; mood: string }[] = [
-  { label: "미니멀", mood: "clean" },
-  { label: "캐주얼", mood: "cityboy" },
-  { label: "스트릿", mood: "street" },
-  { label: "빈티지", mood: "amekaji" },
-  { label: "댄디", mood: "classic" },
-  { label: "소프트", mood: "soft" },
-];
+type Axis = "style" | "tpo" | "vibe";
+
+const AXIS_OPTIONS: Record<Axis, { key: string; label: string }[]> = {
+  style: STYLE_OPTIONS.map((c) => ({ key: c.mood, label: c.label })),
+  tpo: OCCASIONS.map((o) => ({ key: o, label: o })),
+  vibe: VIBE_CHIPS.map((v) => ({ key: v, label: v })),
+};
+
+// 뒤로가기 시 필터가 풀리던 문제(에린 리포트) — 상세 페이지 갔다 오면 컴포넌트가 다시
+// 마운트되는데 state로만 들고 있으면 초기화된다. URL 쿼리에 그대로 실어서, 마운트 시
+// 쿼리에서 복원한다(FEAT-008 /results의 ?q= 패턴과 동일한 발상).
+function parseFiltersFromParams(params: URLSearchParams): FilterSelections {
+  return {
+    style: new Set(params.get("style")?.split(",").filter(Boolean) ?? []),
+    tpo: new Set(params.get("tpo")?.split(",").filter(Boolean) ?? []),
+    vibe: new Set(params.get("vibe")?.split(",").filter(Boolean) ?? []),
+  };
+}
+
+function parseCustomFromParams(params: URLSearchParams): Affinity {
+  const raw = params.get("custom");
+  if (!raw) return {};
+  const out: Affinity = {};
+  for (const pair of raw.split(",")) {
+    const [key, val] = pair.split(":");
+    const n = Number(val);
+    if (key && Number.isFinite(n) && n > 0) out[key] = n;
+  }
+  return out;
+}
+
+function buildFilterParams(applied: FilterSelections, customApplied: Affinity): URLSearchParams {
+  const params = new URLSearchParams();
+  if (applied.style.size) params.set("style", [...applied.style].join(","));
+  if (applied.tpo.size) params.set("tpo", [...applied.tpo].join(","));
+  if (applied.vibe.size) params.set("vibe", [...applied.vibe].join(","));
+  const customPairs = Object.entries(customApplied).filter(([, v]) => v > 0);
+  if (customPairs.length) {
+    params.set("custom", customPairs.map(([key, v]) => `${key}:${v}`).join(","));
+  }
+  return params;
+}
 
 // 홈 = 약속 모드 진입 카드 + 종합 취향 상시 메이슨리 전시. 검색은 /search 페이지로 분리.
 function HomeContent() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  // 코드리뷰 P1-2: 카테고리를 고른 채 상세 → 뒤로가기하면 "전체"로 리셋되던 문제 — 선택
-  // 상태를 컴포넌트 state가 아니라 URL(`?mood=`)에 둬서, 뒤로가기해도 같은 URL로 돌아오며
-  // 자연스럽게 유지되게 한다(정적 export/Capacitor에서도 클라이언트에서 그대로 읽힘).
-  const activeMood = searchParams.get("mood");
-  const activeCategory = CATEGORIES.find((c) => c.mood === activeMood) ?? null;
-
   const { photos, loading } = usePhotos();
-  const [query, setQuery] = useState("");
-  const [moodKeys, setMoodKeys] = useState<string[]>([]);
+  const [query] = useState("");
+  const [moodKeys] = useState<string[]>([]);
   // FEAT-030: 남/녀 토글 제거 — genderFilter는 store에서 "male"로 고정돼 있음(향후 재활성화 대비 유지).
   const { genderFilter, recordView } = useMoodStore();
   const genderedPhotos = useMemo(
     () => filterByGender(photos, genderFilter),
     [photos, genderFilter]
   );
-  // 코드리뷰 Q-1: 처음엔 rankPhotos로 "정렬"만 해서 스크롤을 내리면 다른 무드 사진도 섞여
-  // 나왔다 — 카테고리는 검색이 아니라 "이 느낌만 보기"라 실제로 걸러내는 게 맞다(그래야
-  // 애초에 축을 1:1로 나눈 의미가 산다). dominantMood 기준 필터.
-  const categoryPhotos = useMemo(
-    () =>
-      activeCategory
-        ? genderedPhotos.filter((p) => dominantMood(p.mood_vector) === activeCategory.mood)
-        : genderedPhotos,
-    [genderedPhotos, activeCategory]
+
+  // FEAT-041 프로토타입 — 무신사 스냅 필터 참고. 메인화면에 스타일/TPO/무드 칩 3개를 바로 두고,
+  // 각자 자기 패널을 연다(탭 전환 없음). 탭 안 다중선택은 OR, 세 축 사이는 AND — 데이터가 적어
+  // 교집합이 0이 될 수 있는데, 정확한 장 수는 안 보여주고(에린 피드백) 0일 때만 적용 버튼을 막는다.
+  const [openAxis, setOpenAxis] = useState<Axis | null>(null);
+  const [applied, setApplied] = useState<FilterSelections>(() => parseFiltersFromParams(searchParams));
+  const styleMoods = applied.style; // 스타일은 이미 캐논 축이라 라벨=축
+  const tpoMoods = useMemo(() => toMoodSet(applied.tpo), [applied.tpo]);
+  const vibeMoods = useMemo(() => toMoodSet(applied.vibe), [applied.vibe]);
+  const hasAnyFilter = styleMoods.size > 0 || tpoMoods.size > 0 || vibeMoods.size > 0;
+  const filteredPhotos = useMemo(
+    () => (hasAnyFilter ? genderedPhotos.filter((p) => matchesFilters(p, applied)) : genderedPhotos),
+    [genderedPhotos, hasAnyFilter, applied]
   );
-  // BUG(소피 코드리뷰): 카테고리를 걸러도 moodKeys를 안 넘겨서 HomeGallery의 searching이 계속
-  // false로 남아, 카테고리 화면에 홈 인사말 헤더+히어로 카드가 그대로 나오던 문제. 티켓 결정
-  // 그대로(Q3: FEAT-006 moodKeys/query 메커니즘 재사용) — 카테고리 선택 중엔 그 축 하나를
-  // moodKeys로 넘겨 검색 모드와 동일하게 헤더·히어로·순서스냅샷을 생략시킨다.
-  const galleryMoodKeys = activeCategory ? [activeCategory.mood] : moodKeys;
 
-  // 빈 문자열 = 검색 해제(기본 피드 복귀). AI 실패해도 API가 폴백을 함께 반환해서 항상 결과 있음.
-  const handleSearch = useCallback(async (q: string) => {
-    setQuery(q);
-    if (!q) {
-      setMoodKeys([]);
-      return;
-    }
-    try {
-      const res = await fetch(`/api/search/translate?q=${encodeURIComponent(q)}`);
-      const data = (await res.json()) as { moodKeys?: string[] };
-      setMoodKeys(data.moodKeys ?? []);
-    } catch {
-      setMoodKeys([]); // 요청 자체가 실패(네트워크 등)하면 조용히 기본 피드로(에러 화면 대신)
-    }
-  }, []);
+  // "비율로 직접 정하기"(스타일 패널 안 슬라이더 모드): 체크박스는 필터(걸러내기)지만 이건
+  // 랭킹(순서 매기기)이라 0장이 될 일이 없다 — rankByVector로 genderedPhotos 전부를 가까운
+  // 순으로 재배열만 한다. 체크박스로 고른 스타일과는 서로 대체(동시에 안 켜짐).
+  const [customDraft, setCustomDraft] = useState<Affinity>(() => parseCustomFromParams(searchParams));
+  const [customApplied, setCustomApplied] = useState<Affinity>(() => parseCustomFromParams(searchParams));
+  const customActive = Object.values(customApplied).some((v) => v > 0);
 
-  // 소피 코드리뷰: recordSearch(cat.label)로 기록했더니 엉뚱한 축(주로 amekaji) 취향 점수가
-  // 올라감 — recordSearch는 내부적으로 resolveMoods(query)로 텍스트를 "추측"해서 반영하는데,
-  // "미니멀"/"캐주얼" 같은 라벨은 QUERY_MAP에 없어서 fallbackMoods(글자수 기반 해시 회전)로
-  // 떨어져 실제 선택한 축과 무관한 결과가 나왔다. 이미 축을 정확히 알고 있는 상황(추측이 필요
-  // 없음)이라 recordView(moodKey)로 바꿔서 그 축을 직접 반영한다 — recordView는 사진 클릭
-  // 때도 쓰는, 텍스트 추측 없이 정확한 축 하나를 받는 함수.
-  function selectCategory(cat: { label: string; mood: string }) {
-    // 소피 코드리뷰 Q-2: 탭 클릭은 "사진을 봤다"는 view와 달라 별도 이벤트로 분리(조회수 집계 보호).
-    recordView(cat.mood, "category_select");
-    router.replace(`/?mood=${cat.mood}`, { scroll: false });
+  useEffect(() => {
+    const qs = buildFilterParams(applied, customApplied).toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [applied, customApplied, pathname, router]);
+  // 버그 수정(로직 설명 중 발견): 커스텀이 켜져도 TPO·무드는 계속 AND로 걸려야 하는데(규칙 3),
+  // genderedPhotos 전체를 그대로 랭킹해버려서 TPO·무드 칩에 숫자가 남아있어도 실제로는 적용
+  // 안 되고 있었다 — 먼저 TPO·무드로 거르고(스타일은 커스텀이 대체하므로 비움) 그 안에서만
+  // 커스텀 비율로 순위를 매긴다.
+  const tpoVibeFiltered = useMemo(
+    () =>
+      tpoMoods.size > 0 || vibeMoods.size > 0
+        ? genderedPhotos.filter((p) => matchesFilters(p, { style: new Set(), tpo: applied.tpo, vibe: applied.vibe }))
+        : genderedPhotos,
+    [genderedPhotos, tpoMoods, vibeMoods, applied.tpo, applied.vibe]
+  );
+  const displayPhotos = useMemo(
+    () => (customActive ? rankByVector(tpoVibeFiltered, customApplied) : filteredPhotos),
+    [customActive, customApplied, tpoVibeFiltered, filteredPhotos]
+  );
+  // 체크박스 필터 중 하나라도 걸려 있으면 검색 모드와 동일하게 헤더·히어로·순서스냅샷 생략
+  // (FEAT-032 Q3 결정 재사용) — 축 라벨들을 그대로 moodKeys로 넘긴다.
+  const galleryMoodKeys = hasAnyFilter ? [...styleMoods, ...tpoMoods, ...vibeMoods] : moodKeys;
+
+  function applyAll(next: FilterSelections) {
+    setApplied(next);
+    setCustomApplied({}); // 체크박스로 고르면 슬라이더 지정은 해제
+    setOpenAxis(null);
+    // 코드리뷰 Q-2와 동일 원칙 — 칩 선택은 view가 아니라 별도 이벤트로(대표로 1개만 기록).
+    const firstMood = [...next.style][0] ?? [...toMoodSet(next.tpo)][0] ?? [...toMoodSet(next.vibe)][0];
+    if (firstMood) recordView(firstMood, "category_select");
   }
 
-  function clearCategory() {
-    router.replace("/", { scroll: false });
+  // BUG 수정(에린 리포트 — 간헐적 TPO/무드 초기화): 시트를 연 채로 TPO·무드를 먼저 고르고
+  // 스타일 탭의 슬라이더로 적용하면, 그 선택들은 아직 page.tsx의 applied에 안 올라가고 시트
+  // 안 draft에만 있는 상태였다 — 그런데 applyCustom이 draft가 아니라 기존 applied(prev)만
+  // 기준으로 style만 비웠어서, 같은 세션에서 고른 TPO·무드가 반영되지 않고 날아갔다. 이제
+  // 시트가 넘겨주는 draft 전체를 기준으로 style만 비우고 적용한다.
+  function applyCustom(restDraft: FilterSelections) {
+    setCustomApplied(customDraft);
+    setApplied({ ...restDraft, style: new Set() }); // 슬라이더로 고르면 체크박스 선택은 해제
+    setOpenAxis(null);
   }
+
+  // 에린 피드백 — 탭별 초기화만 있으면 다른 탭에 남은 선택을 잊은 채 테스트하다가 "몇 개를
+  // 눌러도 안 바뀐다"고 느끼기 쉬움(실제로는 다른 탭 필터와 계속 교집합되고 있었을 뿐). 전부
+  // 한 번에 비우고 바로 적용(기본 피드로 복귀).
+  function resetAll() {
+    setApplied(EMPTY_FILTERS);
+    setCustomDraft({});
+    setCustomApplied({});
+    setOpenAxis(null);
+  }
+
+  const chipButtonClass = (active: boolean) =>
+    `shrink-0 whitespace-nowrap inline-flex items-center gap-1 rounded-[8px] border px-2.5 py-1 text-[12px] transition ${
+      active ? "border-ink bg-ink text-white" : "border-line text-ink-soft"
+    }`;
 
   return (
     <div className="animate-fade">
-      {/* 홈의 유일한 카드형 진입점 — 약속 모드 */}
-      <div className="px-5 pt-4">
-        <Link
-          href="/promise"
-          className="flex items-center justify-between rounded-2xl bg-ink px-4 py-3.5 text-white"
-        >
-          <div className="min-w-0">
-            <div className="text-[14px] font-bold">약속 잡혔어? 3분 안에 결정 끝</div>
-            <div className="mt-0.5 text-[12px] text-white/70">자리·예산만 고르면 완성 조합을 골라줄게</div>
-          </div>
-          <span className="ml-2 text-lg">›</span>
-        </Link>
-      </div>
+      {/* FEAT-041: 약속 모드 진입 카드 숨김 — 필터 칩(TPO·무드)이 상황별 추천을 대체하고,
+       * 예산 입력은 가격 데이터 신뢰도 문제로 이미 빠져서 "약속"만의 의미가 옅어졌다는
+       * 판단(에린, 2026-11-26). 라우트(/promise)·PromiseMode.tsx는 그대로 둬서 나중에
+       * 이 진입점만 다시 붙이면 복원 가능. */}
 
       <HomeCloset />
 
-      {/* 밑줄 텍스트탭처럼 생겼지만 실제로는 단일 선택 버튼 묶음 — 코드리뷰 P2-1: role="tab"은
-          aria-controls로 연결된 tabpanel과 좌우 화살표 이동이 따라와야 완성되는 패턴인데
-          둘 다 없어서, 그 기대에 안 맞는 role 대신 aria-pressed 버튼 묶음으로 뺐다. */}
-      <div className="flex gap-5 overflow-x-auto px-5 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* 무신사 스냅처럼 맨 앞 아이콘 버튼(전체 필터) + 스타일/TPO/무드 칩 — 뭘 눌러도 같은
+          시트가 열리고, 시트 안에서 탭을 자유롭게 넘나들 수 있다(에린 피드백). */}
+      <div className="flex items-center gap-2 overflow-x-auto px-5 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <button
           type="button"
-          aria-pressed={!activeCategory}
-          onClick={clearCategory}
-          className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-[14px] transition ${
-            !activeCategory ? "border-ink font-semibold text-ink" : "border-transparent text-ink-faint"
-          }`}
+          onClick={() => setOpenAxis("style")}
+          aria-label="전체 필터"
+          className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[8px] border border-line text-ink-soft"
         >
-          전체
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="4" y1="7" x2="20" y2="7" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="17" x2="20" y2="17" />
+            <circle cx="9" cy="7" r="1.8" fill="currentColor" stroke="none" />
+            <circle cx="16" cy="12" r="1.8" fill="currentColor" stroke="none" />
+            <circle cx="11" cy="17" r="1.8" fill="currentColor" stroke="none" />
+          </svg>
         </button>
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat.mood}
-            type="button"
-            aria-pressed={activeCategory?.mood === cat.mood}
-            onClick={() => selectCategory(cat)}
-            className={`shrink-0 whitespace-nowrap border-b-2 pb-2 text-[14px] transition ${
-              activeCategory?.mood === cat.mood
-                ? "border-ink font-semibold text-ink"
-                : "border-transparent text-ink-faint"
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
+        <button
+          type="button"
+          onClick={() => setOpenAxis("style")}
+          className={chipButtonClass(styleMoods.size > 0 || customActive)}
+        >
+          <span>스타일{styleMoods.size > 0 ? ` · ${styleMoods.size}` : customActive ? " · 커스텀" : ""}</span>
+          <Chevron />
+        </button>
+        <button
+          type="button"
+          onClick={() => setOpenAxis("tpo")}
+          className={chipButtonClass(applied.tpo.size > 0)}
+        >
+          <span>TPO{applied.tpo.size > 0 ? ` · ${applied.tpo.size}` : ""}</span>
+          <Chevron />
+        </button>
+        <button
+          type="button"
+          onClick={() => setOpenAxis("vibe")}
+          className={chipButtonClass(applied.vibe.size > 0)}
+        >
+          <span>무드{applied.vibe.size > 0 ? ` · ${applied.vibe.size}` : ""}</span>
+          <Chevron />
+        </button>
       </div>
 
       <div className="pt-3">
-        <HomeGallery photos={categoryPhotos} loading={loading} moodKeys={galleryMoodKeys} query={query} />
+        <HomeGallery
+          photos={displayPhotos}
+          loading={loading}
+          moodKeys={galleryMoodKeys}
+          query={query}
+          preRanked={customActive}
+        />
       </div>
+
+      {openAxis && (
+        <FilterSheet
+          initialTab={openAxis}
+          options={AXIS_OPTIONS}
+          initial={applied}
+          genderedPhotos={genderedPhotos}
+          onApply={applyAll}
+          onClose={() => setOpenAxis(null)}
+          customDraft={customDraft}
+          onCustomChange={setCustomDraft}
+          onApplyCustom={applyCustom}
+          onResetAll={resetAll}
+        />
+      )}
     </div>
   );
 }

@@ -81,3 +81,20 @@ export function rankPersonalized(
 
 /** 히어로(대형 카드) 노출 기준 — 개인화가 유의미해진 뒤에만(콜드엔 다양한 격자). */
 export const HERO_MIN_STRENGTH = 0.25;
+
+/** FEAT-041 프로토타입: 커스텀 슬라이더(축별 0~100%)로 지정한 벡터와 사진 mood_vector의
+ * 내적(dot product)으로 "랭킹"만 한다(필터 아님) — rankPersonalized의 raw 점수 계산과
+ * 동일한 수식. 축 교집합(칩 동시선택)과 달리 0장이 되는 일이 없다: 전부 점수가 매겨져서
+ * 가까운 순으로 보일 뿐, 안 맞아도 "그나마 가까운 것"이 아래로 밀려날 뿐 사라지지 않는다. */
+export function rankByVector(photos: Photo[], vector: Affinity): Photo[] {
+  const hasWeight = Object.values(vector).some((v) => v > 0);
+  if (!hasWeight) return photos;
+  const scored = photos.map((p) => {
+    const v = p.mood_vector ?? {};
+    let s = 0;
+    for (const [k, val] of Object.entries(v)) s += (vector[k] ?? 0) * val;
+    return { p, s };
+  });
+  scored.sort((a, b) => b.s - a.s);
+  return scored.map((x) => x.p);
+}

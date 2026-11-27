@@ -95,6 +95,7 @@ export default function HomeGallery({
   loading = false,
   moodKeys,
   query,
+  preRanked = false,
 }: {
   photos?: Photo[];
   /** usePhotos()의 loading — photos fetch 완료 전엔 복원(scrollTo)을 미루는 데 쓴다(BUG-011). */
@@ -102,9 +103,12 @@ export default function HomeGallery({
   /** FEAT-006: 검색 결과 모드 — 있으면 이 순서로, 없으면 기존 개인화 피드 */
   moodKeys?: string[];
   query?: string;
+  /** FEAT-041 프로토타입: photos가 호출부에서 이미 랭킹된 순서 — rankPhotos/blendFeed로 다시
+   * 섞지 않고 그대로 쓴다(헤더·히어로·스냅샷은 searching과 동일하게 생략). */
+  preRanked?: boolean;
 }) {
   const { affinity } = useMoodStore();
-  const searching = Boolean(moodKeys && moodKeys.length > 0);
+  const searching = Boolean(moodKeys && moodKeys.length > 0) || preRanked;
 
   const hasTaste = Object.keys(affinity).length > 0;
   // BUG-004: 뒤로가기 시 로드량/스크롤 복원(검색 모드는 항상 새로 시작). resetKey가
@@ -128,13 +132,15 @@ export default function HomeGallery({
   // visible은 deps에서 제외(잘라내기는 아래 shown에서). photos/affinity/검색어가 바뀔 때만 다시 랭킹.
   const freshOrdered = useMemo(
     () =>
-      searching
+      preRanked
+        ? photos
+        : searching
         ? rankPhotos(photos, moodKeys ?? [])
         : blendFeed(
             rankPersonalized(photos, affinity, { explore: false }),
             rankPersonalized(photos, affinity, { explore: true })
           ),
-    [photos, affinity, searching, moodKeys]
+    [photos, affinity, searching, moodKeys, preRanked]
   );
 
   // 마운트 시 딱 한 번만 스냅샷을 꺼내 쓰고 지운다(= 지난 방문에서 떠나기 직전 저장된 순서를

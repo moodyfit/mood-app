@@ -92,6 +92,11 @@ export const QUERY_MAP: QueryMapping[] = [
 
 export const SUGGESTIONS = QUERY_MAP.map((q) => q.keyword);
 
+// FEAT-041: PromiseMode.tsx에 있던 TPO·무드 칩 목록을 공용화(홈 필터 칩에서도 같은 목록을 씀).
+// 약속 모드 = 마감 있는 결정용. '동네 산책'은 마감이 없어 제외, '갑자기 모임' 추가.
+export const OCCASIONS = ["첫 소개팅", "퇴근 후 술약속", "친구 결혼식", "주말 카페", "면접 가는 날", "갑자기 모임"];
+export const VIBE_CHIPS = ["꾸안꾸 그거 뭐냐", "테토남 그 느낌", "느좋 그 자체", "남친룩"];
+
 export function resolveMoods(query: string): MoodKey[] {
   const q = query.trim();
   if (!q) return fallbackMoods(q);
