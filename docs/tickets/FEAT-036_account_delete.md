@@ -9,7 +9,7 @@
 | Key | Value |
 |-----|-------|
 | Type | FEAT |
-| Status | In Progress |
+| Status | Done |
 | 우선순위 | P1 |
 | Layer | Page / DB |
 | Related | FEAT-033 |
@@ -94,7 +94,7 @@ Auth 사용자 삭제는 service role이 필요하다. API Route는 `build:cap`�
 
 - [x] 탈퇴 후 같은 이메일로 로그인되지 않는다
 - [x] 탈퇴 즉시 그 user_id의 `events` · `user_taste` 행이 남지 않는다(1년 파기 크론이 비회원으로 다루지 않도록)
-- [ ] 탈퇴한 회원의 사진이 홈 · 검색에 나오지 않는다
+- [x] 탈퇴한 회원의 사진이 홈 · 검색에 나오지 않는다
 - [x] 웹과 앱 빌드에서 모두 동작한다
 
 ---
@@ -105,6 +105,9 @@ Auth 사용자 삭제는 service role이 필요하다. API Route는 `build:cap`�
 2. `npm run build` · `npm run build:cap`: 통과(`out/space.html` 생성). 앱 빌드 결과물(`out/`, API Route 없음)을 로컬 정적 서버로 띄워 테스트 계정(test01@gmail.com) 탈퇴 → `auth.users` · `events` · `user_taste` · `user_actions` · `photos` 모두 0(2026-11-27). iOS 시뮬레이터 실행은 미확인(Xcode 없음)
 3. 테스트 계정(test@example.com) 탈퇴, 2026-11-27 로컬 웹: 탈퇴 전 `auth.users` 1 · `events` 53 · `user_taste` 1 · `user_actions` 0 · `photos` 0 → 탈퇴 후 모두 0. 올린 사진이 없는 계정이라 Storage 파일 · `photos` 행 삭제는 미확인
 4. DDL 적용(2026-11-27, 서영 · 대시보드): `pg_policies`에 `uploads_owner_delete`(DELETE), `delete_my_account` 실행 권한은 `postgres` · `authenticated` · `service_role`(anon 없음)
+5. 올린 사진 삭제(코드 근거, 사진 올린 계정 탈퇴는 미실행 — AI 태깅 비용): `deleteAccount()`가 `uploaded_by` 본인 행의 `uploads` 파일을 먼저 지우고 지운 개수가 모자라면 중단, `delete_my_account()`가 `photos` 행을 지운다. 홈 · 검색은 `src/lib/photos.ts`에서 `photos` 테이블을 읽으므로 행이 없으면 나오지 않는다
+6. 기기 저장소 삭제(리뷰 반영): `tsc` 통과. 탈퇴 후 `mood.*` 키 삭제 · 새로고침 · 완료 토스트는 화면 확인 전
+7. Step 4 문구: 로컬 웹 `/terms` · `/privacy`에서 약관 제12조 1항 · 처리방침 제7조 · 제8조 새 문구 렌더 확인
 
 ---
 
