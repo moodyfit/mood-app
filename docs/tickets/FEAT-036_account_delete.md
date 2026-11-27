@@ -46,7 +46,7 @@ Auth 사용자 삭제는 service role이 필요하다. API Route는 `build:cap`�
 ### 포함
 
 1. 나의 공간 — 탈퇴 버튼 + 확인 단계
-2. 삭제 — Auth 사용자, 해당 user_id의 `events` · `user_taste` · `photos` 행, Storage `uploads` 파일
+2. 삭제 — Auth 사용자, 해당 user_id의 `events` · `user_taste` · `user_actions` · `photos` 행, Storage `uploads` 파일
 3. 탈퇴 후 로그아웃 · 익명 신원 복귀
 4. 처리방침 제8조 · 약관 제12조 문구를 앱 내 탈퇴에 맞게 수정
 
@@ -59,7 +59,9 @@ Auth 사용자 삭제는 service role이 필요하다. API Route는 `build:cap`�
 ## 결정
 
 - 삭제 실행 위치: `security definer` DB 함수(RPC). 앱 빌드에는 API Route가 없어 서버 대신 DB 함수가 본인 행만 지운다. FEAT-035와 같은 방식(서영이 대시보드에서 실행 · 티켓에 기록). BE(NestJS) 착수 후 탈퇴 API로 옮긴다
-- (대기) 화면 구성 — 구현 전 md 도식으로 확인
+- 화면 구성: 나의 공간 맨 아래 작은 글자 한 줄 `이용약관 · 개인정보 처리방침 · 회원 탈퇴`(비회원은 탈퇴 없음). 계정 카드 옆보다 덜 눈에 띄되, 한 번 눌러 찾을 수 있게(개인정보보호법 제38조 제4항 — 탈퇴를 가입보다 어렵게 하지 않음). 이 줄은 FEAT-036이 만들고 FEAT-037이 약관 링크를 더한다
+- 확인 창 · 토스트 문구는 해요체(FEAT-039 동의 화면과 맞춤)
+- 삭제 순서: 앱이 Storage `uploads`의 본인 파일을 먼저 지우고(실패하면 중단) → DB 함수 `delete_my_account()`가 `events` · `user_taste` · `user_actions` · `photos` 행과 계정을 지운다. Storage는 `protect_objects_delete` 트리거로 SQL 직접 삭제가 막혀 있다
 
 ---
 
