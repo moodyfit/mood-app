@@ -15,7 +15,10 @@ export type EventType =
   | "worn"
   | "owned"
   | "product_click"
-  | "profile_set";
+  | "profile_set"
+  // FEAT-032 코드리뷰 Q-2: 카테고리 탭 클릭은 "사진을 봤다"는 view와 성격이 달라(조회수 집계
+  // 오염 방지) 별도 이벤트로 분리.
+  | "category_select";
 
 interface EventPayload {
   photo_id?: string;

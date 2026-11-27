@@ -115,7 +115,7 @@ export default function HomeGallery({
   // (재현: photos fetch를 인위로 지연시키면 100% 재현). loading이 끝난 뒤에만 복원을 시작한다.
   const [visible, setVisible] = useScrollRestore(
     "moodfit:home-scroll",
-    `${searching}|${query}`,
+    `${searching}|${query}|${moodKeys?.join(",") ?? ""}`,
     INITIAL_VISIBLE,
     searching,
     !loading
@@ -190,11 +190,9 @@ export default function HomeGallery({
     // (remaining 상수화 이전, 이 deps 누락으로 검색 후 무한스크롤이 먹통이던 버그 — FEAT-006 Playwright 재현·수정).
   }, [visible, hasMore, searching, query]);
 
-  const header = searching ? (
-    <div className="mb-3">
-      <div className="text-[15px] font-bold tracking-[-0.3px]">‘{query}’ — 대충 쳐도 돼</div>
-    </div>
-  ) : (
+  // FEAT-032 코드리뷰: 카테고리 탭이 이미 선택 상태(밑줄+볼드)를 보여주는데 바로 아래 같은
+  // 이름을 또 헤더로 반복하는 게 중복으로 느껴진다는 피드백 — 탭 선택 중엔 헤더 자체를 생략.
+  const header = searching ? null : (
     <>
       <div className="mb-3">
         <div className="text-[15px] font-bold tracking-[-0.3px]">
