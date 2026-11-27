@@ -65,6 +65,28 @@ Auth 사용자 삭제는 service role이 필요하다. API Route는 `build:cap`�
 
 ---
 
+## Strategy
+
+Step 하나당 커밋 하나.
+
+### Step 1: 탈퇴 데이터 계층
+
+`src/lib/account.ts` — 내 사진 경로 조회(`photos.uploaded_by`) → Storage `uploads` 파일 삭제(실패하면 중단) → `delete_my_account()` 호출. 컴포넌트는 이 함수만 부른다.
+
+### Step 2: 확인 창
+
+삭제되는 정보 목록 + [취소] [탈퇴하기]. 처리 중에는 버튼을 막고, 실패하면 창 안에 안내한다.
+
+### Step 3: 나의 공간 진입 · 완료 처리
+
+맨 아래 한 줄(회원만 "회원 탈퇴"). 탈퇴 뒤 로그아웃 · 비회원 신원 복귀 · 홈 이동 · 토스트.
+
+### Step 4: 처리방침 · 약관 문구 (#54 머지 후)
+
+처리방침 제8조 · 약관 제12조를 앱 안 탈퇴에 맞게 고친다.
+
+---
+
 ## Acceptance Criteria
 
 - [ ] 탈퇴 후 같은 이메일로 로그인되지 않는다
