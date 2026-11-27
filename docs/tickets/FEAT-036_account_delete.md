@@ -79,7 +79,50 @@ Auth 사용자 삭제는 service role이 필요하다. API Route는 `build:cap`�
 1. `tsc --noEmit`: (대기)
 2. `npm run build` · `npm run build:cap`: (대기)
 3. 테스트 계정 탈퇴 후 DB · Storage 잔존 행: (대기)
+4. DDL 적용(2026-11-27, 서영 · 대시보드): `pg_policies`에 `uploads_owner_delete`(DELETE), `delete_my_account` 실행 권한은 `postgres` · `authenticated` · `service_role`(anon 없음)
 
 ---
 
 ## Implementation Notes
+
+### 대시보드에서 실행한 DDL (2026-11-27)
+
+`supabase/`는 참조 전용이라 실행한 SQL을 여기에 남긴다.
+
+```sql
+create policy uploads_owner_delete on storage.objects
+for delete to authenticated
+using (bucket_id = 'uploads' and owner_id = auth.uid()::text);
+```
+
+```sql
+create or replace function public.delete_my_account()
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  uid uuid := auth.uid();
+begin
+  if uid is null then
+    raise exception 'not authenticated';
+  end if;
+  delete from public.events       where user_id = uid::text;
+  delete from public.user_taste   where user_id = uid::text;
+  delete from public.user_actions where user_id = uid;
+  delete from public.photos       where uploaded_by = uid;
+  delete from auth.users          where id = uid;
+end;
+$$;
+
+revoke all on function public.delete_my_account() from public, anon;
+grant execute on function public.delete_my_account() to authenticated;
+```
+
+### 되돌리기
+
+```sql
+drop function if exists public.delete_my_account();
+drop policy if exists uploads_owner_delete on storage.objects;
+```
