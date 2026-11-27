@@ -67,8 +67,6 @@ Auth 사용자 삭제는 service role이 필요하다. API Route는 `build:cap`�
 
 ## Strategy
 
-Step 하나당 커밋 하나.
-
 ### Step 1: 탈퇴 데이터 계층
 
 `src/lib/account.ts` — 내 사진 경로 조회(`photos.uploaded_by`) → Storage `uploads` 파일 삭제(실패하면 중단) → `delete_my_account()` 호출. 컴포넌트는 이 함수만 부른다.
@@ -89,8 +87,8 @@ Step 하나당 커밋 하나.
 
 ## Acceptance Criteria
 
-- [ ] 탈퇴 후 같은 이메일로 로그인되지 않는다
-- [ ] 탈퇴 즉시 그 user_id의 `events` · `user_taste` 행이 남지 않는다(1년 파기 크론이 비회원으로 다루지 않도록)
+- [x] 탈퇴 후 같은 이메일로 로그인되지 않는다
+- [x] 탈퇴 즉시 그 user_id의 `events` · `user_taste` 행이 남지 않는다(1년 파기 크론이 비회원으로 다루지 않도록)
 - [ ] 탈퇴한 회원의 사진이 홈 · 검색에 나오지 않는다
 - [ ] 웹과 앱 빌드에서 모두 동작한다
 
@@ -98,9 +96,9 @@ Step 하나당 커밋 하나.
 
 ## Verification
 
-1. `tsc --noEmit`: (대기)
-2. `npm run build` · `npm run build:cap`: (대기)
-3. 테스트 계정 탈퇴 후 DB · Storage 잔존 행: (대기)
+1. `tsc --noEmit`: 통과
+2. `npm run build` · `npm run build:cap`: 통과(`out/space.html` 생성). 앱(시뮬레이터)에서 탈퇴 실행은 미확인
+3. 테스트 계정(test@example.com) 탈퇴, 2026-11-27 로컬 웹: 탈퇴 전 `auth.users` 1 · `events` 53 · `user_taste` 1 · `user_actions` 0 · `photos` 0 → 탈퇴 후 모두 0. 올린 사진이 없는 계정이라 Storage 파일 · `photos` 행 삭제는 미확인
 4. DDL 적용(2026-11-27, 서영 · 대시보드): `pg_policies`에 `uploads_owner_delete`(DELETE), `delete_my_account` 실행 권한은 `postgres` · `authenticated` · `service_role`(anon 없음)
 
 ---
