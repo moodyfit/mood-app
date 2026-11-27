@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import LikedLooks from "@/components/LikedLooks";
 import ShelfCard, { Shelf, ShelfHeader } from "@/components/ShelfCard";
 import TasteProfile from "@/components/TasteProfile";
@@ -10,14 +9,13 @@ import WithdrawModal from "@/components/WithdrawModal";
 import { MOODS } from "@/lib/moods";
 import { fetchPhotoProducts, photoUrl } from "@/lib/photos";
 import type { Product } from "@/lib/types";
-import { useMoodStore } from "@/lib/store";
+import { useMoodStore, WITHDRAWN_KEY } from "@/lib/store";
 
 /**
  * 나의 공간 — 취향 카드 + 내 취향 코디 + 내 옷장 + 계정.
  */
 export default function SpacePage() {
-  const router = useRouter();
-  const { clearSpaceDot, wardrobeItems, user, signOut, showToast } = useMoodStore();
+  const { clearSpaceDot, wardrobeItems, user, signOut } = useMoodStore();
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   // null = 상품 조회 중. 실패하면 빈 Map이 와서 코디 사진으로 넘어간다
   const [byPhoto, setByPhoto] = useState<Map<string, Product[]> | null>(null);
@@ -104,8 +102,12 @@ export default function SpacePage() {
           onClose={() => setWithdrawOpen(false)}
           onDone={async () => {
             await signOut();
-            router.replace("/");
-            showToast("탈퇴가 완료됐어요.");
+            // 기기에 남은 취향 · 옷장까지 지우고, 메모리 상태도 비우려고 새로 불러온다
+            Object.keys(localStorage)
+              .filter((k) => k.startsWith("mood."))
+              .forEach((k) => localStorage.removeItem(k));
+            sessionStorage.setItem(WITHDRAWN_KEY, "1");
+            location.replace("/");
           }}
         />
       )}
