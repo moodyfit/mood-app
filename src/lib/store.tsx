@@ -21,7 +21,22 @@ import { getConfig, fetchConfig } from "./config";
 export interface AuthUser {
   id: string;
   email: string | null;
+  consented: boolean; // 가입 동의 기록(user_metadata.consent) 유무
+  provider: string | null; // 가입 방법(email · kakao)
 }
+export const TERMS_VERSION = "2026-11";
+const consentRecord = () => ({ at: new Date().toISOString(), terms_version: TERMS_VERSION, age14: true });
+const toAuthUser = (u: {
+  id: string;
+  email?: string;
+  user_metadata?: Record<string, unknown>;
+  app_metadata?: { provider?: string };
+}): AuthUser => ({
+  id: u.id,
+  email: u.email ?? null,
+  consented: Boolean(u.user_metadata?.consent),
+  provider: u.app_metadata?.provider ?? null,
+});
 interface AuthResult {
   error: string | null;
   needsConfirm?: boolean;
@@ -89,6 +104,7 @@ const K_DOT = "mood.spaceDot.v1"; // B5 카드 발급 dot (나의 공간 미확�
 export const K_KAKAO_PENDING = "mood.kakaoPending.v1"; // 카카오로 떠났다가 /login으로 돌아왔는지(sessionStorage)
 export const K_LOGIN_EMAIL = "mood.loginEmail.v1"; // 재설정 후 로그인 칸 미리 채우기(sessionStorage, 1회용)
 export const EXPIRED_LINK = "링크가 만료됐어요. 다시 요청해 주세요.";
+export const SIGNUP_DONE = "가입이 끝났어. 환영해!";
 export const K_RECOVERY = "mood.recovery.v1"; // 재설정 메일 링크로 들어온 탭 표시(sessionStorage, 새로고침에도 유지)
 const K_DISC = "mood.discovered.v1"; // C7 '발견' 결 (스크린샷 입주)
 const K_BODY = "mood.bodyProfile.v1"; // 영상(룩북) 탭 — 신체 프로필(고정 검색축·락인)
@@ -147,6 +163,7 @@ interface MoodStore {
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
   signInWithKakao: () => Promise<AuthResult>;
+  recordConsent: () => Promise<AuthResult>;
   requestPasswordReset: (email: string) => Promise<AuthResult>;
   updatePassword: (password: string) => Promise<AuthResult>;
   toast: ToastState | null;
@@ -258,6 +275,8 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
+    // 확인 메일 링크는 #…type=signup으로 열린다. Supabase가 해시를 지우기 전에 읽어 둔다.
+    let fromSignupLink = window.location.hash.includes("type=signup");
     // 인증(로그인) — 세션 있으면 신원=auth id. 로그인 순간 익명 취향 ↔ 계정 취향 병합(크로스기기).
     const sb = getSupabase();
     if (!sb) return;
@@ -265,7 +284,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       const u = data.session?.user;
       if (u) {
         userIdRef.current = u.id;
-        setUser({ id: u.id, email: u.email ?? null });
+        setUser(toAuthUser(u));
         void hydrateTaste(u.id);
       }
       // 비회원 취향은 서버에 두지 않는다(브라우저에만) — user_taste는 회원 행만 읽고 쓸 수 있다
@@ -274,7 +293,12 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       const u = session?.user;
       if (u) {
         userIdRef.current = u.id;
-        setUser({ id: u.id, email: u.email ?? null });
+        setUser(toAuthUser(u));
+        if (event === "SIGNED_IN" && fromSignupLink) {
+          fromSignupLink = false;
+          showToast(SIGNUP_DONE);
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
         if (event === "SIGNED_IN") {
           // 병합: 계정 서버 취향 ∪ 현재(익명) 로컬 취향 → 로컬 반영 + 계정으로 저장
           void (async () => {
@@ -507,7 +531,11 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
   const signUp = useCallback(async (email: string, password: string): Promise<AuthResult> => {
     const sb = getSupabase();
     if (!sb) return { error: NO_SERVER };
-    const { data, error } = await sb.auth.signUp({ email, password });
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password,
+      options: { data: { consent: consentRecord() }, emailRedirectTo: `${window.location.origin}/space` },
+    });
     if (error) return { error: authError(error) };
     trackEvent(userIdRef.current, "profile_set", { meta: { auth: "signup" } });
     return { error: null, needsConfirm: !data.session };
@@ -529,6 +557,16 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       options: { redirectTo: `${window.location.origin}/login` },
     });
     return { error: authError(error) };
+  }, []);
+
+  // 카카오 가입자 · 동의 기록 없는 기존 계정의 가입 동의 기록
+  const recordConsent = useCallback(async (): Promise<AuthResult> => {
+    const sb = getSupabase();
+    if (!sb) return { error: NO_SERVER };
+    const { data, error } = await sb.auth.updateUser({ data: { consent: consentRecord() } });
+    if (error) return { error: authError(error) };
+    if (data.user) setUser(toAuthUser(data.user));
+    return { error: null };
   }, []);
 
   const signOut = useCallback(async () => {
@@ -664,6 +702,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       signIn,
       signOut,
       signInWithKakao,
+      recordConsent,
       requestPasswordReset,
       updatePassword,
       toast,
@@ -704,6 +743,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       signIn,
       signOut,
       signInWithKakao,
+      recordConsent,
       requestPasswordReset,
       updatePassword,
       toast,
