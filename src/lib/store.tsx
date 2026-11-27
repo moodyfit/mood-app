@@ -37,9 +37,10 @@ const AUTH_ERRORS: Record<string, string> = {
   same_password: "지금 쓰는 비밀번호와 다른 비밀번호를 입력해 주세요.",
   over_email_send_rate_limit: "요청이 너무 잦아요. 잠시 후 다시 요청해 주세요.",
   over_request_rate_limit: "요청이 너무 잦아요. 잠시 후 다시 요청해 주세요.",
+  access_denied: "카카오 로그인을 취소했어요.",
 };
 /** Supabase Auth 오류를 화면용 한국어로. 모르는 코드는 원문 대신 일반 안내를 보여 준다. */
-function authError(e: { code?: string } | null): string | null {
+export function authError(e: { code?: string } | null): string | null {
   if (!e) return null;
   return AUTH_ERRORS[e.code ?? ""] ?? "문제가 생겼어요. 잠시 후 다시 시도해 주세요.";
 }
@@ -85,6 +86,7 @@ const K_SEARCH = "mood.searchCounts.v1"; // 7.8 검색 기억
 const K_OWNED = "mood.owned.v1"; // 1.5.2 '내 옷' 소유 결
 const K_SCAN = "mood.scanDone.v1"; // 스캔 1회 완료 — 이후 스캔 탭은 전시 기본, 원할 때만 재스캔
 const K_DOT = "mood.spaceDot.v1"; // B5 카드 발급 dot (나의 공간 미확인 신호)
+export const K_KAKAO_PENDING = "mood.kakaoPending.v1"; // 카카오로 떠났다가 /login으로 돌아왔는지(sessionStorage)
 export const K_LOGIN_EMAIL = "mood.loginEmail.v1"; // 재설정 후 로그인 칸 미리 채우기(sessionStorage, 1회용)
 export const EXPIRED_LINK = "링크가 만료됐어요. 다시 요청해 주세요.";
 export const K_RECOVERY = "mood.recovery.v1"; // 재설정 메일 링크로 들어온 탭 표시(sessionStorage, 새로고침에도 유지)
@@ -144,6 +146,7 @@ interface MoodStore {
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
+  signInWithKakao: () => Promise<AuthResult>;
   requestPasswordReset: (email: string) => Promise<AuthResult>;
   updatePassword: (password: string) => Promise<AuthResult>;
   toast: ToastState | null;
@@ -517,6 +520,17 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     return { error: authError(error) };
   }, []);
 
+  // 성공하면 카카오로 페이지가 넘어갔다가 /login으로 돌아온다. 여기서는 출발 전 오류만 받는다.
+  const signInWithKakao = useCallback(async (): Promise<AuthResult> => {
+    const sb = getSupabase();
+    if (!sb) return { error: NO_SERVER };
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: "kakao",
+      options: { redirectTo: `${window.location.origin}/login` },
+    });
+    return { error: authError(error) };
+  }, []);
+
   const signOut = useCallback(async () => {
     const sb = getSupabase();
     if (sb) await sb.auth.signOut();
@@ -649,6 +663,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signIn,
       signOut,
+      signInWithKakao,
       requestPasswordReset,
       updatePassword,
       toast,
@@ -688,6 +703,7 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signIn,
       signOut,
+      signInWithKakao,
       requestPasswordReset,
       updatePassword,
       toast,

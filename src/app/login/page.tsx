@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import BackButton from "@/components/BackButton";
 import PasswordInput from "@/components/ui/PasswordInput";
-import { K_LOGIN_EMAIL, useMoodStore } from "@/lib/store";
+import { K_KAKAO_PENDING, K_LOGIN_EMAIL, authError, useMoodStore } from "@/lib/store";
 
 const COPY = {
   login: { title: "로그인", desc: "로그인하면 취향이 기기 상관없이 이어져.", cta: "로그인", toggle: "계정이 없어? 회원가입" },
@@ -12,15 +12,19 @@ const COPY = {
   reset: { title: "비밀번호 재설정", desc: "가입한 이메일로 재설정 링크를 보내줄게.", cta: "재설정 메일 보내기", toggle: "로그인으로 돌아가기" },
 } as const;
 
+// 앱 빌드에서는 카카오 버튼을 뺀다 — 카카오 웹 리다이렉트가 앱으로 돌아오지 못한다
+const APP_BUILD = process.env.BUILD_TARGET === "capacitor";
+
 // 로그인/회원가입 — 이메일+비밀번호(Supabase Auth). 로그인 순간 익명 취향이 계정으로 병합됨.
 export default function LoginPage() {
   const router = useRouter();
-  const { signIn, signUp, requestPasswordReset, user } = useMoodStore();
+  const { signIn, signUp, signInWithKakao, requestPasswordReset, user } = useMoodStore();
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [kakaoReturn, setKakaoReturn] = useState(false);
 
   useEffect(() => {
     try {
@@ -32,7 +36,54 @@ export default function LoginPage() {
     }
   }, []);
 
-  // 이미 로그인 상태면 안내
+  // 카카오에서 취소 · 실패로 돌아오면 주소에 error가 붙는다(쿼리 또는 해시).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search + "&" + window.location.hash.slice(1));
+    const err = params.get("error");
+    const code = err === "access_denied" ? err : params.get("error_code") || err; // 취소는 Supabase가 붙인 error_code보다 먼저 본다
+    if (!code) return;
+    setMsg(authError({ code }));
+    setKakaoReturn(false);
+    try {
+      sessionStorage.removeItem(K_KAKAO_PENDING);
+    } catch {
+      /* 무시 */
+    }
+    window.history.replaceState(null, "", "/login");
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(K_KAKAO_PENDING)) setKakaoReturn(true);
+    } catch {
+      /* 무시 */
+    }
+  }, []);
+
+  // 카카오 로그인으로 돌아와 세션이 생기면 이메일 로그인 성공과 같이 나의 공간으로 보낸다.
+  useEffect(() => {
+    if (!user || !kakaoReturn) return;
+    try {
+      sessionStorage.removeItem(K_KAKAO_PENDING);
+    } catch {
+      /* 무시 */
+    }
+    router.replace("/space");
+  }, [user, kakaoReturn, router]);
+
+  async function kakao() {
+    setMsg(null);
+    try {
+      sessionStorage.setItem(K_KAKAO_PENDING, "1");
+    } catch {
+      /* 돌아온 뒤 자동 이동만 빠진다 */
+    }
+    const res = await signInWithKakao();
+    if (res.error) setMsg(res.error);
+  }
+
+  // 이미 로그인 상태면 안내. 카카오에서 막 돌아온 경우는 안내 없이 나의 공간으로 넘어간다.
+  if (user && kakaoReturn) return null;
   if (user) {
     return (
       <div className="animate-fade px-5 pb-14">
@@ -149,6 +200,26 @@ export default function LoginPage() {
         >
           비밀번호를 잊었어?
         </button>
+      )}
+
+      {mode !== "reset" && !APP_BUILD && (
+        <>
+          <div className="mt-6 flex items-center gap-3 text-[12px] text-ink-soft">
+            <span className="h-px flex-1 bg-line" />
+            또는
+            <span className="h-px flex-1 bg-line" />
+          </div>
+          <button
+            type="button"
+            onClick={kakao}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-[12px] bg-[#FEE500] py-3.5 text-[15px] font-semibold text-black/85 transition active:scale-[0.99]"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <path d="M12 3C6.48 3 2 6.58 2 11c0 2.83 1.86 5.31 4.66 6.72l-.95 3.48c-.08.3.26.54.52.37l4.15-2.75c.53.06 1.07.09 1.62.09 5.52 0 10-3.58 10-8S17.52 3 12 3z" />
+            </svg>
+            카카오 로그인
+          </button>
+        </>
       )}
 
       <button
