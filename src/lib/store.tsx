@@ -110,6 +110,7 @@ const K_DISC = "mood.discovered.v1"; // C7 '발견' 결 (스크린샷 입주)
 const K_BODY = "mood.bodyProfile.v1"; // 영상(룩북) 탭 — 신체 프로필(고정 검색축·락인)
 const K_UID = "mood.uid.v1"; // 익명 기기 신원(개인화 서버 적재 키. 로그인 도입 시 병합)
 const K_GENDER_FILTER = "mood.genderFilter.v1"; // 회의록(2026-10-08) 남/녀 토글 — v3(#20) 이후 남녀 코디가 섞여 나오는 문제
+export const WITHDRAWN_KEY = "moodfit:withdrawn"; // 탈퇴 직후 새로고침된 홈에서 완료 토스트를 띄우는 표시
 
 /** 피드 성별 필터. "all"이면 photos.gender 무관 전부 노출(기존 동작). */
 export type GenderFilter = "all" | "male" | "female";
@@ -388,6 +389,16 @@ export function MoodProvider({ children }: { children: React.ReactNode }) {
     // 링크가 있으면 누를 시간을 더 준다
     toastTimer.current = setTimeout(() => setToast(null), link ? 3000 : 1900);
   }, []);
+
+  useEffect(() => {
+    try {
+      if (!sessionStorage.getItem(WITHDRAWN_KEY)) return;
+      sessionStorage.removeItem(WITHDRAWN_KEY);
+      showToast("탈퇴가 완료됐어요.");
+    } catch {
+      /* ignore */
+    }
+  }, [showToast]);
 
   const isSaved = useCallback(
     (key: MoodKey) => likedMoods.some((s) => s.moodKey === key),
